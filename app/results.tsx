@@ -53,6 +53,11 @@ export default function ResultsScreen() {
     return Math.max(0, Math.floor(usable / columns));
   }, [layoutWidth, columns, layoutPadding]);
 
+  const listContentStyle = useMemo(
+    () => [styles.listContent, { paddingHorizontal: layoutPadding, maxWidth: layoutWidth }],
+    [layoutPadding, layoutWidth],
+  );
+
   const 검색제출무시 = useCallback(() => {}, []);
 
   const renderPropertyItem = useCallback(
@@ -116,7 +121,7 @@ export default function ResultsScreen() {
           key={`col-${columns}`}
           numColumns={columns}
           columnWrapperStyle={columns > 1 ? styles.gridRow : undefined}
-          contentContainerStyle={[styles.listContent, { paddingHorizontal: layoutPadding, maxWidth: layoutWidth }]}
+          contentContainerStyle={listContentStyle}
           ListEmptyComponent={<Text style={styles.emptyText}>{emptyText}</Text>}
         />
       ) : (
@@ -127,7 +132,7 @@ export default function ResultsScreen() {
           key={`cust-col-${columns}`}
           numColumns={columns}
           columnWrapperStyle={columns > 1 ? styles.gridRow : undefined}
-          contentContainerStyle={[styles.listContent, { paddingHorizontal: layoutPadding, maxWidth: layoutWidth }]}
+          contentContainerStyle={listContentStyle}
           ListEmptyComponent={<Text style={styles.emptyText}>{emptyText}</Text>}
         />
       )}
