@@ -29,6 +29,7 @@ export default function PropertyDetailScreen() {
   const layoutPadding = useMemo(() => getHorizontalPadding(windowWidth), [windowWidth]);
   const contentMaxWidth = useMemo(() => getContentMaxWidth(windowWidth), [windowWidth]);
   const narrow = windowWidth < 768;
+  const isUltraWide = windowWidth >= 1920;
   const headerTitleSize = windowWidth < 400 ? 18 : windowWidth < 768 ? 20 : 22;
 
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -106,7 +107,11 @@ export default function PropertyDetailScreen() {
             </View>
           </View>
 
-          {carouselMidDesktopClip ? (
+          {isUltraWide ? (
+            <View style={styles.carouselUltraWide}>
+              <PropertyCarousel photos={photos} />
+            </View>
+          ) : carouselMidDesktopClip ? (
             <View style={carouselMidDesktopClip}>
               <PropertyCarousel photos={photos} />
             </View>
@@ -114,26 +119,57 @@ export default function PropertyDetailScreen() {
             <PropertyCarousel photos={photos} />
           )}
 
-          <View style={[styles.infoRow, narrow && styles.infoRowColumn]}>
-            <View style={[styles.specGrid, narrow && styles.specGridFull]}>
-              {[0, 1, 2, 3].map((row) => (
-                <View key={row} style={[styles.specRow, row < 3 && styles.specRowBottom]}>
-                  {[0, 1].map((col) => {
-                    const idx = row * 2 + col;
-                    const { label, value } = specs[idx];
-                    return (
-                      <View
-                        key={label}
-                        style={[styles.specCell, col === 0 && styles.specCellRight]}>
-                        <Text style={styles.specLabel}>{label}</Text>
-                        <Text style={styles.specValue}>{value}</Text>
-                      </View>
-                    );
-                  })}
-                </View>
-              ))}
+          <View style={[styles.infoRow, narrow && styles.infoRowColumn, isUltraWide && styles.infoRowUltra]}>
+            <View style={[styles.specGrid, narrow && styles.specGridFull, isUltraWide && styles.specGridUltra]}>
+              {isUltraWide ? (
+                <>
+                  {[0, 1, 2, 3].map((row) => (
+                    <View key={row} style={[styles.specRow, row < 3 && styles.specRowBottom]}>
+                      {[0, 1].map((col) => {
+                        const idx = row * 2 + col;
+                        const { label, value } = specs[idx];
+                        return (
+                          <View
+                            key={label}
+                            style={[styles.specCellUltra2col, col === 0 && styles.specCellRight]}>
+                            <Text style={styles.specLabel}>{label}</Text>
+                            <Text style={styles.specValue} numberOfLines={2}>
+                              {value}
+                            </Text>
+                          </View>
+                        );
+                      })}
+                    </View>
+                  ))}
+                </>
+              ) : (
+                <>
+                  {[0, 1, 2, 3].map((row) => (
+                    <View key={row} style={[styles.specRow, row < 3 && styles.specRowBottom]}>
+                      {[0, 1].map((col) => {
+                        const idx = row * 2 + col;
+                        const { label, value } = specs[idx];
+                        return (
+                          <View
+                            key={label}
+                            style={[styles.specCell, col === 0 && styles.specCellRight]}>
+                            <Text style={styles.specLabel}>{label}</Text>
+                            <Text style={styles.specValue}>{value}</Text>
+                          </View>
+                        );
+                      })}
+                    </View>
+                  ))}
+                </>
+              )}
             </View>
-            <View style={[styles.memoBox, narrow && styles.memoBoxFull, { padding: layoutPadding }]}>
+            <View
+              style={[
+                styles.memoBox,
+                narrow && styles.memoBoxFull,
+                isUltraWide && styles.memoBoxUltra,
+                { padding: layoutPadding },
+              ]}>
               <Text style={styles.memoLabel}>메모</Text>
               <ScrollView
                 style={styles.memoScroll}
@@ -176,6 +212,9 @@ const styles = StyleSheet.create({
   // infoRow: paddingVertical만 — paddingHorizontal은 container에서 상속
   infoRow: { flex: 1, flexDirection: 'row', alignItems: 'stretch', minHeight: 0, paddingVertical: 16, gap: 12 },
   infoRowColumn: { flexDirection: 'column' },
+  infoRowUltra: { flexDirection: 'row' },
+  /** 1920+ : 캐러셀과 스펙/메모 행이 같은 콘텐츠 너비(오른쪽 끝 정렬)를 쓰도록 */
+  carouselUltraWide: { width: '100%', alignSelf: 'stretch' },
   specGrid: {
     flex: 1,
     minHeight: 0,
@@ -188,6 +227,21 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   specGridFull: { width: '100%' },
+  specGridUltra: {
+    flex: 1,
+    minWidth: 0,
+    minHeight: 0,
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+  },
+  specCellUltra2col: {
+    width: '50%',
+    minWidth: 0,
+    minHeight: 0,
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    justifyContent: 'flex-start',
+  },
   specRow: { flex: 1, flexDirection: 'row', minHeight: 0 },
   specRowBottom: { borderBottomWidth: 1, borderBottomColor: '#F1F5F9' },
   specCell: {
@@ -207,6 +261,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#E2E8F0',
     flexDirection: 'column',
+  },
+  memoBoxUltra: {
+    flex: 1,
+    minWidth: 0,
+    minHeight: 0,
   },
   memoBoxFull: { width: '100%' },
   memoScroll: { flex: 1, minHeight: 0 },
