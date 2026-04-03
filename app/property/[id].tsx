@@ -65,12 +65,7 @@ export default function PropertyDetailScreen() {
 
   return (
     <View style={styles.page}>
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}>
-        <View style={[styles.container, { paddingHorizontal: layoutPadding, maxWidth: contentMaxWidth }]}>
+      <View style={[styles.container, { paddingHorizontal: layoutPadding, maxWidth: contentMaxWidth }]}>
 
           <View style={[styles.header, { paddingVertical: layoutPadding }]}>
             <View style={styles.headerTopRow}>
@@ -105,32 +100,44 @@ export default function PropertyDetailScreen() {
 
           <View style={[styles.infoRow, narrow && styles.infoRowColumn]}>
             <View style={[styles.specGrid, narrow && styles.specGridFull]}>
-              {specs.map(({ label, value }, idx) => (
-                <View key={label} style={[styles.specCell, idx % 2 === 0 && styles.specCellRight, idx < specs.length - 2 && styles.specCellBottom]}>
-                  <Text style={styles.specLabel}>{label}</Text>
-                  <Text style={styles.specValue}>{value}</Text>
+              {[0, 1, 2, 3].map((row) => (
+                <View key={row} style={[styles.specRow, row < 3 && styles.specRowBottom]}>
+                  {[0, 1].map((col) => {
+                    const idx = row * 2 + col;
+                    const { label, value } = specs[idx];
+                    return (
+                      <View
+                        key={label}
+                        style={[styles.specCell, col === 0 && styles.specCellRight]}>
+                        <Text style={styles.specLabel}>{label}</Text>
+                        <Text style={styles.specValue}>{value}</Text>
+                      </View>
+                    );
+                  })}
                 </View>
               ))}
             </View>
             <View style={[styles.memoBox, narrow && styles.memoBoxFull, { padding: layoutPadding }]}>
               <Text style={styles.memoLabel}>메모</Text>
-              <ScrollView style={styles.memoScroll} showsVerticalScrollIndicator={false} nestedScrollEnabled>
+              <ScrollView
+                style={styles.memoScroll}
+                contentContainerStyle={styles.memoScrollContent}
+                showsVerticalScrollIndicator
+                nestedScrollEnabled
+                keyboardShouldPersistTaps="handled">
                 <Text style={styles.memoText}>{property.memo || '—'}</Text>
               </ScrollView>
             </View>
           </View>
 
-        </View>
-      </ScrollView>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   page: { flex: 1, backgroundColor: '#F3F5F9' },
-  scroll: { flex: 1 },
-  scrollContent: { flexGrow: 1, paddingBottom: 24 },
-  container: { width: '100%', alignSelf: 'center' },
+  container: { flex: 1, width: '100%', alignSelf: 'center' },
   notFound: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 16 },
   notFoundBack: { color: '#1D4ED8', fontSize: 16, fontWeight: '600' },
   notFoundText: { color: '#334155', fontSize: 16 },
@@ -151,18 +158,43 @@ const styles = StyleSheet.create({
   headerBtnText: { color: '#FFFFFF', fontSize: 12, fontWeight: '600' },
   headerBtnDel: { color: '#FCA5A5' },
   // infoRow: paddingVertical만 — paddingHorizontal은 container에서 상속
-  infoRow: { flexDirection: 'row', alignItems: 'stretch', paddingVertical: 16, gap: 12 },
+  infoRow: { flex: 1, flexDirection: 'row', alignItems: 'stretch', minHeight: 0, paddingVertical: 16, gap: 12 },
   infoRowColumn: { flexDirection: 'column' },
-  specGrid: { flex: 1, flexDirection: 'row', flexWrap: 'wrap', alignContent: 'flex-start', backgroundColor: '#FFFFFF', borderRadius: 12, borderWidth: 1, borderColor: '#E2E8F0', overflow: 'hidden' },
-  specGridFull: { flex: 0, width: '100%' },
-  specCell: { width: '50%', padding: 14 },
+  specGrid: {
+    flex: 1,
+    minHeight: 0,
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    overflow: 'hidden',
+  },
+  specGridFull: { width: '100%' },
+  specRow: { flex: 1, flexDirection: 'row', minHeight: 0 },
+  specRowBottom: { borderBottomWidth: 1, borderBottomColor: '#F1F5F9' },
+  specCell: {
+    flex: 1,
+    minHeight: 0,
+    padding: 14,
+    justifyContent: 'space-between',
+  },
   specCellRight: { borderRightWidth: 1, borderRightColor: '#F1F5F9' },
-  specCellBottom: { borderBottomWidth: 1, borderBottomColor: '#F1F5F9' },
   specLabel: { fontSize: 11, color: '#94A3B8', fontWeight: '500', marginBottom: 4 },
   specValue: { fontSize: 14, fontWeight: '700', color: '#1E293B' },
-  memoBox: { flex: 1, backgroundColor: '#FFFFFF', borderRadius: 12, borderWidth: 1, borderColor: '#E2E8F0', minHeight: 160 },
-  memoBoxFull: { flex: 0, width: '100%', minHeight: 200 },
-  memoScroll: { maxHeight: 280 },
+  memoBox: {
+    flex: 1,
+    minHeight: 0,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    flexDirection: 'column',
+  },
+  memoBoxFull: { width: '100%' },
+  memoScroll: { flex: 1, minHeight: 0 },
+  memoScrollContent: { paddingBottom: 8 },
   memoLabel: { fontSize: 11, color: '#94A3B8', fontWeight: '600', marginBottom: 8 },
   memoText: { fontSize: 14, color: '#334155', lineHeight: 22 },
 });
