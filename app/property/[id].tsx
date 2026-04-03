@@ -12,7 +12,7 @@ import {
 import { router, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
-import { BADGE_COLORS, topbar } from '@/constants/colors';
+import { BADGE_COLORS, bg, border, red, text, text2 } from '@/constants/colors';
 import { DUMMY_PROPERTIES } from '@/constants/dummyData';
 import { getContentMaxWidth, getHorizontalPadding } from '@/constants/theme';
 import PropertyCarousel from '@/components/PropertyCarousel';
@@ -21,6 +21,8 @@ import PropertyCarousel from '@/components/PropertyCarousel';
 
 const getBadge = (key: string) =>
   key in BADGE_COLORS ? BADGE_COLORS[key as keyof typeof BADGE_COLORS] : BADGE_COLORS.기본;
+
+const topbar = bg;
 
 export default function PropertyDetailScreen() {
   const { width: windowWidth } = useWindowDimensions();
@@ -70,7 +72,7 @@ export default function PropertyDetailScreen() {
           <View style={[styles.header, { paddingVertical: layoutPadding }]}>
             <View style={styles.headerTopRow}>
               <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-                <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+                <Ionicons name="arrow-back" size={24} color={text} />
               </TouchableOpacity>
               <View style={styles.badgeRow}>
                 <View style={[styles.badge, { backgroundColor: typeBadge.bg }]}>
@@ -147,16 +149,16 @@ const styles = StyleSheet.create({
   badgeRow: { flexDirection: 'row', gap: 8 },
   badge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 999 },
   badgeText: { fontSize: 12, fontWeight: '700' },
-  headerTitle: { color: '#FFFFFF', fontWeight: '800', marginTop: 4 },
-  headerAddr: { color: 'rgba(255,255,255,0.75)', fontSize: 13 },
+  headerTitle: { color: text, fontWeight: '800', marginTop: 4 },
+  headerAddr: { color: text2, fontSize: 13 },
   headerBottom: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 2, gap: 10 },
   headerBottomNarrow: { flexDirection: 'column', alignItems: 'flex-start' },
-  headerPrice: { fontSize: 20, fontWeight: '800', color: '#FFFFFF' },
+  headerPrice: { fontSize: 20, fontWeight: '800', color: text },
   headerBtnGroup: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   headerBtnGroupNarrow: { width: '100%', justifyContent: 'flex-start' },
-  headerBtn: { borderWidth: 1, borderColor: 'rgba(255,255,255,0.28)', borderRadius: 6, paddingHorizontal: 9, paddingVertical: 5 },
-  headerBtnText: { color: '#FFFFFF', fontSize: 12, fontWeight: '600' },
-  headerBtnDel: { color: '#FCA5A5' },
+  headerBtn: { borderWidth: 1, borderColor: border, borderRadius: 6, paddingHorizontal: 9, paddingVertical: 5 },
+  headerBtnText: { color: text, fontSize: 12, fontWeight: '600' },
+  headerBtnDel: { color: red },
   // infoRow: paddingVertical만 — paddingHorizontal은 container에서 상속
   infoRow: { flex: 1, flexDirection: 'row', alignItems: 'stretch', minHeight: 0, paddingVertical: 16, gap: 12 },
   infoRowColumn: { flexDirection: 'column' },
