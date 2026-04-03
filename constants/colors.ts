@@ -10,7 +10,7 @@ export const text = '#18202E'; // 본문
 export const text2 = '#6B7585'; // 보조 텍스트
 export const text3 = '#9AA5B4'; // 힌트, 플레이스홀더
 export const border = '#D8DCE6'; // 구분선, 테두리
-export const bg = '#F3F5F9'; // 화면 배경
+export const bg = '#F4F6F9'; // 화면 배경
 export const card = '#FFFFFF'; // 카드 배경
 export const topbar = '#111827'; // 상단 바
 

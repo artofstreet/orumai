@@ -188,7 +188,7 @@ export default function PropertyDetailScreen() {
 }
 
 const styles = StyleSheet.create({
-  page: { flex: 1, backgroundColor: '#F3F5F9' },
+  page: { flex: 1, backgroundColor: '#F4F6F9' },
   container: { flex: 1, width: '100%', alignSelf: 'center' },
   notFound: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 16 },
   notFoundBack: { color: '#1D4ED8', fontSize: 16, fontWeight: '600' },

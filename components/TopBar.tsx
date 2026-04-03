@@ -33,7 +33,7 @@ export default function TopBar() {
         <View style={styles.logoBox}>
           <Text style={styles.logoO}>오</Text>
         </View>
-        {!compact && <Text style={styles.logoText}>오름AI</Text>}
+        <Text style={styles.logoText}>오름AI</Text>
       </View>
 
       <View style={[styles.right, compact && styles.rightCompact]}>
@@ -46,7 +46,7 @@ export default function TopBar() {
           onHoverOut={() => {
             if (Platform.OS === 'web') setIsAddHovered(false);
           }}>
-          <Text style={styles.addButtonText}>{compact ? '+' : '+등록'}</Text>
+          <Text style={styles.addButtonText}>+등록</Text>
         </Pressable>
 
         {showPrint && (
@@ -122,6 +122,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
     marginLeft: 7,
+    flexShrink: 0,
   },
   right: {
     flexDirection: 'row',

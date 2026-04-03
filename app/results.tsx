@@ -8,7 +8,7 @@ import PropertyCard from '@/components/PropertyCard';
 import SearchBar from '@/components/SearchBar';
 import type { Customer, Property } from '@/types';
 
-import { bg, border, primary, text2 } from '@/constants/colors';
+import { bg, border, primary, text, text2 } from '@/constants/colors';
 import { getContentMaxWidth, getGridColumns, getHorizontalPadding } from '@/constants/theme';
 import { useProperties } from '@/hooks/useProperties';
 import { useSearch } from '@/hooks/useSearch';
@@ -47,7 +47,6 @@ export default function ResultsScreen() {
     return getGridColumns(windowWidth);
   }, [isUltraWide, windowWidth]);
   const layoutPadding = useMemo(() => getHorizontalPadding(windowWidth), [windowWidth]);
-  /** 상세 app/property/[id].tsx 와 동일: getContentMaxWidth + getHorizontalPadding */
   const layoutWidth = useMemo(() => getContentMaxWidth(windowWidth), [windowWidth]);
   const cardWidth = useMemo(() => {
     const usable = layoutWidth - layoutPadding * 2 - GAP * (columns - 1);
@@ -60,28 +59,36 @@ export default function ResultsScreen() {
     ({ item }: { item: Property }) => {
       // TODO-ROUTE: /property/[id] 라우트 추가 후 타입 안전하게 제거 예정
       const onPress = () => router.push(`/property/${item.id}` as unknown as Parameters<typeof router.push>[0]);
-      return <PropertyCard property={item} width={cardWidth} onPress={onPress} />; // 카드 너비 전달
+      return <PropertyCard property={item} width={cardWidth} onPress={onPress} />;
     },
     [cardWidth],
   );
 
   const renderCustomerItem = useCallback(
     ({ item }: { item: Customer }) => {
-      return <CustomerCard item={item} width={cardWidth} />; // 카드 너비 전달
+      return <CustomerCard item={item} width={cardWidth} />;
     },
     [cardWidth],
   );
 
   const emptyText = '검색 결과가 없어요';
-  // 결과 요약 문구(숫자만 강조)
-  const 매물건수 = tabCountProperties; // 매물 건수
-  const 고객건수 = tabCountCustomers; // 고객 건수
+  const 매물건수 = tabCountProperties;
+  const 고객건수 = tabCountCustomers;
 
   return (
     <View style={styles.page}>
       <View style={[styles.header, { paddingHorizontal: layoutPadding, maxWidth: layoutWidth }]}>
-        <SearchBar value={searchQuery} onChangeText={setSearchQuery} onSubmit={검색제출무시} />
-
+        <View style={styles.searchRow}>
+          {windowWidth > 600 ? (
+            <Text style={styles.logoLine}>
+              <Text style={styles.logoO}>오름</Text>
+              <Text style={styles.logoAI}>AI</Text>
+            </Text>
+          ) : null}
+          <View style={styles.searchBarSlot}>
+            <SearchBar value={searchQuery} onChangeText={setSearchQuery} onSubmit={검색제출무시} />
+          </View>
+        </View>
         <Text style={styles.summaryText}>
           매물 <Text style={styles.summaryCount}>{매물건수}</Text>건 · 고객{' '}
           <Text style={styles.summaryCount}>{고객건수}</Text>건 검색됨
@@ -106,8 +113,8 @@ export default function ResultsScreen() {
           data={filteredProperties}
           keyExtractor={(item) => item.id}
           renderItem={renderPropertyItem}
-          key={`col-${columns}`} // 열 수 변경 시 재렌더링
-          numColumns={columns} // 반응형 그리드 열 수
+          key={`col-${columns}`}
+          numColumns={columns}
           columnWrapperStyle={columns > 1 ? styles.gridRow : undefined}
           contentContainerStyle={[styles.listContent, { paddingHorizontal: layoutPadding, maxWidth: layoutWidth }]}
           ListEmptyComponent={<Text style={styles.emptyText}>{emptyText}</Text>}
@@ -117,8 +124,8 @@ export default function ResultsScreen() {
           data={filteredCustomers}
           keyExtractor={(item) => item.id}
           renderItem={renderCustomerItem}
-          key={`cust-col-${columns}`} // 열 수 변경 시 재렌더링
-          numColumns={columns} // 반응형 그리드 열 수
+          key={`cust-col-${columns}`}
+          numColumns={columns}
           columnWrapperStyle={columns > 1 ? styles.gridRow : undefined}
           contentContainerStyle={[styles.listContent, { paddingHorizontal: layoutPadding, maxWidth: layoutWidth }]}
           ListEmptyComponent={<Text style={styles.emptyText}>{emptyText}</Text>}
@@ -129,33 +136,23 @@ export default function ResultsScreen() {
 }
 
 const styles = StyleSheet.create({
-  page: {
-    flex: 1,
-    backgroundColor: bg,
-    paddingTop: 16,
-    gap: 12,
-  },
-  header: {
-    gap: 12,
-    alignSelf: 'center',
-    width: '100%',
-  },
-  summaryText: {
-    fontSize: 12,
-    color: '#64748B',
-    fontWeight: '400',
-  }, // 검색결과 요약 텍스트
-  summaryCount: {
-    fontSize: 12,
-    color: '#0F172A',
-    fontWeight: '700',
-  }, // 요약 숫자 강조
-  tabRow: {
+  page: { flex: 1, backgroundColor: bg, paddingTop: 16, gap: 12 },
+  header: { gap: 12, alignSelf: 'center', width: '100%' },
+  searchRow: {
     flexDirection: 'row',
-    gap: 18,
-    borderBottomWidth: 1,
-    borderBottomColor: border,
-  },
+    alignItems: 'center',
+    width: '100%',
+    maxWidth: 680,
+    alignSelf: 'center',
+    gap: 16,
+  }, // 로고+검색창 묶음(중앙, SearchBar max 680과 동일)
+  logoLine: { fontWeight: '800' }, // 오름AI 래퍼
+  logoO: { color: text, fontSize: 20 }, // 오름(본문 네이비)
+  logoAI: { color: primary, fontSize: 20 }, // AI(브랜드 파랑)
+  searchBarSlot: { flex: 1, minWidth: 0 }, // 검색창이 묶음 안 남은 폭 채움
+  summaryText: { fontSize: 12, color: '#64748B', fontWeight: '400' },
+  summaryCount: { fontSize: 12, color: '#0F172A', fontWeight: '700' },
+  tabRow: { flexDirection: 'row', gap: 18, borderBottomWidth: 1, borderBottomColor: border },
   tabButton: {
     paddingVertical: 10,
     paddingHorizontal: 2,
@@ -164,34 +161,11 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
     borderBottomColor: 'transparent',
   },
-  tabButtonActive: {
-    borderBottomColor: primary,
-  },
-  tabText: {
-    color: '#94A3B8',
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  tabTextActive: {
-    color: '#1D4ED8',
-    fontWeight: '700',
-  },
-  listContent: {
-    alignSelf: 'center',
-    width: '100%',
-    paddingVertical: 16,
-    paddingBottom: 24,
-    gap: 8,
-  },
-  gridRow: {
-    gap: 8,
-  }, // 2열 그리드 row 간격
-  emptyText: {
-    paddingTop: 24,
-    textAlign: 'center',
-    color: text2,
-    fontSize: 14,
-    fontWeight: '700',
-  },
+  tabButtonActive: { borderBottomColor: primary },
+  tabText: { color: '#94A3B8', fontSize: 14, fontWeight: '500' },
+  tabTextActive: { color: '#1D4ED8', fontWeight: '700' },
+  listContent: { alignSelf: 'center', width: '100%', paddingVertical: 16, paddingBottom: 24, gap: 8 },
+  gridRow: { gap: 8 },
+  emptyText: { paddingTop: 24, textAlign: 'center', color: text2, fontSize: 14, fontWeight: '700' },
 });
 
