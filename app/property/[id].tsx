@@ -73,7 +73,8 @@ export default function PropertyDetailScreen() {
     <ScrollView
       style={styles.page}
       contentContainerStyle={styles.pageScrollContent}
-      keyboardShouldPersistTaps="handled">
+      keyboardShouldPersistTaps="handled"
+      nestedScrollEnabled={true}>
       <View style={[styles.container, { paddingHorizontal: layoutPadding, maxWidth: layoutWidth }]}>
         <View style={[styles.header, { paddingVertical: layoutPadding }]}>
           <View style={styles.headerTopRow}>
@@ -112,17 +113,19 @@ export default function PropertyDetailScreen() {
           </View>
         </View>
 
-        {isUltraWide ? (
-          <View style={styles.carouselUltraWide}>
+        <View onStartShouldSetResponder={() => true}>
+          {isUltraWide ? (
+            <View style={styles.carouselUltraWide}>
+              <PropertyCarousel photos={photos} />
+            </View>
+          ) : carouselMidDesktopClip ? (
+            <View style={carouselMidDesktopClip}>
+              <PropertyCarousel photos={photos} />
+            </View>
+          ) : (
             <PropertyCarousel photos={photos} />
-          </View>
-        ) : carouselMidDesktopClip ? (
-          <View style={carouselMidDesktopClip}>
-            <PropertyCarousel photos={photos} />
-          </View>
-        ) : (
-          <PropertyCarousel photos={photos} />
-        )}
+          )}
+        </View>
 
         <View
           style={[
