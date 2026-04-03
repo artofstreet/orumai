@@ -27,7 +27,7 @@ const topbar = bg;
 export default function PropertyDetailScreen() {
   const { width: windowWidth } = useWindowDimensions();
   const layoutPadding = useMemo(() => getHorizontalPadding(windowWidth), [windowWidth]);
-  const contentMaxWidth = useMemo(() => getContentMaxWidth(windowWidth), [windowWidth]);
+  const layoutWidth = useMemo(() => getContentMaxWidth(windowWidth), [windowWidth]);
   const narrow = windowWidth < 768;
   const isUltraWide = windowWidth >= 1920;
   const headerTitleSize = windowWidth < 400 ? 18 : windowWidth < 768 ? 20 : 22;
@@ -76,7 +76,7 @@ export default function PropertyDetailScreen() {
 
   return (
     <View style={styles.page}>
-      <View style={[styles.container, { paddingHorizontal: layoutPadding, maxWidth: contentMaxWidth }]}>
+      <View style={[styles.container, { paddingHorizontal: layoutPadding, maxWidth: layoutWidth }]}>
 
           <View style={[styles.header, { paddingVertical: layoutPadding }]}>
             <View style={styles.headerTopRow}>

@@ -9,11 +9,7 @@ import SearchBar from '@/components/SearchBar';
 import type { Customer, Property } from '@/types';
 
 import { bg, border, primary, text2 } from '@/constants/colors';
-import {
-  getContentMaxWidth,
-  getGridColumns,
-  getHorizontalPadding,
-} from '@/constants/theme';
+import { getContentMaxWidth, getGridColumns, getHorizontalPadding } from '@/constants/theme';
 import { useProperties } from '@/hooks/useProperties';
 import { useSearch } from '@/hooks/useSearch';
 
@@ -45,13 +41,18 @@ export default function ResultsScreen() {
   const tabCountProperties = filteredProperties.length; // 매물 결과 건수
   const tabCountCustomers = filteredCustomers.length; // 고객 결과 건수
 
-  const columns = useMemo(() => getGridColumns(windowWidth), [windowWidth]);
+  const isUltraWide = windowWidth >= 1920;
+  const columns = useMemo(() => {
+    if (isUltraWide) return 3;
+    return getGridColumns(windowWidth);
+  }, [isUltraWide, windowWidth]);
   const layoutPadding = useMemo(() => getHorizontalPadding(windowWidth), [windowWidth]);
-  const containerWidth = useMemo(() => getContentMaxWidth(windowWidth), [windowWidth]);
+  /** 상세 app/property/[id].tsx 와 동일: getContentMaxWidth + getHorizontalPadding */
+  const layoutWidth = useMemo(() => getContentMaxWidth(windowWidth), [windowWidth]);
   const cardWidth = useMemo(() => {
-    const usable = containerWidth - layoutPadding * 2 - GAP * (columns - 1);
+    const usable = layoutWidth - layoutPadding * 2 - GAP * (columns - 1);
     return Math.max(0, Math.floor(usable / columns));
-  }, [containerWidth, columns, layoutPadding]);
+  }, [layoutWidth, columns, layoutPadding]);
 
   const 검색제출무시 = useCallback(() => {}, []);
 
@@ -78,7 +79,7 @@ export default function ResultsScreen() {
 
   return (
     <View style={styles.page}>
-      <View style={[styles.header, { paddingHorizontal: layoutPadding, maxWidth: containerWidth }]}>
+      <View style={[styles.header, { paddingHorizontal: layoutPadding, maxWidth: layoutWidth }]}>
         <SearchBar value={searchQuery} onChangeText={setSearchQuery} onSubmit={검색제출무시} />
 
         <Text style={styles.summaryText}>
@@ -108,7 +109,7 @@ export default function ResultsScreen() {
           key={`col-${columns}`} // 열 수 변경 시 재렌더링
           numColumns={columns} // 반응형 그리드 열 수
           columnWrapperStyle={columns > 1 ? styles.gridRow : undefined}
-          contentContainerStyle={[styles.listContent, { paddingHorizontal: layoutPadding, maxWidth: containerWidth }]}
+          contentContainerStyle={[styles.listContent, { paddingHorizontal: layoutPadding, maxWidth: layoutWidth }]}
           ListEmptyComponent={<Text style={styles.emptyText}>{emptyText}</Text>}
         />
       ) : (
@@ -119,7 +120,7 @@ export default function ResultsScreen() {
           key={`cust-col-${columns}`} // 열 수 변경 시 재렌더링
           numColumns={columns} // 반응형 그리드 열 수
           columnWrapperStyle={columns > 1 ? styles.gridRow : undefined}
-          contentContainerStyle={[styles.listContent, { paddingHorizontal: layoutPadding, maxWidth: containerWidth }]}
+          contentContainerStyle={[styles.listContent, { paddingHorizontal: layoutPadding, maxWidth: layoutWidth }]}
           ListEmptyComponent={<Text style={styles.emptyText}>{emptyText}</Text>}
         />
       )}
