@@ -53,6 +53,14 @@ export default function PropertyDetailScreen() {
   const dealBadge = getBadge(property.deal); // 거래유형 뱃지 색상
   const photos = (property.photos ?? []).slice(0, 10); // 사진 배열 최대 10장
 
+  /** 1280~1919px만 캐러셀 세로 200px로 제한(와이드·핸드폰 구간은 변경 없음) */
+  const carouselMidDesktopClip = useMemo(() => {
+    if (windowWidth >= 1280 && windowWidth < 1920) {
+      return { height: 200, overflow: 'hidden' as const, width: '100%' as const };
+    }
+    return undefined;
+  }, [windowWidth]);
+
   // 스펙 8개 (2열 × 4행 그리드)
   const specs = [
     { label: '면적', value: property.area },
@@ -98,7 +106,13 @@ export default function PropertyDetailScreen() {
             </View>
           </View>
 
-          <PropertyCarousel photos={photos} />
+          {carouselMidDesktopClip ? (
+            <View style={carouselMidDesktopClip}>
+              <PropertyCarousel photos={photos} />
+            </View>
+          ) : (
+            <PropertyCarousel photos={photos} />
+          )}
 
           <View style={[styles.infoRow, narrow && styles.infoRowColumn]}>
             <View style={[styles.specGrid, narrow && styles.specGridFull]}>
