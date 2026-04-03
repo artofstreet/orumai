@@ -63,7 +63,7 @@ export default function ResultsScreen() {
   const renderPropertyItem = useCallback(
     ({ item }: { item: Property }) => {
       // TODO-ROUTE: /property/[id] 라우트 추가 후 타입 안전하게 제거 예정
-      const onPress = () => router.push(`/property/${item.id}` as unknown as Parameters<typeof router.push>[0]);
+      const onPress = () => router.push({ pathname: '/property/[id]', params: { id: item.id } });
       return <PropertyCard property={item} width={cardWidth} onPress={onPress} />;
     },
     [cardWidth],
