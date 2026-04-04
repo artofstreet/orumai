@@ -27,7 +27,7 @@ export const detailStyles = StyleSheet.create({
   headerBtnText: { color: text, fontSize: 12, fontWeight: '600' },
   headerBtnDel: { color: red },
   infoRow: { flexDirection: 'row', alignItems: 'stretch', paddingVertical: 16, gap: 12 },
-  infoRowWide: { flex: 1, minHeight: 0 },
+  infoRowWide: { width: '100%' },
   infoRowColumn: { flexDirection: 'column' },
   carouselUltraWide: { width: '100%', alignSelf: 'stretch' },
   specGrid: {
@@ -39,7 +39,7 @@ export const detailStyles = StyleSheet.create({
     borderColor: '#E2E8F0',
   },
   specGridFull: { width: '100%' },
-  specGridFlex: { minWidth: 0 },
+  specGridFlex: { minWidth: 0, flex: 1 },
   specGridUltra: { minWidth: 0 },
   specCellUltra2col: {
     width: '50%',
@@ -52,12 +52,13 @@ export const detailStyles = StyleSheet.create({
   specRowBottom: { borderBottomWidth: 1, borderBottomColor: '#F1F5F9' },
   specCell: {
     flex: 1,
-    padding: 14,
-    justifyContent: 'space-between',
+    padding: 8,
+    justifyContent: 'flex-start',
+    gap: 4,
   },
   specCellRight: { borderRightWidth: 1, borderRightColor: '#F1F5F9' },
   specLabel: { fontSize: 11, color: '#94A3B8', fontWeight: '500', marginBottom: 4 },
-  specValue: { fontSize: 14, fontWeight: '700', color: '#1E293B' },
+  specValue: { fontSize: 12, fontWeight: '700', color: '#1E293B', flexWrap: 'wrap' },
   memoBox: {
     minHeight: 60,
     backgroundColor: '#FFFFFF',
@@ -67,7 +68,7 @@ export const detailStyles = StyleSheet.create({
     flexDirection: 'column',
   },
   memoBoxUltra: { minWidth: 0 },
-  memoBoxFlex: { minWidth: 0 },
+  memoBoxFlex: { minWidth: 0, flex: 1 },
   memoBoxFull: { width: '100%' },
   memoBody: { paddingBottom: 8 },
   memoLabel: { fontSize: 11, color: '#94A3B8', fontWeight: '600', marginBottom: 8 },
