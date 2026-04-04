@@ -17,7 +17,7 @@ interface Props {
 
 export default function PropertyCarousel({ photos }: Props) {
   const { width: winW, height: winH } = useWindowDimensions();
-  const carouselHeight = Math.min(280, Math.max(180, Math.floor(Math.min(winW, 1320) * 0.22)));
+  const carouselHeight = Math.min(480, Math.max(280, Math.floor(Math.min(winW, 1320) * 0.35)));
   const [idx, setIdx] = useState<number>(0); // 현재 사진 인덱스 — 캐러셀·팝업 공유
   const [open, setOpen] = useState<boolean>(false); // 팝업 열림 여부
 

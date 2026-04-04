@@ -1,3 +1,5 @@
+import { Ionicons } from '@expo/vector-icons';
+import { router, useLocalSearchParams } from 'expo-router';
 import React, { useMemo } from 'react';
 import {
   Alert,
@@ -7,13 +9,11 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
-import { router, useLocalSearchParams } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 
+import PropertyCarousel from '@/components/PropertyCarousel';
 import { BADGE_COLORS, text } from '@/constants/colors';
 import { DUMMY_PROPERTIES } from '@/constants/dummyData';
 import { getContentMaxWidth, getHorizontalPadding } from '@/constants/theme';
-import PropertyCarousel from '@/components/PropertyCarousel';
 import { detailStyles as styles } from './detailStyles';
 
 // TODO-DB: supabase.from('properties').select().eq('id', id).single() 로 교체 예정
@@ -37,7 +37,7 @@ export default function PropertyDetailScreen() {
   /** 1280~1919px만 캐러셀 세로 200px로 제한(와이드·핸드폰 구간은 변경 없음) */
   const carouselMidDesktopClip = useMemo(() => {
     if (windowWidth >= 1280 && windowWidth < 1920) {
-      return { height: 200, overflow: 'hidden' as const, width: '100%' as const };
+      return { height: 380, overflow: 'hidden' as const, width: '100%' as const };
     }
     return undefined;
   }, [windowWidth]);
@@ -61,12 +61,12 @@ export default function PropertyDetailScreen() {
   const specs = [
     { label: '면적', value: property.area },
     { label: '층수', value: property.floor },
+    { label: '총층수', value: property.totalFloors ?? '—' },
     { label: '방향', value: property.dir ?? '—' },
     { label: '입주일', value: property.moveInDate ?? '—' },
-    { label: '총층수', value: property.totalFloors ?? '—' },
-    { label: '건축연도', value: property.builtYear ?? '—' },
     { label: '주차', value: property.parking ?? '—' },
     { label: '난방방식', value: property.heating ?? '—' },
+    { label: '건축연도', value: property.builtYear ?? '—' },
   ];
 
   return (
@@ -130,8 +130,6 @@ export default function PropertyDetailScreen() {
         <View
           style={[
             styles.infoRow,
-            narrow && styles.infoRowColumn,
-            !narrow && styles.infoRowWide,
           ]}>
           <View
             style={[
