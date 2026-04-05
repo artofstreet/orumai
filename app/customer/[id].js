@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -5,19 +6,16 @@ import { DUMMY_CUSTOMERS } from '@/constants/dummyData';
 
 // TODO-DB: DUMMY_CUSTOMERS를 supabase.from('customers')로 교체
 
-// 아바타 배경색 배열 (CustomerCard와 동일)
 const 아바타배경색배열 = [
   '#5B8DEF', '#52B788', '#9B72CF', '#F4845F',
   '#F06595', '#4DABF7', '#63C9A8', '#FFB347',
 ];
 
-// 이름 첫 글자 추출
 const getInitialChar = (name) => {
   const trimmed = name.trim();
   return trimmed.length > 0 ? trimmed[0] : '?';
 };
 
-// charCode 기반 색상 선택
 const getAvatarBg = (name) => {
   const code = getInitialChar(name).charCodeAt(0);
   return 아바타배경색배열[code % 아바타배경색배열.length];
@@ -52,7 +50,7 @@ export default function CustomerDetailScreen() {
 
       {/* 뒤로가기 */}
       <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
-        <Text style={styles.backTxt}>← 뒤로</Text>
+        <Ionicons name="arrow-back" size={24} color="#111827" />
       </TouchableOpacity>
 
       {/* 아바타 + 이름 + 전번 */}
@@ -84,13 +82,12 @@ const styles = StyleSheet.create({
   errorTxt: { fontSize: 16, color: '#888' },
   backLink: { fontSize: 14, color: '#FF6B35' },
   backBtn: { paddingVertical: 8 },
-  backTxt: { fontSize: 15, color: '#FF6B35', fontWeight: '800' },
   profileRow: { flexDirection: 'row', alignItems: 'center', gap: 16 },
   avatar: { width: 64, height: 64, borderRadius: 999, alignItems: 'center', justifyContent: 'center' },
   avatarTxt: { color: '#fff', fontSize: 24, fontWeight: '800' },
   profileInfo: { flex: 1, gap: 4 },
   name: { fontSize: 22, fontWeight: '800', color: '#111827' },
-  phone: { fontSize: 16, fontWeight: '800', color: '#111827' },
+  phone: { fontSize: 16, fontWeight: '800', color: '#FF6B35' },
   date: { fontSize: 12, color: '#aaa' },
   memoBox: { backgroundColor: '#f8f8f8', borderRadius: 12, padding: 16, gap: 8, minHeight: 200 },
   memoLabel: { fontSize: 13, fontWeight: '700', color: '#888' },
