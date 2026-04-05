@@ -28,11 +28,11 @@ export const printProperty = (property: Property): void => {
       <title>${title} - 오름AI</title>
       <style>
         body { font-family: 'Noto Sans KR', sans-serif; padding: 32px; max-width: 680px; margin: 0 auto; color: #0F172A; }
-        .logo { font-size: 18px; font-weight: 800; color: #1D4ED8; }
+        .logo { font-size: 18px; font-weight: 800; color: #1D4ED8; margin-bottom: 12px; }
         .badge { display: inline-block; background: #EEF2FF; color: #4338CA; border-radius: 6px; padding: 3px 10px; font-size: 12px; font-weight: 700; margin-right: 6px; }
         .title { font-size: 22px; font-weight: 800; margin: 8px 0 4px; }
         .addr { font-size: 13px; color: #64748B; margin-bottom: 8px; }
-        .price { font-size: 24px; font-weight: 800; color: ${priceColor}; margin-bottom: 16px; }
+        .price { font-size: 24px; font-weight: 800; color: ${priceColor}; }
         .specs { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid #E2E8F0; border-radius: 8px; overflow: hidden; margin-bottom: 16px; }
         .spec-item { padding: 8px 16px; border-bottom: 1px solid #E2E8F0; }
         .spec-item:nth-child(odd) { border-right: 1px solid #E2E8F0; }
@@ -47,20 +47,20 @@ export const printProperty = (property: Property): void => {
     </head>
     <body>
       <div class="logo">오름AI</div>
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;border-bottom:2px solid #E2E8F0;padding-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:16px;border-bottom:2px solid #E2E8F0;padding-bottom:16px;">
         <div>
           <div class="title">${title}</div>
           <div class="addr">📍 ${property.addr}</div>
-          <div style="margin-bottom:4px;">
+          <div style="margin-bottom:6px;">
             <span class="badge">${property.type}</span>
             <span class="badge">${property.deal}</span>
           </div>
           <div class="price">${property.deal} ${property.price}</div>
         </div>
-        <div style="text-align:right;font-size:13px;color:#334155;line-height:1.8;flex-shrink:0;margin-left:16px;padding-bottom:4px;">
-          <div style="font-weight:800;font-size:15px;">${agent.officeName}</div>
-          <div>${agent.agentName} ${agent.position}</div>
-          <div>${agent.phone}</div>
+        <div style="text-align:right;color:#334155;flex-shrink:0;margin-left:16px;">
+          <div style="font-weight:800;font-size:18px;margin-bottom:4px;">${agent.officeName}</div>
+          <div style="font-size:15px;margin-bottom:4px;">${agent.agentName} ${agent.position}</div>
+          <div style="font-weight:700;font-size:24px;">${agent.phone}</div>
         </div>
       </div>
       ${photoHtml}
