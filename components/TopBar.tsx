@@ -3,6 +3,7 @@ import React, { useMemo, useState } from 'react';
 import { Platform, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 import { getHorizontalPadding } from '@/constants/theme';
+import { router } from 'expo-router';
 
 // TopBar 컴포넌트: 상단 네비/통계/액션을 보여줍니다.
 export default function TopBar() {
@@ -75,7 +76,7 @@ export default function TopBar() {
         </Pressable>
         <Pressable
           style={[styles.iconButton, webShadowStyle, getWebHoverShadow(isProfileHovered)]}
-          onPress={() => {}}
+          onPress={() => router.push('/profile')}
           onHoverIn={() => {
             if (Platform.OS === 'web') setIsProfileHovered(true);
           }}

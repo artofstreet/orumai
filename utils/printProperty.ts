@@ -1,3 +1,4 @@
+import { loadAgentProfile } from '@/app/profile';
 import type { Property } from '@/types';
 
 // 거래유형별 가격 색상
@@ -8,6 +9,7 @@ const DEAL_COLOR: Record<string, string> = {
 };
 
 export const printProperty = (property: Property): void => {
+  const agent = loadAgentProfile();
   const title = property.buildingName ?? property.name;
   const priceColor = DEAL_COLOR[property.deal] ?? '#0F172A';
   const photos = (property.photos ?? []).slice(0, 4);
@@ -26,7 +28,7 @@ export const printProperty = (property: Property): void => {
       <title>${title} - 오름AI</title>
       <style>
         body { font-family: 'Noto Sans KR', sans-serif; padding: 32px; max-width: 680px; margin: 0 auto; color: #0F172A; }
-        .logo { font-size: 18px; font-weight: 800; color: #1D4ED8; margin-bottom: 24px; }
+        .logo { font-size: 18px; font-weight: 800; color: #1D4ED8; }
         .badge { display: inline-block; background: #EEF2FF; color: #4338CA; border-radius: 6px; padding: 3px 10px; font-size: 12px; font-weight: 700; margin-right: 6px; }
         .title { font-size: 22px; font-weight: 800; margin: 8px 0 4px; }
         .addr { font-size: 13px; color: #64748B; margin-bottom: 8px; }
@@ -45,13 +47,22 @@ export const printProperty = (property: Property): void => {
     </head>
     <body>
       <div class="logo">오름AI</div>
-      <div>
-        <span class="badge">${property.type}</span>
-        <span class="badge">${property.deal}</span>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;border-bottom:2px solid #E2E8F0;padding-bottom:16px;">
+        <div>
+          <div class="title">${title}</div>
+          <div class="addr">📍 ${property.addr}</div>
+          <div style="margin-bottom:4px;">
+            <span class="badge">${property.type}</span>
+            <span class="badge">${property.deal}</span>
+          </div>
+          <div class="price">${property.deal} ${property.price}</div>
+        </div>
+        <div style="text-align:right;font-size:13px;color:#334155;line-height:1.8;flex-shrink:0;margin-left:16px;padding-bottom:4px;">
+          <div style="font-weight:800;font-size:15px;">${agent.officeName}</div>
+          <div>${agent.agentName} ${agent.position}</div>
+          <div>${agent.phone}</div>
+        </div>
       </div>
-      <div class="title">${title}</div>
-      <div class="addr">📍 ${property.addr}</div>
-      <div class="price">${property.deal} ${property.price}</div>
       ${photoHtml}
       <div class="specs">
         <div class="spec-item"><div class="spec-label">면적</div><div class="spec-value">${property.area}</div></div>
