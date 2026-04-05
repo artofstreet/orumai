@@ -60,13 +60,9 @@ export default function PropertyDetailScreen() {
 
   const specs = [
     { label: '면적', value: property.area },
-    { label: '층수', value: property.floor },
-    { label: '총층수', value: property.totalFloors ?? '—' },
+    { label: '층수/총층수', value: `${property.floor}/${property.totalFloors ?? '—'}` },
     { label: '방향', value: property.dir ?? '—' },
     { label: '입주일', value: property.moveInDate ?? '—' },
-    { label: '주차', value: property.parking ?? '—' },
-    { label: '난방방식', value: property.heating ?? '—' },
-    { label: '건축연도', value: property.builtYear ?? '—' },
   ];
 
   return (
@@ -140,7 +136,7 @@ export default function PropertyDetailScreen() {
             ]}>
             {isUltraWide ? (
               <>
-                {[0, 1, 2, 3].map((row) => (
+                {[0, 1].map((row) => (
                   <View key={row} style={[styles.specRow, row < 3 && styles.specRowBottom]}>
                     {[0, 1].map((col) => {
                       const idx = row * 2 + col;
@@ -161,7 +157,7 @@ export default function PropertyDetailScreen() {
               </>
             ) : (
               <>
-                {[0, 1, 2, 3].map((row) => (
+                {[0, 1].map((row) => (
                   <View key={row} style={[styles.specRow, row < 3 && styles.specRowBottom]}>
                     {[0, 1].map((col) => {
                       const idx = row * 2 + col;
