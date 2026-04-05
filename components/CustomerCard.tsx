@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
-import React, { useMemo } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { Customer } from '@/types';
 
@@ -29,7 +29,6 @@ const getAvatarBackgroundColor = (name: string): string => {
   return 아바타배경색배열[code % 아바타배경색배열.length]; // charCode 기반 색상 순환 선택
 };
 
-// createdAt(ISO 문자열)에서 날짜만 표시합니다.
 const formatCreatedAt = (createdAt: string): string => {
   if (!createdAt) return '';
   return createdAt.slice(0, 10);
@@ -47,14 +46,22 @@ export default function CustomerCard({ item, width }: CustomerCardProps) {
   const avatarBg = useMemo(() => getAvatarBackgroundColor(item.name), [item.name]);
   const createdDateText = useMemo(() => formatCreatedAt(item.createdAt), [item.createdAt]);
 
+  const [isHovered, setIsHovered] = useState<boolean>(false);
+  const hoverStyle = useMemo(() => {
+    if (Platform.OS !== 'web') return null;
+    return isHovered
+      ? ({ boxShadow: '0 4px 12px rgba(0,0,0,0.14)', transform: [{ translateY: -2 }], transition: 'all 0.2s ease' } as unknown as object)
+      : ({ boxShadow: '0 2px 8px rgba(0,0,0,0.08)', transition: 'all 0.2s ease' } as unknown as object);
+  }, [isHovered]);
+
   return (
-    <TouchableOpacity
-      style={[styles.card, width !== undefined ? { width } : null]}
-      activeOpacity={0.85}
+    <Pressable
+      style={[styles.card, width !== undefined ? { width } : null, hoverStyle]}
       onPress={() => {
-        // TODO-ROUTE: /customer/[id] 라우트 추가 후 타입 안전하게 제거 예정
-        router.push(`/customer/${item.id}` as unknown as Parameters<typeof router.push>[0]);
-      }}>
+        router.push({ pathname: '/customer/[id]', params: { id: item.id } });
+      }}
+      onHoverIn={() => { if (Platform.OS === 'web') setIsHovered(true); }}
+      onHoverOut={() => { if (Platform.OS === 'web') setIsHovered(false); }}>
       <View style={styles.leftRow}>
         <View style={[styles.avatar, { backgroundColor: avatarBg }]}>
           <Text style={styles.avatarText}>{initial}</Text>
@@ -75,7 +82,7 @@ export default function CustomerCard({ item, width }: CustomerCardProps) {
       </Text>
 
       <Text style={styles.date}>{createdDateText}</Text>
-    </TouchableOpacity>
+    </Pressable>
   );
 }
 
@@ -130,4 +137,3 @@ const styles = StyleSheet.create({
     color: text3,
   },
 });
-
