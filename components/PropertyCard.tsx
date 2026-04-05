@@ -14,9 +14,9 @@ import type { Property } from '@/types';
 
 // 거래유형별 가격 색상
 const DEAL_PRICE_COLOR: Record<string, string> = {
-  매매: '#E53E3E', // 빨간색
-  전세: '#E53E3E', // 빨간색
-  월세: '#1D4ED8', // 파란색
+  매매: '#1D4ED8', // 파란색
+  전세: '#16A34A', // 초록색
+  월세: '#DB2777', // 분홍색
 };
 
 // 매물종류 칩 색상

@@ -20,6 +20,12 @@ import { detailStyles as styles } from './detailStyles';
 const getBadge = (key: string) =>
   key in BADGE_COLORS ? BADGE_COLORS[key as keyof typeof BADGE_COLORS] : BADGE_COLORS.기본;
 
+const DEAL_PRICE_COLOR: Record<string, string> = {
+  매매: '#1D4ED8', // 파란색
+  전세: '#16A34A', // 초록색
+  월세: '#DB2777', // 분홍색
+};
+
 export default function PropertyDetailScreen() {
   const { width: windowWidth } = useWindowDimensions();
   const layoutPadding = useMemo(() => getHorizontalPadding(windowWidth), [windowWidth]);
@@ -29,12 +35,10 @@ export default function PropertyDetailScreen() {
   const headerTitleSize = windowWidth < 400 ? 18 : windowWidth < 768 ? 20 : 22;
 
   const { id } = useLocalSearchParams<{ id: string }>();
-  // TODO-DB: 매물 단건 조회 (현재는 dummyData에서 find)
   const property = useMemo(() => DUMMY_PROPERTIES.find((p) => p.id === id), [id]);
 
-  const 준비중 = () => Alert.alert('준비 중', '곧 지원될 예정입니다.'); // 미구현 버튼 핸들러
+  const 준비중 = () => Alert.alert('준비 중', '곧 지원될 예정입니다.');
 
-  /** 1280~1919px만 캐러셀 세로 200px로 제한(와이드·핸드폰 구간은 변경 없음) */
   const carouselMidDesktopClip = useMemo(() => {
     if (windowWidth >= 1280 && windowWidth < 1920) {
       return { height: 380, overflow: 'hidden' as const, width: '100%' as const };
@@ -53,10 +57,11 @@ export default function PropertyDetailScreen() {
     );
   }
 
-  const title = property.buildingName ?? property.name; // 건물명 (없으면 name)
-  const typeBadge = getBadge(property.type); // 매물종류 뱃지 색상
-  const dealBadge = getBadge(property.deal); // 거래유형 뱃지 색상
-  const photos = (property.photos ?? []).slice(0, 10); // 사진 배열 최대 10장
+  const title = property.buildingName ?? property.name;
+  const typeBadge = getBadge(property.type);
+  const dealBadge = getBadge(property.deal);
+  const photos = (property.photos ?? []).slice(0, 10);
+  const priceColor = DEAL_PRICE_COLOR[property.deal] ?? '#0F172A';
 
   const specs = [
     { label: '면적', value: property.area },
@@ -91,7 +96,9 @@ export default function PropertyDetailScreen() {
           </Text>
           <Text style={styles.headerAddr}>📍 {property.addr}</Text>
           <View style={[styles.headerBottom, narrow && styles.headerBottomNarrow]}>
-            <Text style={styles.headerPrice}>{property.price}</Text>
+            <Text style={[styles.headerPrice, { color: priceColor }]}>
+              {property.deal} {property.price}
+            </Text>
             <View style={[styles.headerBtnGroup, narrow && styles.headerBtnGroupNarrow]}>
               <TouchableOpacity style={styles.headerBtn} onPress={준비중}>
                 <Text style={styles.headerBtnText}>광고문구</Text>
@@ -123,10 +130,7 @@ export default function PropertyDetailScreen() {
           )}
         </View>
 
-        <View
-          style={[
-            styles.infoRow,
-          ]}>
+        <View style={[styles.infoRow]}>
           <View
             style={[
               styles.specGrid,
@@ -142,13 +146,9 @@ export default function PropertyDetailScreen() {
                       const idx = row * 2 + col;
                       const { label, value } = specs[idx];
                       return (
-                        <View
-                          key={label}
-                          style={[styles.specCellUltra2col, col === 0 && styles.specCellRight]}>
+                        <View key={label} style={[styles.specCellUltra2col, col === 0 && styles.specCellRight]}>
                           <Text style={styles.specLabel}>{label}</Text>
-                          <Text style={styles.specValue} numberOfLines={2}>
-                            {value}
-                          </Text>
+                          <Text style={styles.specValue} numberOfLines={2}>{value}</Text>
                         </View>
                       );
                     })}
@@ -163,9 +163,7 @@ export default function PropertyDetailScreen() {
                       const idx = row * 2 + col;
                       const { label, value } = specs[idx];
                       return (
-                        <View
-                          key={label}
-                          style={[styles.specCell, col === 0 && styles.specCellRight]}>
+                        <View key={label} style={[styles.specCell, col === 0 && styles.specCellRight]}>
                           <Text style={styles.specLabel}>{label}</Text>
                           <Text style={styles.specValue}>{value}</Text>
                         </View>

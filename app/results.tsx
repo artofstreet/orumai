@@ -1,7 +1,7 @@
+import { router, useLocalSearchParams } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
-import { router, useLocalSearchParams } from 'expo-router';
 
 import CustomerCard from '@/components/CustomerCard';
 import PropertyCard from '@/components/PropertyCard';
@@ -85,10 +85,12 @@ export default function ResultsScreen() {
       <View style={[styles.header, { paddingHorizontal: layoutPadding, maxWidth: layoutWidth }]}>
         <View style={styles.searchRow}>
           {windowWidth > 600 ? (
-            <Text style={styles.logoLine}>
-              <Text style={styles.logoO}>오름</Text>
-              <Text style={styles.logoAI}>AI</Text>
-            </Text>
+            <Pressable onPress={() => router.push('/')}>
+              <Text style={styles.logoLine}>
+                <Text style={styles.logoO}>오름</Text>
+                <Text style={styles.logoAI}>AI</Text>
+              </Text>
+            </Pressable>
           ) : null}
           <View style={styles.searchBarSlot}>
             <SearchBar value={searchQuery} onChangeText={setSearchQuery} onSubmit={검색제출무시} />
