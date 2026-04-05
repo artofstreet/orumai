@@ -38,20 +38,14 @@ const CUSTOMER_SEARCH_PARTS: Array<(c: Customer) => string> = [
 ];
 
 export interface UseSearchReturn {
-  // 현재 검색어
   searchQuery: string;
-  // 검색어 변경 함수
   setSearchQuery: (query: string) => void;
-  // 검색어로 필터링된 매물 목록
   filteredProperties: Property[];
-  // 검색어로 필터링된 고객 목록
   filteredCustomers: Customer[];
 }
 
 type UseSearchOptions = {
-  // 필터링 대상 매물 목록(미지정 시 더미 사용)
   properties?: Property[];
-  // 필터링 대상 고객 목록(미지정 시 더미 사용)
   customers?: Customer[];
 };
 
@@ -77,9 +71,11 @@ export function useSearch(options?: UseSearchOptions): UseSearchReturn {
   }, [properties, words]);
 
   const filteredCustomers = useMemo<Customer[]>(() => {
-    if (words.length === 0) return customers;
+    const sorted = [...customers].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 
-    return customers.filter((c) => {
+    if (words.length === 0) return sorted;
+
+    return sorted.filter((c) => {
       const searchable = CUSTOMER_SEARCH_PARTS.map((pick) => pick(c)).join(' ').toLowerCase();
       return 모든단어포함여부(searchable, words);
     });
@@ -92,4 +88,3 @@ export function useSearch(options?: UseSearchOptions): UseSearchReturn {
     filteredCustomers,
   };
 }
-
