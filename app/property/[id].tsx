@@ -7,7 +7,7 @@ import {
   Text,
   TouchableOpacity,
   useWindowDimensions,
-  View,
+  View
 } from 'react-native';
 
 import PropertyCarousel from '@/components/PropertyCarousel';
