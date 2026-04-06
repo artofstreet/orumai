@@ -1,8 +1,8 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Animated, Easing, FlatList, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
-
+import { subscribeRegisterPress } from '@/components/TopBar';
 import CustomerCard from '@/components/CustomerCard';
 import PropertyCard from '@/components/PropertyCard';
 import SearchBar from '@/components/SearchBar';
@@ -13,7 +13,11 @@ import { getContentMaxWidth, getGridColumns, getHorizontalPadding } from '@/cons
 import { useProperties } from '@/hooks/useProperties';
 import { useSearch } from '@/hooks/useSearch';
 
+import PropertyRegisterScreen from './property/register';
+
 // TODO-DB: useProperties, useSearch를 Supabase 연결 후 실데이터로 교체 예정
+// TODO-AUTH: 등록 저장 시 로그인 사용자 id 연동
+// TODO-STORAGE: 매물 사진 업로드 연동
 
 type TabKey = 'properties' | 'customers';
 
@@ -29,10 +33,62 @@ export default function ResultsScreen() {
   const { properties } = useProperties();
   const { filteredProperties, filteredCustomers, searchQuery, setSearchQuery } = useSearch({ properties });
 
-  const params = useLocalSearchParams<{ query?: string }>();
+  const params = useLocalSearchParams<{ query?: string; openRegister?: string | string[] }>();
   const initialQuery = useMemo(() => getInitialQuery(params.query), [params.query]);
+  const openRegisterParam = useMemo(() => {
+    const v = params.openRegister;
+    if (Array.isArray(v)) return v[0];
+    return v;
+  }, [params.openRegister]);
 
   const [tab, setTab] = useState<TabKey>('properties');
+  const [registerOpen, setRegisterOpen] = useState<boolean>(false); // 우측 등록 패널 열림
+  const panelW = useMemo(() => Math.min(480, Math.floor(windowWidth * 0.92)), [windowWidth]); // 패널 너비(px)
+  const slideX = useRef(new Animated.Value(panelW)).current; // 패널 슬라이드(translateX)
+  const consumedOpenRegister = useRef<boolean>(false); // openRegister=1 URL 소비 여부
+
+  useEffect(() => {
+    if (!registerOpen) slideX.setValue(panelW);
+  }, [panelW, slideX, registerOpen]);
+
+  useEffect(() => {
+    return subscribeRegisterPress(() => {
+      slideX.setValue(panelW);
+      setRegisterOpen(true);
+    });
+  }, [panelW, slideX]);
+
+  useEffect(() => {
+    if (openRegisterParam !== '1') {
+      consumedOpenRegister.current = false;
+      return;
+    }
+    if (consumedOpenRegister.current) return;
+    consumedOpenRegister.current = true;
+    slideX.setValue(panelW);
+    setRegisterOpen(true);
+  }, [openRegisterParam, panelW, slideX]);
+
+  useEffect(() => {
+    if (!registerOpen) return;
+    Animated.timing(slideX, {
+      toValue: 0,
+      duration: 280,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start();
+  }, [registerOpen, slideX]);
+
+  const closeRegisterPanel = useCallback(() => {
+    Animated.timing(slideX, {
+      toValue: panelW,
+      duration: 260,
+      easing: Easing.in(Easing.cubic),
+      useNativeDriver: true,
+    }).start(({ finished }) => {
+      if (finished) setRegisterOpen(false);
+    });
+  }, [panelW, slideX]);
 
   useEffect(() => {
     setSearchQuery(initialQuery);
@@ -82,7 +138,8 @@ export default function ResultsScreen() {
 
   return (
     <View style={styles.page}>
-      <View style={[styles.header, { paddingHorizontal: layoutPadding, maxWidth: layoutWidth }]}>
+      <View style={[styles.contentMax, { maxWidth: layoutWidth }]}>
+        <View style={[styles.header, { paddingHorizontal: layoutPadding, maxWidth: layoutWidth }]}>
         <View style={styles.searchRow}>
           {windowWidth > 600 ? (
             <Pressable onPress={() => router.push('/')}>
@@ -115,36 +172,81 @@ export default function ResultsScreen() {
         </View>
       </View>
 
-      {tab === 'properties' ? (
-        <FlatList
-          data={filteredProperties}
-          keyExtractor={(item) => item.id}
-          renderItem={renderPropertyItem}
-          key={`col-${columns}`}
-          numColumns={columns}
-          columnWrapperStyle={columns > 1 ? styles.gridRow : undefined}
-          contentContainerStyle={listContentStyle}
-          ListEmptyComponent={<Text style={styles.emptyText}>{emptyText}</Text>}
-        />
-      ) : (
-        <FlatList
-          data={filteredCustomers}
-          keyExtractor={(item) => item.id}
-          renderItem={renderCustomerItem}
-          key={`cust-col-${columns}`}
-          numColumns={columns}
-          columnWrapperStyle={columns > 1 ? styles.gridRow : undefined}
-          contentContainerStyle={listContentStyle}
-          ListEmptyComponent={<Text style={styles.emptyText}>{emptyText}</Text>}
-        />
-      )}
+        {tab === 'properties' ? (
+          <FlatList
+            data={filteredProperties}
+            keyExtractor={(item) => item.id}
+            renderItem={renderPropertyItem}
+            key={`col-${columns}`}
+            numColumns={columns}
+            columnWrapperStyle={columns > 1 ? styles.gridRow : undefined}
+            contentContainerStyle={listContentStyle}
+            ListEmptyComponent={<Text style={styles.emptyText}>{emptyText}</Text>}
+            style={styles.listFlex}
+          />
+        ) : (
+          <FlatList
+            data={filteredCustomers}
+            keyExtractor={(item) => item.id}
+            renderItem={renderCustomerItem}
+            key={`cust-col-${columns}`}
+            numColumns={columns}
+            columnWrapperStyle={columns > 1 ? styles.gridRow : undefined}
+            contentContainerStyle={listContentStyle}
+            ListEmptyComponent={<Text style={styles.emptyText}>{emptyText}</Text>}
+            style={styles.listFlex}
+          />
+        )}
+
+        {registerOpen &&
+          (
+            <>
+              <Pressable style={styles.backdrop} onPress={closeRegisterPanel} accessibilityRole="button" />
+              <Animated.View
+                style={[
+                  styles.registerPanel,
+                  { width: panelW, transform: [{ translateX: slideX }] },
+                ]}>
+                <PropertyRegisterScreen embedded />
+              </Animated.View>
+            </>
+          )}
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   page: { flex: 1, backgroundColor: bg, paddingTop: 16, gap: 12 },
+  contentMax: {
+    flex: 1,
+    width: '100%',
+    alignSelf: 'center',
+    position: 'relative',
+    overflow: 'hidden',
+  },
   header: { gap: 12, alignSelf: 'center', width: '100%' },
+  listFlex: { flex: 1 },
+  backdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(15, 23, 42, 0.35)',
+    zIndex: 10,
+  },
+  registerPanel: {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    bottom: 0,
+    backgroundColor: '#FFFFFF',
+    zIndex: 11,
+    borderLeftWidth: 1,
+    borderLeftColor: '#E2E8F0',
+    shadowColor: '#000',
+    shadowOffset: { width: -4, height: 0 },
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    elevation: 12,
+  },
   searchRow: {
     flexDirection: 'row',
     alignItems: 'center',
