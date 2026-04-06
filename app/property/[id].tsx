@@ -15,6 +15,7 @@ import { BADGE_COLORS, text } from '@/constants/colors';
 import { DUMMY_PROPERTIES } from '@/constants/dummyData';
 import { getContentMaxWidth, getHorizontalPadding } from '@/constants/theme';
 import { printProperty } from '@/utils/printProperty';
+import { openRegisterPanel } from '@/utils/registerEvents';
 import { detailStyles as styles } from './detailStyles';
 
 // TODO-DB: supabase.from('properties').select().eq('id', id).single() 로 교체 예정
@@ -107,7 +108,7 @@ export default function PropertyDetailScreen() {
               <TouchableOpacity style={styles.headerBtn} onPress={() => printProperty(property)}>
                 <Text style={styles.headerBtnText}>A4인쇄</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.headerBtn} onPress={준비중}>
+              <TouchableOpacity style={styles.headerBtn} onPress={() => openRegisterPanel('property', property.id)}>
                 <Text style={styles.headerBtnText}>편집</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.headerBtn} onPress={준비중}>

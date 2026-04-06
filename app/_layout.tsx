@@ -9,6 +9,7 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import TopBar from '@/components/TopBar';
 import { bg } from '@/constants/colors';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { registerOpenPanel } from '@/utils/registerEvents';
 import CustomerRegisterScreen from './customer/register';
 import PropertyRegisterScreen from './property/register';
 
@@ -35,16 +36,28 @@ export default function RootLayout() {
     if (!registerOpen) slideX.setValue(panelW);
   }, [panelW, slideX, registerOpen]);
 
-  const openSelectModal = useCallback(() => { // +등록 → 선택 모달 열기
-    setSelectModalVisible(true);
-  }, []);
-
-  const onSelectKind = useCallback((kind: RegisterKind) => { // 매물/고객 선택 → 패널 열기
-    setSelectModalVisible(false);
+  /** 패널 열기 — 매물/고객 선택 + editId 옵션 */
+  const openPanel = useCallback((kind: RegisterKind, editId?: string) => {
     setRegisterKind(kind);
     slideX.setValue(panelW);
     setRegisterOpen(true);
   }, [panelW, slideX]);
+
+  /** +등록 버튼 → 선택 모달 열기 */
+  const openSelectModal = useCallback(() => {
+    setSelectModalVisible(true);
+  }, []);
+
+  /** 매물/고객 선택 → 패널 열기 */
+  const onSelectKind = useCallback((kind: RegisterKind) => {
+    setSelectModalVisible(false);
+    openPanel(kind);
+  }, [openPanel]);
+
+  /** 전역 패널 열기 함수 등록 — 다른 화면에서 호출 가능 */
+  useEffect(() => {
+    registerOpenPanel(openPanel);
+  }, [openPanel]);
 
   useEffect(() => {
     if (!registerOpen) return;
@@ -90,7 +103,7 @@ export default function RootLayout() {
             </Stack>
           </View>
 
-          {/* 매물/고객 선택 모달 — +등록 버튼 바로 아래 우측 */}
+          {/* 매물/고객 선택 모달 */}
           <Modal
             visible={selectModalVisible}
             transparent
@@ -151,9 +164,9 @@ const styles = StyleSheet.create({
   },
   modalBackdrop: {
     flex: 1,
-    justifyContent: 'flex-start',  // 상단 정렬
-    alignItems: 'flex-end',         // 우측 정렬
-    paddingTop: 56,                 // TopBar 높이 아래
+    justifyContent: 'flex-start',
+    alignItems: 'flex-end',
+    paddingTop: 56,
     paddingRight: 16,
   },
   modalCard: {
