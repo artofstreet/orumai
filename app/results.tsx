@@ -43,7 +43,11 @@ export default function ResultsScreen() {
 
   const [tab, setTab] = useState<TabKey>('properties');
   const [registerOpen, setRegisterOpen] = useState<boolean>(false); // 우측 등록 패널 열림
-  const panelW = useMemo(() => Math.min(480, Math.floor(windowWidth * 0.92)), [windowWidth]); // 패널 너비(px)
+  /** 768px 미만: 전체 너비 덮기 · 이상: 우측 슬라이드 패널 */
+  const panelW = useMemo(() => {
+    if (windowWidth < 768) return windowWidth;
+    return Math.min(480, Math.floor(windowWidth * 0.92));
+  }, [windowWidth]);
   const slideX = useRef(new Animated.Value(panelW)).current; // 패널 슬라이드(translateX)
   const consumedOpenRegister = useRef<boolean>(false); // openRegister=1 URL 소비 여부
 

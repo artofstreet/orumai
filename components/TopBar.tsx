@@ -44,9 +44,33 @@ export default function TopBar({ onRegisterPress }: TopBarProps) {
   return (
     <View style={[styles.container, { paddingHorizontal: pad }]}>
       <View style={styles.left}>
-        <View style={styles.logoBox}>
-          <Text style={styles.logoO}>오</Text>
-        </View>
+        {Platform.OS === 'web' ? (
+          <div
+            style={{
+              width: 26,
+              height: 26,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: '#1D4ED8',
+              borderRadius: 6,
+            }}>
+            <svg width="26" height="26" viewBox="0 0 80 80">
+              <polyline
+                points="10,58 28,34 40,44 54,22 70,58"
+                fill="none"
+                stroke="#fff"
+                strokeWidth="4"
+                strokeLinejoin="round"
+                strokeLinecap="round"
+              />
+            </svg>
+          </div>
+        ) : (
+          <View style={styles.logoBox}>
+            <Text style={styles.logoO}>오</Text>
+          </View>
+        )}
         <Text style={styles.logoText}>오름AI</Text>
       </View>
 
