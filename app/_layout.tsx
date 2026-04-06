@@ -2,37 +2,46 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Easing, Platform, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { Animated, Easing, Modal, Platform, Pressable, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import 'react-native-reanimated';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 import TopBar from '@/components/TopBar';
 import { bg } from '@/constants/colors';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import CustomerRegisterScreen from './customer/register';
 import PropertyRegisterScreen from './property/register';
 
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
+export const unstable_settings = { anchor: '(tabs)' };
+
+type RegisterKind = 'property' | 'customer'; // 등록 종류
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme(); // 현재 색상 스킴(라이트/다크)
+  const colorScheme = useColorScheme();
   const { width: windowWidth } = useWindowDimensions();
 
-  const [registerOpen, setRegisterOpen] = useState<boolean>(false); // 등록 패널 열림 여부
+  const [selectModalVisible, setSelectModalVisible] = useState<boolean>(false); // 매물/고객 선택 모달
+  const [registerKind, setRegisterKind] = useState<RegisterKind | null>(null); // 선택된 등록 종류
+  const [registerOpen, setRegisterOpen] = useState<boolean>(false); // 슬라이드 패널 열림
 
-  const panelW = useMemo(() => { // 패널 너비(모바일 전체 / 데스크탑 480)
+  const panelW = useMemo(() => {
     if (windowWidth < 768) return windowWidth;
     return Math.min(480, Math.floor(windowWidth * 0.92));
   }, [windowWidth]);
 
-  const slideX = useRef(new Animated.Value(panelW)).current; // 슬라이드 애니메이션
+  const slideX = useRef(new Animated.Value(panelW)).current;
 
   useEffect(() => {
     if (!registerOpen) slideX.setValue(panelW);
   }, [panelW, slideX, registerOpen]);
 
-  const openPanel = useCallback(() => { // 패널 열기
+  const openSelectModal = useCallback(() => { // +등록 → 선택 모달 열기
+    setSelectModalVisible(true);
+  }, []);
+
+  const onSelectKind = useCallback((kind: RegisterKind) => { // 매물/고객 선택 → 패널 열기
+    setSelectModalVisible(false);
+    setRegisterKind(kind);
     slideX.setValue(panelW);
     setRegisterOpen(true);
   }, [panelW, slideX]);
@@ -47,7 +56,7 @@ export default function RootLayout() {
     }).start();
   }, [registerOpen, slideX]);
 
-  const closePanel = useCallback(() => { // 패널 닫기
+  const closePanel = useCallback(() => {
     Animated.timing(slideX, {
       toValue: panelW,
       duration: 260,
@@ -59,7 +68,6 @@ export default function RootLayout() {
   }, [panelW, slideX]);
 
   useEffect(() => {
-    // 웹에서 입력 포커스 시 검은 outline 제거(글로벌)
     if (Platform.OS === 'web' && typeof document !== 'undefined') {
       const style = document.createElement('style');
       style.innerHTML = `input:focus { outline: none !important; }`;
@@ -71,14 +79,10 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <SafeAreaProvider>
         <SafeAreaView style={styles.container}>
-          <TopBar onRegisterPress={openPanel} />
+          <TopBar onRegisterPress={openSelectModal} />
           <View style={styles.content}>
-            {/* TODO-AUTH: 여기서 Supabase 세션 확인 후 로그인 화면 분기 */}
-            <Stack
-              screenOptions={{
-                headerShown: false,
-                contentStyle: { backgroundColor: bg },
-              }}>
+            {/* TODO-AUTH: Supabase 세션 확인 후 로그인 화면 분기 */}
+            <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: bg } }}>
               <Stack.Screen name="(tabs)" />
               <Stack.Screen name="results" />
               <Stack.Screen name="property/[id]" />
@@ -86,12 +90,32 @@ export default function RootLayout() {
             </Stack>
           </View>
 
-          {/* 전역 등록 패널 — 모든 화면 위에 오버레이 */}
+          {/* 매물/고객 선택 모달 — +등록 버튼 바로 아래 우측 */}
+          <Modal
+            visible={selectModalVisible}
+            transparent
+            animationType="fade"
+            onRequestClose={() => setSelectModalVisible(false)}>
+            <Pressable style={styles.modalBackdrop} onPress={() => setSelectModalVisible(false)}>
+              <View style={styles.modalCard}>
+                <TouchableOpacity style={styles.modalOptionRow} onPress={() => onSelectKind('property')}>
+                  <Text style={styles.modalOptionTxt}>🏠 매물 등록</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.modalOptionRow, { borderTopWidth: 1, borderTopColor: '#F1F5F9' }]} onPress={() => onSelectKind('customer')}>
+                  <Text style={styles.modalOptionTxt}>👤 고객 등록</Text>
+                </TouchableOpacity>
+              </View>
+            </Pressable>
+          </Modal>
+
+          {/* 전역 슬라이드 패널 */}
           {registerOpen && (
             <>
               <Pressable style={styles.backdrop} onPress={closePanel} accessibilityRole="button" />
               <Animated.View style={[styles.panel, { width: panelW, transform: [{ translateX: slideX }] }]}>
-                <PropertyRegisterScreen embedded />
+                {registerKind === 'property'
+                  ? <PropertyRegisterScreen embedded />
+                  : <CustomerRegisterScreen embedded />}
               </Animated.View>
             </>
           )}
@@ -103,19 +127,14 @@ export default function RootLayout() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: bg,
-  },
-  content: {
-    flex: 1,
-  },
-  backdrop: { // 배경 어둡게
+  container: { flex: 1, backgroundColor: bg },
+  content: { flex: 1 },
+  backdrop: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(15, 23, 42, 0.45)',
     zIndex: 20,
   },
-  panel: { // 슬라이드 등록 패널
+  panel: {
     position: 'absolute',
     right: 0,
     top: 0,
@@ -130,4 +149,29 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     elevation: 12,
   },
+  modalBackdrop: {
+    flex: 1,
+    justifyContent: 'flex-start',  // 상단 정렬
+    alignItems: 'flex-end',         // 우측 정렬
+    paddingTop: 56,                 // TopBar 높이 아래
+    paddingRight: 16,
+  },
+  modalCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    paddingVertical: 4,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    minWidth: 160,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.12,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  modalOptionRow: {
+    paddingVertical: 14,
+    paddingHorizontal: 20,
+  },
+  modalOptionTxt: { fontSize: 15, fontWeight: '600', color: '#1E293B' },
 });
