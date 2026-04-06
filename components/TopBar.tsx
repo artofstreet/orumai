@@ -5,17 +5,8 @@ import { Platform, Pressable, StyleSheet, Text, useWindowDimensions, View } from
 import { getHorizontalPadding } from '@/constants/theme';
 import { router } from 'expo-router';
 
-/** +등록 버튼 외부 구독(예: results 패널 열기) — TODO-DB: 등록 완료 후 목록 갱신 연동 시 활용 가능 */
-const registerPressListeners = new Set<() => void>();
-
-/** results 등에서 +등록과 동일 동작을 구독할 때 사용 */
-export function subscribeRegisterPress(fn: () => void): () => void {
-  registerPressListeners.add(fn);
-  return () => registerPressListeners.delete(fn);
-}
-
 export type TopBarProps = {
-  onRegisterPress?: () => void; // +등록 버튼 콜백
+  onRegisterPress?: () => void; // +등록 버튼 콜백 (_layout에서 패널 열기)
 };
 
 // TopBar 컴포넌트: 상단 네비/통계/액션을 보여줍니다.
@@ -43,7 +34,7 @@ export default function TopBar({ onRegisterPress }: TopBarProps) {
 
   return (
     <View style={[styles.container, { paddingHorizontal: pad }]}>
-      <View style={styles.left}>
+      <Pressable style={styles.left} onPress={() => router.push('/')}>
         {Platform.OS === 'web' ? (
           <div
             style={{
@@ -72,18 +63,13 @@ export default function TopBar({ onRegisterPress }: TopBarProps) {
           </View>
         )}
         <Text style={styles.logoText}>오름AI</Text>
-      </View>
+      </Pressable>
 
       <View style={[styles.right, compact && styles.rightCompact]}>
         <Pressable
           style={[styles.addButton, webShadowStyle, getWebHoverShadow(isAddHovered)]}
           onPress={() => {
-            onRegisterPress?.();
-            if (registerPressListeners.size > 0) {
-              registerPressListeners.forEach((listener) => listener());
-            } else {
-              router.push({ pathname: '/results', params: { openRegister: '1' } });
-            }
+            onRegisterPress?.(); // _layout 전역 패널 열기
           }}
           onHoverIn={() => {
             if (Platform.OS === 'web') setIsAddHovered(true);
@@ -200,4 +186,3 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
-
