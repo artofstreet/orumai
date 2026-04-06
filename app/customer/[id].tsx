@@ -3,28 +3,29 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { DUMMY_CUSTOMERS } from '@/constants/dummyData';
+import { openRegisterPanel } from '@/utils/registerEvents';
+import { detailStyles } from '../property/detailStyles';
 
 // TODO-DB: DUMMY_CUSTOMERS를 supabase.from('customers')로 교체
 
-const 아바타배경색배열 = [
+const 아바타배경색배열: string[] = [
   '#5B8DEF', '#52B788', '#9B72CF', '#F4845F',
   '#F06595', '#4DABF7', '#63C9A8', '#FFB347',
 ];
 
-const getInitialChar = (name) => {
+const getInitialChar = (name: string): string => {
   const trimmed = name.trim();
   return trimmed.length > 0 ? trimmed[0] : '?';
 };
 
-const getAvatarBg = (name) => {
+const getAvatarBg = (name: string): string => {
   const code = getInitialChar(name).charCodeAt(0);
   return 아바타배경색배열[code % 아바타배경색배열.length];
 };
 
 export default function CustomerDetailScreen() {
-  const params = useLocalSearchParams();
-  const rawId = params.id;
-  const id = Array.isArray(rawId) ? rawId[0] : rawId;
+  const params = useLocalSearchParams<{ id: string }>();
+  const id = Array.isArray(params.id) ? params.id[0] : params.id; // id 추출
   const router = useRouter();
 
   // TODO-DB: supabase.from('customers').select().eq('id', id)로 교체
@@ -41,9 +42,9 @@ export default function CustomerDetailScreen() {
     );
   }
 
-  const 아바타색 = getAvatarBg(고객.name);
-  const 첫글자 = getInitialChar(고객.name);
-  const 등록일 = 고객.createdAt?.slice(0, 10) ?? '';
+  const 아바타색 = getAvatarBg(고객.name); // 아바타 배경색
+  const 첫글자 = getInitialChar(고객.name); // 아바타 첫 글자
+  const 등록일 = 고객.createdAt?.slice(0, 10) ?? ''; // 등록일 포맷
 
   return (
     <ScrollView style={styles.page} contentContainerStyle={styles.content}>
@@ -53,7 +54,7 @@ export default function CustomerDetailScreen() {
         <Ionicons name="arrow-back" size={24} color="#111827" />
       </TouchableOpacity>
 
-      {/* 아바타 + 이름 + 전번 */}
+      {/* 아바타 + 이름 + 전번 + 편집 버튼 */}
       <View style={styles.profileRow}>
         <View style={[styles.avatar, { backgroundColor: 아바타색 }]}>
           <Text style={styles.avatarTxt}>{첫글자}</Text>
@@ -63,6 +64,12 @@ export default function CustomerDetailScreen() {
           <Text style={styles.phone}>{고객.phone}</Text>
           <Text style={styles.date}>등록일 {등록일}</Text>
         </View>
+        <TouchableOpacity
+          style={[detailStyles.headerBtn, { alignSelf: 'flex-end', marginBottom: 4 }]}
+          activeOpacity={0.6}
+          onPress={() => openRegisterPanel('customer', 고객.id, 고객 as Record<string, unknown>)}>
+          <Text style={detailStyles.headerBtnText}>편집</Text>
+        </TouchableOpacity>
       </View>
 
       {/* 메모 */}

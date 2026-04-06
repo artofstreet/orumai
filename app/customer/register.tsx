@@ -1,12 +1,14 @@
 /**
- * 고객 등록 화면
- * TODO-DB: 저장 시 Supabase `customers` insert
+ * 고객 등록/편집 화면
+ * TODO-DB: 저장 시 Supabase `customers` insert / update
  * TODO-AUTH: 작성자 user_id 바인딩
  */
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
+import { clearEditData, getEditData } from '@/utils/registerEvents';
+import { detailStyles } from '../property/detailStyles';
 import { formatPhoneHyphen } from '../property/registerMocks';
 import { registerStyles as styles } from '../property/registerStyles';
 
@@ -14,22 +16,30 @@ type ScreenProps = {
   embedded?: boolean; // true면 뒤로가기 숨김(슬라이드 패널용)
 };
 
-/** 고객 등록 화면 */
+/** 문자열 안전 추출 헬퍼 */
+const str = (v: unknown): string => (typeof v === 'string' ? v : '');
+
+/** 고객 등록/편집 화면 */
 export default function CustomerRegisterScreen({ embedded = false }: ScreenProps) {
   const router = useRouter();
 
-  const [name, setName] = useState<string>(''); // 고객 이름
-  const [phone, setPhone] = useState<string>(''); // 전화번호(하이픈 자동)
-  const [memo, setMemo] = useState<string>(''); // 메모(녹음 내용 포함)
+  // 편집 모드: 기존 데이터 lazy 초기화
+  const d = getEditData();
+  const isEdit = d !== null; // 편집 모드 여부
+
+  const [name, setName] = useState<string>(() => str(d?.name)); // 고객 이름
+  const [phone, setPhone] = useState<string>(() => str(d?.phone)); // 전화번호
+  const [memo, setMemo] = useState<string>(() => str(d?.memo)); // 메모
 
   /** 전화 입력 시 하이픈 자동 */
   const onPhoneChange = (t: string) => {
     setPhone(formatPhoneHyphen(t));
   };
 
-  /** 저장 (DB 미연동) */
+  /** 저장/완료 */
   const onSave = () => {
-    // TODO-DB: supabase.from('customers').insert({ name, phone, memo })
+    clearEditData(); // 편집 데이터 초기화
+    // TODO-DB: isEdit ? supabase.update() : supabase.insert()
   };
 
   return (
@@ -45,7 +55,15 @@ export default function CustomerRegisterScreen({ embedded = false }: ScreenProps
           <Text style={styles.backTxt}>← 뒤로</Text>
         </TouchableOpacity>
       )}
-      <Text style={styles.title}>고객 등록</Text>
+      <Text style={styles.title}>{isEdit ? '고객 편집' : '고객 등록'}</Text>
+      <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' }}>
+        <TouchableOpacity
+          style={[detailStyles.headerBtn, { paddingHorizontal: 20, paddingVertical: 8 }]}
+          activeOpacity={0.6}
+          onPress={onSave}>
+          <Text style={[detailStyles.headerBtnText, { fontSize: 15 }]}>완료</Text>
+        </TouchableOpacity>
+      </View>
 
       {/* 이름 */}
       <View style={styles.section}>
@@ -73,7 +91,7 @@ export default function CustomerRegisterScreen({ embedded = false }: ScreenProps
         />
       </View>
 
-      {/* 메모 — 웹: textarea 자동 확장 / 앱: TextInput 멀티라인 */}
+      {/* 메모 */}
       <View style={styles.section}>
         <Text style={styles.sectionLabel}>메모</Text>
         {Platform.OS === 'web' ? (
@@ -115,9 +133,6 @@ export default function CustomerRegisterScreen({ embedded = false }: ScreenProps
         )}
       </View>
 
-      <TouchableOpacity style={styles.saveBtn} onPress={onSave}>
-        <Text style={styles.saveBtnTxt}>저장</Text>
-      </TouchableOpacity>
       <Text style={styles.hint}>TODO-DB: 저장 시 서버 스키마에 맞게 필드 매핑</Text>
     </ScrollView>
   );
