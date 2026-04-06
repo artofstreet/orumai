@@ -7,47 +7,40 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-import { clearEditData, getEditData } from '@/utils/registerEvents';
+import { clearEditData } from '@/utils/registerEvents';
 import { detailStyles } from '../property/detailStyles';
 import { formatPhoneHyphen } from '../property/registerMocks';
 import { registerStyles as styles } from '../property/registerStyles';
 
 type ScreenProps = {
-  embedded?: boolean; // true면 뒤로가기 숨김(슬라이드 패널용)
+  embedded?: boolean; // true면 뒤로가기 숨김
+  initialData?: Record<string, unknown> | null; // 편집 시 기존 데이터
 };
 
 /** 문자열 안전 추출 헬퍼 */
 const str = (v: unknown): string => (typeof v === 'string' ? v : '');
 
 /** 고객 등록/편집 화면 */
-export default function CustomerRegisterScreen({ embedded = false }: ScreenProps) {
+export default function CustomerRegisterScreen({ embedded = false, initialData }: ScreenProps) {
   const router = useRouter();
 
-  // 편집 모드: 기존 데이터 lazy 초기화
-  const d = getEditData();
+  const d = initialData ?? null; // 편집 데이터
   const isEdit = d !== null; // 편집 모드 여부
 
   const [name, setName] = useState<string>(() => str(d?.name)); // 고객 이름
   const [phone, setPhone] = useState<string>(() => str(d?.phone)); // 전화번호
   const [memo, setMemo] = useState<string>(() => str(d?.memo)); // 메모
 
-  /** 전화 입력 시 하이픈 자동 */
-  const onPhoneChange = (t: string) => {
-    setPhone(formatPhoneHyphen(t));
-  };
+  const onPhoneChange = (t: string) => setPhone(formatPhoneHyphen(t));
 
-  /** 저장/완료 */
   const onSave = () => {
-    clearEditData(); // 편집 데이터 초기화
+    clearEditData();
     // TODO-DB: isEdit ? supabase.update() : supabase.insert()
   };
 
   return (
     <ScrollView
-      style={[
-        styles.page,
-        embedded ? { flex: 1, width: '100%' } : { maxWidth: 480, alignSelf: 'center', width: '100%' },
-      ]}
+      style={[styles.page, embedded ? { flex: 1, width: '100%' } : { maxWidth: 480, alignSelf: 'center', width: '100%' }]}
       contentContainerStyle={styles.scrollContent}
       keyboardShouldPersistTaps="handled">
       {!embedded && (
@@ -65,7 +58,6 @@ export default function CustomerRegisterScreen({ embedded = false }: ScreenProps
         </TouchableOpacity>
       </View>
 
-      {/* 이름 */}
       <View style={styles.section}>
         <Text style={styles.sectionLabel}>이름</Text>
         <TextInput
@@ -77,7 +69,6 @@ export default function CustomerRegisterScreen({ embedded = false }: ScreenProps
         />
       </View>
 
-      {/* 전화번호 */}
       <View style={styles.section}>
         <Text style={styles.sectionLabel}>전화번호</Text>
         <TextInput
@@ -91,7 +82,6 @@ export default function CustomerRegisterScreen({ embedded = false }: ScreenProps
         />
       </View>
 
-      {/* 메모 */}
       <View style={styles.section}>
         <Text style={styles.sectionLabel}>메모</Text>
         {Platform.OS === 'web' ? (
@@ -132,7 +122,6 @@ export default function CustomerRegisterScreen({ embedded = false }: ScreenProps
           />
         )}
       </View>
-
       <Text style={styles.hint}>TODO-DB: 저장 시 서버 스키마에 맞게 필드 매핑</Text>
     </ScrollView>
   );

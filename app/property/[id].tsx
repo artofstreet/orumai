@@ -108,7 +108,7 @@ export default function PropertyDetailScreen() {
               <TouchableOpacity style={styles.headerBtn} onPress={() => printProperty(property)}>
                 <Text style={styles.headerBtnText}>A4인쇄</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.headerBtn} onPress={() => openRegisterPanel('property', property.id)}>
+              <TouchableOpacity style={styles.headerBtn} onPress={() => openRegisterPanel('property', property.id, property as Record<string, unknown>)}>
                 <Text style={styles.headerBtnText}>편집</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.headerBtn} onPress={준비중}>

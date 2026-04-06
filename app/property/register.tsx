@@ -6,14 +6,9 @@
  */
 import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
-import {
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
+import { clearEditData } from '@/utils/registerEvents';
 import { detailStyles } from './detailStyles';
 import { RegisterDealChips, RegisterPropChips } from './registerChipBlocks';
 import { MOCK_ADDRESS_ROWS, formatPhoneHyphen } from './registerMocks';
@@ -22,56 +17,57 @@ import { registerStyles as styles } from './registerStyles';
 import type { DealKind, PropKind, RelationKind } from './registerTypes';
 
 type ScreenProps = {
-  embedded?: boolean; // true면 뒤로가기 숨김(results 슬라이드 패널용)
+  embedded?: boolean; // true면 뒤로가기 숨김
+  initialData?: Record<string, unknown> | null; // 편집 시 기존 데이터
 };
 
+/** 문자열 안전 추출 헬퍼 */
+const str = (v: unknown): string => (typeof v === 'string' ? v : '');
+
 /** 매물 등록/편집 화면 */
-export default function PropertyRegisterScreen({ embedded = false }: ScreenProps) {
+export default function PropertyRegisterScreen({ embedded = false, initialData }: ScreenProps) {
   const router = useRouter();
 
-  const [address, setAddress] = useState<string>('');
-  const [deal, setDeal] = useState<DealKind>('월세');
-  const [propType, setPropType] = useState<PropKind>('아파트');
+  const d = initialData ?? null; // 편집 데이터
+  const isEdit = d !== null; // 편집 모드 여부
+
+  const stripUnit = (v: unknown) => str(v).replace('㎡', '').trim(); // ㎡ 제거
+
+  const [address, setAddress] = useState<string>(() => str(d?.addr));
+  const [deal, setDeal] = useState<DealKind>(() => (str(d?.deal) as DealKind) || '월세');
+  const [propType, setPropType] = useState<PropKind>(() => (str(d?.type) as PropKind) || '아파트');
   const [salePrice, setSalePrice] = useState<string>('');
   const [jeonsePrice, setJeonsePrice] = useState<string>('');
   const [deposit, setDeposit] = useState<string>('');
   const [monthly, setMonthly] = useState<string>('');
-  const [areaSqm, setAreaSqm] = useState<string>('');
-  const [floor, setFloor] = useState<string>('');
-  const [totalFloors, setTotalFloors] = useState<string>('');
-  const [direction, setDirection] = useState<string>('');
-  const [moveInDate, setMoveInDate] = useState<string>('');
+  const [areaSqm, setAreaSqm] = useState<string>(() => stripUnit(d?.area));
+  const [floor, setFloor] = useState<string>(() => str(d?.floor));
+  const [totalFloors, setTotalFloors] = useState<string>(() => str(d?.totalFloors));
+  const [direction, setDirection] = useState<string>(() => str(d?.dir));
+  const [moveInDate, setMoveInDate] = useState<string>(() => str(d?.moveInDate));
   const [ownerName, setOwnerName] = useState<string>('');
   const [relation, setRelation] = useState<RelationKind | undefined>(undefined);
   const [ownerPhone, setOwnerPhone] = useState<string>('');
   const [ownerMemo, setOwnerMemo] = useState<string>('');
-  const [memo, setMemo] = useState<string>('');
-
+  const [memo, setMemo] = useState<string>(() => str(d?.memo));
   const [showSuggest, setShowSuggest] = useState<boolean>(false);
 
-  /** 주소 자동완성 후보 (Mock 3건 필터) */
   const suggestions = useMemo(() => {
     const q = address.trim();
     if (q.length < 1) return [];
     return MOCK_ADDRESS_ROWS.filter((r) => r.label.includes(q)).slice(0, 3);
   }, [address]);
 
-  /** 전화 입력 시 하이픈 자동 */
-  const onPhoneChange = (t: string) => {
-    setOwnerPhone(formatPhoneHyphen(t));
-  };
+  const onPhoneChange = (t: string) => setOwnerPhone(formatPhoneHyphen(t));
 
-  /** 저장/완료 */
   const onSave = () => {
-    // TODO-DB: supabase.from('properties').insert({ ... })
+    clearEditData();
+    // TODO-DB: isEdit ? supabase.update() : supabase.insert()
   };
 
   return (
     <ScrollView
-      style={[
-        styles.page,
-        embedded ? { flex: 1, width: '100%' } : { maxWidth: 480, alignSelf: 'center', width: '100%' },
-      ]}
+      style={[styles.page, embedded ? { flex: 1, width: '100%' } : { maxWidth: 480, alignSelf: 'center', width: '100%' }]}
       contentContainerStyle={styles.scrollContent}
       keyboardShouldPersistTaps="handled">
       {!embedded && (
@@ -79,7 +75,7 @@ export default function PropertyRegisterScreen({ embedded = false }: ScreenProps
           <Text style={styles.backTxt}>← 뒤로</Text>
         </TouchableOpacity>
       )}
-      <Text style={styles.title}>매물 등록</Text>
+      <Text style={styles.title}>{isEdit ? '매물 편집' : '매물 등록'}</Text>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
         <Text style={styles.sub}>Mock 음성·주소 자동완성은 개발용입니다.</Text>
         <TouchableOpacity
@@ -104,16 +100,13 @@ export default function PropertyRegisterScreen({ embedded = false }: ScreenProps
         {showSuggest && suggestions.length > 0 && (
           <View style={styles.suggestBox}>
             {suggestions.map((s) => (
-              <TouchableOpacity
-                key={s.id}
-                style={styles.suggestRow}
-                onPress={() => {
-                  setAddress(s.label);
-                  setAreaSqm(formatAreaSqmInput(s.areaSqm));
-                  setFloor(formatFloorInput(s.floor));
-                  setTotalFloors(formatFloorInput(s.totalFloors));
-                  setShowSuggest(false);
-                }}>
+              <TouchableOpacity key={s.id} style={styles.suggestRow} onPress={() => {
+                setAddress(s.label);
+                setAreaSqm(formatAreaSqmInput(s.areaSqm));
+                setFloor(formatFloorInput(s.floor));
+                setTotalFloors(formatFloorInput(s.totalFloors));
+                setShowSuggest(false);
+              }}>
                 <Text style={styles.suggestTxt}>{s.label}</Text>
               </TouchableOpacity>
             ))}
@@ -140,7 +133,6 @@ export default function PropertyRegisterScreen({ embedded = false }: ScreenProps
         ownerMemo={ownerMemo} setOwnerMemo={setOwnerMemo}
         memo={memo} setMemo={setMemo}
       />
-
       <Text style={styles.hint}>TODO-DB: 저장 시 서버 스키마에 맞게 필드 매핑</Text>
     </ScrollView>
   );

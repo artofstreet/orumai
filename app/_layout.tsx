@@ -24,6 +24,8 @@ export default function RootLayout() {
   const [selectModalVisible, setSelectModalVisible] = useState<boolean>(false); // 매물/고객 선택 모달
   const [registerKind, setRegisterKind] = useState<RegisterKind | null>(null); // 선택된 등록 종류
   const [registerOpen, setRegisterOpen] = useState<boolean>(false); // 슬라이드 패널 열림
+  const [panelKey, setPanelKey] = useState<number>(0); // 패널 재마운트용 키
+  const [panelEditData, setPanelEditData] = useState<Record<string, unknown> | null>(null); // 편집 데이터
 
   const panelW = useMemo(() => {
     if (windowWidth < 768) return windowWidth;
@@ -37,9 +39,12 @@ export default function RootLayout() {
   }, [panelW, slideX, registerOpen]);
 
   /** 패널 열기 — 매물/고객 선택 + editId 옵션 */
-  const openPanel = useCallback((kind: RegisterKind, editId?: string) => {
+  const openPanel = useCallback((kind: RegisterKind, editId?: string, editData?: Record<string, unknown>) => {
+    console.log('openPanel 호출:', kind, editData); // 디버그
+    setPanelEditData(editData ?? null); // 편집 데이터 직접 저장
     setRegisterKind(kind);
     slideX.setValue(panelW);
+    setPanelKey((k) => k + 1);
     setRegisterOpen(true);
   }, [panelW, slideX]);
 
@@ -94,7 +99,6 @@ export default function RootLayout() {
         <SafeAreaView style={styles.container}>
           <TopBar onRegisterPress={openSelectModal} />
           <View style={styles.content}>
-            {/* TODO-AUTH: Supabase 세션 확인 후 로그인 화면 분기 */}
             <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: bg } }}>
               <Stack.Screen name="(tabs)" />
               <Stack.Screen name="results" />
@@ -127,8 +131,8 @@ export default function RootLayout() {
               <Pressable style={styles.backdrop} onPress={closePanel} accessibilityRole="button" />
               <Animated.View style={[styles.panel, { width: panelW, transform: [{ translateX: slideX }] }]}>
                 {registerKind === 'property'
-                  ? <PropertyRegisterScreen embedded />
-                  : <CustomerRegisterScreen embedded />}
+                  ? <PropertyRegisterScreen key={panelKey} embedded initialData={panelEditData} />
+                  : <CustomerRegisterScreen key={panelKey} embedded initialData={panelEditData} />}
               </Animated.View>
             </>
           )}
@@ -182,9 +186,6 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     elevation: 8,
   },
-  modalOptionRow: {
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-  },
+  modalOptionRow: { paddingVertical: 14, paddingHorizontal: 20 },
   modalOptionTxt: { fontSize: 15, fontWeight: '600', color: '#1E293B' },
 });
