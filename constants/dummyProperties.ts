@@ -23,7 +23,7 @@ export const DUMMY_PROPERTIES: Property[] = [
     status: 'done',
     phone: '010-4821-9033',
     memo: '역 도보 8분, 남향, 내부 수리 완료. 조망 좋음.',
-    photos: [ // 캐러셀 테스트용 사진 3장
+    photos: [
       'https://picsum.photos/600/400?random=1',
       'https://picsum.photos/600/400?random=11',
       'https://picsum.photos/600/400?random=12',
@@ -34,6 +34,7 @@ export const DUMMY_PROPERTIES: Property[] = [
     id: 'prop_002',
     type: '상가' satisfies PropertyType,
     name: '광주 북구 중흥동 코너 상가 1층',
+    buildingName: '중흥상가빌딩',
     addr: '광주 북구 중흥동 123-45',
     deal: '월세',
     price: '1억/월 60만원',
@@ -48,20 +49,19 @@ export const DUMMY_PROPERTIES: Property[] = [
     status: 'done',
     phone: '010-7732-1189',
     memo: '유동인구 많음, 광고 가시성 좋음. 보증금 협의 가능.',
-    // photos 없음(플레이스홀더 테스트용)
     createdAt: '2026-04-01T10:05:00.000Z',
   },
   {
     id: 'prop_003',
     type: '원룸' satisfies PropertyType,
     name: '광주 동구 학동 역세권 원룸 풀옵션',
+    buildingName: '학동역세권빌라',
     addr: '광주 동구 학동 67-8',
     deal: '월세',
     price: '300/45만원',
     area: '20㎡',
     floor: '3층',
     dir: '남향',
-    // moveInDate 없음(플레이스홀더 테스트용)
     totalFloors: '5층',
     builtYear: '2017년',
     parking: '불가',
@@ -69,7 +69,7 @@ export const DUMMY_PROPERTIES: Property[] = [
     status: 'draft',
     phone: '010-2211-4470',
     memo: '풀옵션(에어컨/인덕션), 즉시 입주 가능. 관리비 저렴.',
-    photos: ['https://picsum.photos/300/200?random=2'], // 테스트용 대표사진 URL
+    photos: ['https://picsum.photos/300/200?random=2'],
     createdAt: '2026-04-02T07:40:00.000Z',
   },
   {
@@ -112,7 +112,7 @@ export const DUMMY_PROPERTIES: Property[] = [
     status: 'done',
     phone: '010-8820-3347',
     memo: '복층 구조, 루프탑 뷰, 헬스장 포함. 직주근접.',
-    photos: [ // 캐러셀 테스트용 사진 3장
+    photos: [
       'https://picsum.photos/600/400?random=3',
       'https://picsum.photos/600/400?random=13',
       'https://picsum.photos/600/400?random=14',
@@ -144,6 +144,7 @@ export const DUMMY_PROPERTIES: Property[] = [
     id: 'prop_007',
     type: '상가' satisfies PropertyType,
     name: '광주 광산구 수완동 먹자골목 상가 2층',
+    buildingName: '수완먹자상가',
     addr: '광주 광산구 수완동 890-7',
     deal: '매매',
     price: '2.5억',
@@ -162,6 +163,7 @@ export const DUMMY_PROPERTIES: Property[] = [
     id: 'prop_008',
     type: '빌라' satisfies PropertyType,
     name: '광주 동구 지산동 빌라 원룸형',
+    buildingName: '지산빌라',
     addr: '광주 동구 지산동 112-9',
     deal: '월세',
     price: '200/30만원',
@@ -181,6 +183,7 @@ export const DUMMY_PROPERTIES: Property[] = [
     id: 'prop_009',
     type: '오피스텔' satisfies PropertyType,
     name: '광주 서구 농성동 오피스텔 신축',
+    buildingName: '농성오피스텔',
     addr: '광주 서구 농성동 448-2',
     deal: '전세',
     price: '8000만원',
@@ -218,4 +221,3 @@ export const DUMMY_PROPERTIES: Property[] = [
     createdAt: '2026-04-03T11:00:00.000Z',
   },
 ];
-
