@@ -34,12 +34,13 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
   const stripUnit = (v: unknown) => str(v).replace('㎡', '').trim(); // ㎡ 제거
 
   const [address, setAddress] = useState<string>(() => str(d?.addr));
+  const [buildingName, setBuildingName] = useState<string>(() => str(d?.buildingName)); // 건물명
   const [deal, setDeal] = useState<DealKind>(() => (str(d?.deal) as DealKind) || '월세');
   const [propType, setPropType] = useState<PropKind>(() => (str(d?.type) as PropKind) || '아파트');
-  const [salePrice, setSalePrice] = useState<string>('');
-  const [jeonsePrice, setJeonsePrice] = useState<string>('');
-  const [deposit, setDeposit] = useState<string>('');
-  const [monthly, setMonthly] = useState<string>('');
+  const [salePrice, setSalePrice] = useState<string>(() => str(d?.salePrice)); // 편집 시 복원
+  const [jeonsePrice, setJeonsePrice] = useState<string>(() => str(d?.jeonsePrice)); // 편집 시 복원
+  const [deposit, setDeposit] = useState<string>(() => str(d?.deposit)); // 편집 시 복원
+  const [monthly, setMonthly] = useState<string>(() => str(d?.monthly)); // 편집 시 복원
   const [areaSqm, setAreaSqm] = useState<string>(() => stripUnit(d?.area));
   const [floor, setFloor] = useState<string>(() => str(d?.floor));
   const [totalFloors, setTotalFloors] = useState<string>(() => str(d?.totalFloors));
@@ -86,6 +87,7 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
         </TouchableOpacity>
       </View>
 
+      {/* 주소 */}
       <View style={styles.section}>
         <Text style={styles.sectionLabel}>주소</Text>
         <TextInput
@@ -112,6 +114,18 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
             ))}
           </View>
         )}
+      </View>
+
+      {/* 건물명 */}
+      <View style={styles.section}>
+        <Text style={styles.sectionLabel}>건물명</Text>
+        <TextInput
+          style={styles.input}
+          value={buildingName}
+          onChangeText={setBuildingName}
+          placeholder="건물명 (선택)"
+          placeholderTextColor="#9AA5B4"
+        />
       </View>
 
       <RegisterDealChips deal={deal} setDeal={setDeal} />
