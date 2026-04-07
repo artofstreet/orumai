@@ -8,7 +8,10 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 import TopBar from '@/components/TopBar';
 import { bg } from '@/constants/colors';
+import { DUMMY_CUSTOMERS } from '@/constants/dummyCustomers';
+import { DUMMY_PROPERTIES } from '@/constants/dummyProperties';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { printCustomerList, printPropertyList } from '@/utils/printList';
 import { registerOpenPanel } from '@/utils/registerEvents';
 import CustomerRegisterScreen from './customer/register';
 import ProfileScreen from './profile';
@@ -16,19 +19,19 @@ import PropertyRegisterScreen from './property/register';
 
 export const unstable_settings = { anchor: '(tabs)' };
 
-type RegisterKind = 'property' | 'customer'; // 등록 종류
+type RegisterKind = 'property' | 'customer';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const { width: windowWidth } = useWindowDimensions();
 
   const [selectModalVisible, setSelectModalVisible] = useState<boolean>(false);
+  const [printModalVisible, setPrintModalVisible] = useState<boolean>(false); // 인쇄 모달
   const [registerKind, setRegisterKind] = useState<RegisterKind | null>(null);
   const [registerOpen, setRegisterOpen] = useState<boolean>(false);
   const [panelKey, setPanelKey] = useState<number>(0);
   const [panelEditData, setPanelEditData] = useState<Record<string, unknown> | null>(null);
 
-  // 프로필 패널
   const [profileOpen, setProfileOpen] = useState<boolean>(false);
   const [profileKey, setProfileKey] = useState<number>(0);
   const profileSlideX = useRef(new Animated.Value(0)).current;
@@ -90,7 +93,6 @@ export default function RootLayout() {
     });
   }, [panelW, slideX]);
 
-  // 프로필 패널 열기/닫기
   const openProfilePanel = useCallback(() => {
     profileSlideX.setValue(panelW);
     setProfileKey((k) => k + 1);
@@ -126,7 +128,11 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <SafeAreaProvider>
         <SafeAreaView style={styles.container}>
-          <TopBar onRegisterPress={openSelectModal} onProfilePress={openProfilePanel} />
+          <TopBar
+            onRegisterPress={openSelectModal}
+            onProfilePress={openProfilePanel}
+            onPrintPress={() => setPrintModalVisible(true)}
+          />
           <View style={styles.content}>
             <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: bg } }}>
               <Stack.Screen name="(tabs)" />
@@ -137,11 +143,7 @@ export default function RootLayout() {
           </View>
 
           {/* 매물/고객 선택 모달 */}
-          <Modal
-            visible={selectModalVisible}
-            transparent
-            animationType="fade"
-            onRequestClose={() => setSelectModalVisible(false)}>
+          <Modal visible={selectModalVisible} transparent animationType="fade" onRequestClose={() => setSelectModalVisible(false)}>
             <Pressable style={styles.modalBackdrop} onPress={() => setSelectModalVisible(false)}>
               <View style={styles.modalCard}>
                 <TouchableOpacity style={styles.modalOptionRow} onPress={() => onSelectKind('property')}>
@@ -149,6 +151,26 @@ export default function RootLayout() {
                 </TouchableOpacity>
                 <TouchableOpacity style={[styles.modalOptionRow, { borderTopWidth: 1, borderTopColor: '#F1F5F9' }]} onPress={() => onSelectKind('customer')}>
                   <Text style={styles.modalOptionTxt}>👤 고객 등록</Text>
+                </TouchableOpacity>
+              </View>
+            </Pressable>
+          </Modal>
+
+          {/* 인쇄 선택 모달 */}
+          <Modal visible={printModalVisible} transparent animationType="fade" onRequestClose={() => setPrintModalVisible(false)}>
+            <Pressable style={styles.modalBackdrop} onPress={() => setPrintModalVisible(false)}>
+              <View style={styles.modalCard}>
+                <TouchableOpacity style={styles.modalOptionRow} onPress={() => {
+                  setPrintModalVisible(false);
+                  printPropertyList(DUMMY_PROPERTIES);
+                }}>
+                  <Text style={styles.modalOptionTxt}>🏠 전체 매물 인쇄</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.modalOptionRow, { borderTopWidth: 1, borderTopColor: '#F1F5F9' }]} onPress={() => {
+                  setPrintModalVisible(false);
+                  printCustomerList(DUMMY_CUSTOMERS);
+                }}>
+                  <Text style={styles.modalOptionTxt}>👤 전체 고객 인쇄</Text>
                 </TouchableOpacity>
               </View>
             </Pressable>
@@ -185,46 +207,10 @@ export default function RootLayout() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: bg },
   content: { flex: 1 },
-  backdrop: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(15, 23, 42, 0.45)',
-    zIndex: 20,
-  },
-  panel: {
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    bottom: 0,
-    backgroundColor: '#FFFFFF',
-    zIndex: 21,
-    borderLeftWidth: 1,
-    borderLeftColor: '#E2E8F0',
-    shadowColor: '#000',
-    shadowOffset: { width: -4, height: 0 },
-    shadowOpacity: 0.12,
-    shadowRadius: 12,
-    elevation: 12,
-  },
-  modalBackdrop: {
-    flex: 1,
-    justifyContent: 'flex-start',
-    alignItems: 'flex-end',
-    paddingTop: 56,
-    paddingRight: 16,
-  },
-  modalCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    paddingVertical: 4,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    minWidth: 160,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.12,
-    shadowRadius: 12,
-    elevation: 8,
-  },
+  backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(15, 23, 42, 0.45)', zIndex: 20 },
+  panel: { position: 'absolute', right: 0, top: 0, bottom: 0, backgroundColor: '#FFFFFF', zIndex: 21, borderLeftWidth: 1, borderLeftColor: '#E2E8F0', shadowColor: '#000', shadowOffset: { width: -4, height: 0 }, shadowOpacity: 0.12, shadowRadius: 12, elevation: 12 },
+  modalBackdrop: { flex: 1, justifyContent: 'flex-start', alignItems: 'flex-end', paddingTop: 56, paddingRight: 16 },
+  modalCard: { backgroundColor: '#FFFFFF', borderRadius: 12, paddingVertical: 4, borderWidth: 1, borderColor: '#E2E8F0', minWidth: 160, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.12, shadowRadius: 12, elevation: 8 },
   modalOptionRow: { paddingVertical: 14, paddingHorizontal: 20 },
   modalOptionTxt: { fontSize: 15, fontWeight: '600', color: '#1E293B' },
 });

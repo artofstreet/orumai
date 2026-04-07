@@ -83,7 +83,7 @@ export default function CustomerDetailScreen() {
 }
 
 const styles = StyleSheet.create({
-  page: { flex: 1, backgroundColor: '#fff' },
+  page: { flex: 1, backgroundColor: '#F4F6F9' },
   content: { padding: 32, gap: 20, maxWidth: 1200, width: '100%', alignSelf: 'center' },
   errorWrap: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 12 },
   errorTxt: { fontSize: 16, color: '#888' },
@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
   name: { fontSize: 22, fontWeight: '800', color: '#111827' },
   phone: { fontSize: 16, fontWeight: '800', color: '#FF6B35' },
   date: { fontSize: 12, color: '#aaa' },
-  memoBox: { backgroundColor: '#f8f8f8', borderRadius: 12, padding: 16, gap: 8, minHeight: 200 },
+  memoBox: { backgroundColor: '#f8f8f8', borderRadius: 12, padding: 16, gap: 8, minHeight: 200, borderWidth: 1, borderColor: '#D8DCE6' },
   memoLabel: { fontSize: 13, fontWeight: '700', color: '#888' },
   memoTxt: { fontSize: 15, color: '#222', lineHeight: 24 },
 });
