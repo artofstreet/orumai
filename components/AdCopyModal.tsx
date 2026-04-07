@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import {
     ActivityIndicator,
     Modal,
+    Platform,
     Pressable,
     ScrollView,
     StyleSheet,
@@ -14,29 +15,29 @@ import {
 import type { Property } from '@/types';
 import { generateAdCopy, type AdCopyResult } from '@/utils/generateAdCopy';
 
-// 탭 목록
 const TABS = [
   { key: 'naver', label: '네이버', emoji: '🏠' },
   { key: 'kakao', label: '카카오', emoji: '💬' },
   { key: 'sns',   label: 'SNS',   emoji: '📸' },
 ] as const;
 
-type TabKey = typeof TABS[number]['key']; // 'naver' | 'kakao' | 'sns'
+type TabKey = typeof TABS[number]['key'];
 
 interface AdCopyModalProps {
-  visible: boolean;    // 모달 표시 여부
-  property: Property;  // 대상 매물
-  onClose: () => void; // 닫기 콜백
+  visible: boolean;
+  property: Property;
+  onClose: () => void;
 }
 
 export default function AdCopyModal({ visible, property, onClose }: AdCopyModalProps) {
-  const [loading, setLoading]     = useState<boolean>(false);       // 생성 중 여부
-  const [result, setResult]       = useState<AdCopyResult | null>(null); // 생성 결과
-  const [error, setError]         = useState<string>('');           // 오류 메시지
-  const [activeTab, setActiveTab] = useState<TabKey>('naver');      // 현재 탭
-  const [copied, setCopied]       = useState<boolean>(false);       // 복사 완료 표시
+  const [loading, setLoading]     = useState<boolean>(false);
+  const [result, setResult]       = useState<AdCopyResult | null>(null);
+  const [error, setError]         = useState<string>('');
+  const [activeTab, setActiveTab] = useState<TabKey>('naver');
+  const [copied, setCopied]       = useState<boolean>(false);
 
-  // 모달 열릴 때마다 자동 생성
+  const isWeb = Platform.OS === 'web'; // 웹 여부
+
   useEffect(() => {
     if (!visible) return;
     setResult(null);
@@ -46,7 +47,6 @@ export default function AdCopyModal({ visible, property, onClose }: AdCopyModalP
     void handleGenerate();
   }, [visible]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Claude API 호출
   const handleGenerate = useCallback(async () => {
     setLoading(true);
     setError('');
@@ -62,27 +62,26 @@ export default function AdCopyModal({ visible, property, onClose }: AdCopyModalP
     }
   }, [property]);
 
-  // 현재 탭 텍스트 클립보드 복사
   const handleCopy = useCallback(async () => {
     if (!result) return;
     await Clipboard.setStringAsync(result[activeTab]);
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000); // 2초 후 초기화
+    setTimeout(() => setCopied(false), 2000);
   }, [result, activeTab]);
 
-  const activeText = result ? result[activeTab] : ''; // 현재 탭 문구
+  const activeText = result ? result[activeTab] : '';
 
   return (
     <Modal
       visible={visible}
       transparent
-      animationType="slide"
+      animationType={isWeb ? 'fade' : 'slide'}
       onRequestClose={onClose}>
-      {/* 반투명 배경 — 탭 밖 누르면 닫힘 */}
       <Pressable style={styles.backdrop} onPress={onClose} />
 
-      <View style={styles.sheet}>
-        {/* 헤더 */}
+      <View style={[styles.sheet, isWeb && styles.sheetWeb]}>
+        {!isWeb && <View style={styles.handle} />}
+
         <View style={styles.header}>
           <Text style={styles.headerTitle}>✨ AI 광고문구</Text>
           <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
@@ -90,7 +89,6 @@ export default function AdCopyModal({ visible, property, onClose }: AdCopyModalP
           </TouchableOpacity>
         </View>
 
-        {/* 탭 */}
         <View style={styles.tabRow}>
           {TABS.map((t) => (
             <TouchableOpacity
@@ -104,7 +102,6 @@ export default function AdCopyModal({ visible, property, onClose }: AdCopyModalP
           ))}
         </View>
 
-        {/* 본문 */}
         <ScrollView style={styles.body} contentContainerStyle={styles.bodyContent}>
           {loading && (
             <View style={styles.center}>
@@ -122,7 +119,6 @@ export default function AdCopyModal({ visible, property, onClose }: AdCopyModalP
           )}
         </ScrollView>
 
-        {/* 하단 버튼 */}
         <View style={styles.footer}>
           <TouchableOpacity
             style={[styles.footerBtn, styles.footerBtnSecondary]}
@@ -144,7 +140,9 @@ export default function AdCopyModal({ visible, property, onClose }: AdCopyModalP
 
 const styles = StyleSheet.create({
   backdrop:               { flex: 1, backgroundColor: 'rgba(0,0,0,0.45)' },
-  sheet:                  { backgroundColor: '#FFFFFF', borderTopLeftRadius: 20, borderTopRightRadius: 20, paddingBottom: 32, maxHeight: '75%' },
+  sheet:                  { backgroundColor: '#FFFFFF', borderTopLeftRadius: 20, borderTopRightRadius: 20, paddingBottom: 32, maxHeight: '55%' },
+  sheetWeb:               { position: 'absolute' as const, top: '50%' as unknown as number, left: '50%' as unknown as number, transform: [{ translateX: -300 }, { translateY: -260 }], width: 600, borderRadius: 16, maxHeight: 560, paddingBottom: 24 },
+  handle:                 { width: 40, height: 4, backgroundColor: '#E2E8F0', borderRadius: 2, alignSelf: 'center', marginTop: 10, marginBottom: 4 },
   header:                 { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: '#F1F5F9' },
   headerTitle:            { fontSize: 17, fontWeight: '700', color: '#0F172A' },
   closeBtn:               { padding: 4 },
@@ -154,7 +152,7 @@ const styles = StyleSheet.create({
   tabActive:              { backgroundColor: '#FFF7ED', borderWidth: 1, borderColor: '#F97316' },
   tabText:                { fontSize: 13, fontWeight: '600', color: '#94A3B8' },
   tabTextActive:          { color: '#F97316' },
-  body:                   { maxHeight: 260, marginTop: 4 },
+  body:                   { maxHeight: 280, marginTop: 4 },
   bodyContent:            { padding: 20 },
   center:                 { alignItems: 'center', paddingVertical: 32, gap: 12 },
   loadingText:            { fontSize: 14, color: '#64748B', textAlign: 'center' },
