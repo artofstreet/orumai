@@ -121,7 +121,10 @@ export default function ProfileScreen({ embedded = false }: ScreenProps) {
               </View>
               <View style={styles.profileInfo}>
                 {/* 이름 + 직급 한 줄 */}
-                <Text style={styles.nameText}>{profile.agentName || '이름 없음'}  {profile.position}</Text>
+                <Text style={styles.nameText}>
+  {profile.agentName || '이름 없음'}
+  {profile.position ? <Text style={{ fontSize: 14, fontWeight: '400', color: 'rgba(255,255,255,0.72)' }}>  {profile.position}</Text> : null}
+</Text>
                 {/* 상호만 아래 줄 */}
                 <Text style={styles.subText}>{profile.officeName}</Text>
                 <Text style={styles.subText}>{profile.phone}</Text>
