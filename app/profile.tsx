@@ -2,15 +2,15 @@ import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
-const STORAGE_KEY = 'orumai_agent_profile'; // 로컬 저장 키
+const STORAGE_KEY = 'orumai_agent_profile';
 
 export type AgentProfile = {
-  officeName: string;  // 상호
-  agentName: string;   // 중개사 이름
-  position: string;    // 직급
-  phone: string;       // 전화번호
-  plan: string;        // 요금제
-  memo: string;        // 메모
+  officeName: string;
+  agentName: string;
+  position: string;
+  phone: string;
+  plan: string;
+  memo: string;
 };
 
 export const defaultProfile: AgentProfile = {
@@ -37,7 +37,6 @@ export const saveAgentProfile = (profile: AgentProfile): void => {
   } catch {}
 };
 
-// 아바타 배경색 — 이름 첫 글자 코드값으로 자동 배정
 const AVATAR_COLORS: string[] = [
   '#5B8DEF', '#52B788', '#9B72CF', '#F4845F',
   '#F06595', '#4DABF7', '#63C9A8', '#FFB347',
@@ -49,13 +48,13 @@ const getAvatarBg = (name: string): string => {
 };
 
 type ScreenProps = {
-  embedded?: boolean; // true면 슬라이드 패널 모드
+  embedded?: boolean;
 };
 
 export default function ProfileScreen({ embedded = false }: ScreenProps) {
   const router = useRouter();
   const [profile, setProfile] = useState<AgentProfile>(defaultProfile);
-  const [isEdit, setIsEdit] = useState<boolean>(false); // 편집 모드
+  const [isEdit, setIsEdit] = useState<boolean>(false);
   const [saved, setSaved] = useState<boolean>(false);
 
   useEffect(() => {
@@ -78,8 +77,8 @@ export default function ProfileScreen({ embedded = false }: ScreenProps) {
     setProfile((p) => ({ ...p, phone: formatted }));
   };
 
-  const avatarBg = getAvatarBg(profile.agentName || '김'); // 아바타 색상
-  const firstChar = (profile.agentName || '?').trim()[0]; // 첫 글자
+  const avatarBg = getAvatarBg(profile.agentName || '김');
+  const firstChar = (profile.agentName || '?').trim()[0];
 
   const webMemoStyle = {
     ...StyleSheet.flatten(styles.input),
@@ -95,7 +94,6 @@ export default function ProfileScreen({ embedded = false }: ScreenProps) {
       style={[styles.page, embedded && { flex: 1, width: '100%' }]}
       contentContainerStyle={styles.content}>
 
-      {/* 헤더 */}
       <View style={styles.header}>
         {!embedded && (
           <Pressable onPress={() => router.back()} style={styles.backBtn}>
@@ -114,18 +112,18 @@ export default function ProfileScreen({ embedded = false }: ScreenProps) {
         )}
       </View>
 
-      {/* 보기 모드 */}
       {!isEdit && (
         <>
-          {/* 신분증 카드 */}
           <View style={styles.idCard}>
             <View style={styles.profileRow}>
               <View style={[styles.avatar, { backgroundColor: avatarBg }]}>
                 <Text style={styles.avatarTxt}>{firstChar}</Text>
               </View>
               <View style={styles.profileInfo}>
-                <Text style={styles.nameText}>{profile.agentName || '이름 없음'}</Text>
-                <Text style={styles.subText}>{profile.position}{profile.position && profile.officeName ? ' · ' : ''}{profile.officeName}</Text>
+                {/* 이름 + 직급 한 줄 */}
+                <Text style={styles.nameText}>{profile.agentName || '이름 없음'}  {profile.position}</Text>
+                {/* 상호만 아래 줄 */}
+                <Text style={styles.subText}>{profile.officeName}</Text>
                 <Text style={styles.subText}>{profile.phone}</Text>
               </View>
             </View>
@@ -138,7 +136,6 @@ export default function ProfileScreen({ embedded = false }: ScreenProps) {
             </View>
           </View>
 
-          {/* 메모 박스 */}
           <View style={styles.memoBox}>
             <Text style={styles.memoLabel}>메모</Text>
             <Text style={styles.memoTxt}>{profile.memo || '메모 없음'}</Text>
@@ -146,7 +143,6 @@ export default function ProfileScreen({ embedded = false }: ScreenProps) {
         </>
       )}
 
-      {/* 편집 모드 */}
       {isEdit && (
         <View style={styles.card}>
           <Text style={styles.label}>상호</Text>
@@ -193,7 +189,7 @@ export default function ProfileScreen({ embedded = false }: ScreenProps) {
   );
 }
 
-const NAVY = '#1E3A5F'; // 네이비 메인 색상
+const NAVY = '#1E3A5F';
 
 const styles = StyleSheet.create({
   page: { flex: 1, backgroundColor: '#F4F6F9' },
@@ -206,8 +202,6 @@ const styles = StyleSheet.create({
   editBtnTxt: { fontSize: 14, color: '#1E293B', fontWeight: '600' },
   doneBtn: { backgroundColor: NAVY, borderRadius: 8, paddingHorizontal: 16, paddingVertical: 7 },
   doneBtnTxt: { color: '#fff', fontWeight: '800', fontSize: 14 },
-
-  // 신분증 카드
   idCard: { backgroundColor: NAVY, borderRadius: 16, padding: 28, gap: 20 },
   profileRow: { flexDirection: 'row', alignItems: 'center', gap: 20 },
   avatar: { width: 72, height: 72, borderRadius: 999, borderWidth: 2, borderColor: 'rgba(255,255,255,0.85)', alignItems: 'center', justifyContent: 'center' },
@@ -220,13 +214,9 @@ const styles = StyleSheet.create({
   planLabel: { fontSize: 14, color: 'rgba(255,255,255,0.72)' },
   planBadge: { backgroundColor: '#FFC107', borderRadius: 20, paddingHorizontal: 14, paddingVertical: 4 },
   planBadgeTxt: { fontSize: 13, fontWeight: '700', color: '#7B4F00' },
-
-  // 메모 박스
   memoBox: { backgroundColor: '#fff', borderRadius: 12, borderLeftWidth: 4, borderLeftColor: NAVY, padding: 20, gap: 10 },
   memoLabel: { fontSize: 13, fontWeight: '700', color: '#888' },
   memoTxt: { fontSize: 15, color: '#222', lineHeight: 24 },
-
-  // 편집 카드
   card: { backgroundColor: '#fff', borderRadius: 16, padding: 20, gap: 8, borderWidth: 1, borderColor: '#E2E8F0' },
   label: { fontSize: 12, color: '#64748B', fontWeight: '600', marginTop: 8 },
   input: { borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 8, padding: 10, fontSize: 15, color: '#0F172A', backgroundColor: '#F8FAFC' },
