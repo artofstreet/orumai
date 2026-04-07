@@ -89,7 +89,7 @@ export const printCustomerList = (customers: Customer[]): void => {
     <tr>
       <td>${c.name}</td>
       <td>${c.phone}</td>
-      <td>${c.memo}</td>
+      <td>${c.memo.length > 40 ? c.memo.slice(0, 40) + '...' : c.memo}</td>
       <td>${c.createdAt?.slice(0, 10) ?? '—'}</td>
     </tr>
   `).join('');
