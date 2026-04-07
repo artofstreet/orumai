@@ -6,23 +6,22 @@ import { getHorizontalPadding } from '@/constants/theme';
 import { router } from 'expo-router';
 
 export type TopBarProps = {
-  onRegisterPress?: () => void; // +등록 버튼 콜백 (_layout에서 패널 열기)
+  onRegisterPress?: () => void; // +등록 버튼 콜백
+  onProfilePress?: () => void;  // 마이 버튼 콜백
 };
 
-// TopBar 컴포넌트: 상단 네비/통계/액션을 보여줍니다.
-export default function TopBar({ onRegisterPress }: TopBarProps) {
+export default function TopBar({ onRegisterPress, onProfilePress }: TopBarProps) {
   const { width } = useWindowDimensions();
   const pad = useMemo(() => getHorizontalPadding(width), [width]);
-  const showPrint = width >= 768; // 태블릿 이상에서 인쇄 버튼
+  const showPrint = width >= 768;
   const compact = width < 400;
 
-  const [isAddHovered, setIsAddHovered] = useState<boolean>(false); // "+등록" hover 상태(웹)
-  const [isPrintHovered, setIsPrintHovered] = useState<boolean>(false); // 인쇄 hover 상태(웹)
-  const [isBellHovered, setIsBellHovered] = useState<boolean>(false); // 알림 hover 상태(웹)
-  const [isProfileHovered, setIsProfileHovered] = useState<boolean>(false); // 프로필 hover 상태(웹)
+  const [isAddHovered, setIsAddHovered] = useState<boolean>(false);
+  const [isPrintHovered, setIsPrintHovered] = useState<boolean>(false);
+  const [isBellHovered, setIsBellHovered] = useState<boolean>(false);
+  const [isProfileHovered, setIsProfileHovered] = useState<boolean>(false);
 
   const webShadowStyle = useMemo(() => {
-    // 웹에서만 boxShadow/transition 적용(타입 안전을 위해 unknown 캐스팅)
     if (Platform.OS !== 'web') return null;
     return { transition: 'all 0.2s ease' } as unknown as object;
   }, []);
@@ -68,15 +67,9 @@ export default function TopBar({ onRegisterPress }: TopBarProps) {
       <View style={[styles.right, compact && styles.rightCompact]}>
         <Pressable
           style={[styles.addButton, webShadowStyle, getWebHoverShadow(isAddHovered)]}
-          onPress={() => {
-            onRegisterPress?.(); // _layout 전역 패널 열기
-          }}
-          onHoverIn={() => {
-            if (Platform.OS === 'web') setIsAddHovered(true);
-          }}
-          onHoverOut={() => {
-            if (Platform.OS === 'web') setIsAddHovered(false);
-          }}>
+          onPress={() => onRegisterPress?.()}
+          onHoverIn={() => { if (Platform.OS === 'web') setIsAddHovered(true); }}
+          onHoverOut={() => { if (Platform.OS === 'web') setIsAddHovered(false); }}>
           <Text style={styles.addButtonText}>+등록</Text>
         </Pressable>
 
@@ -84,35 +77,23 @@ export default function TopBar({ onRegisterPress }: TopBarProps) {
           <Pressable
             style={[styles.iconButton, webShadowStyle, getWebHoverShadow(isPrintHovered)]}
             onPress={() => {}}
-            onHoverIn={() => {
-              if (Platform.OS === 'web') setIsPrintHovered(true);
-            }}
-            onHoverOut={() => {
-              if (Platform.OS === 'web') setIsPrintHovered(false);
-            }}>
+            onHoverIn={() => { if (Platform.OS === 'web') setIsPrintHovered(true); }}
+            onHoverOut={() => { if (Platform.OS === 'web') setIsPrintHovered(false); }}>
             <Ionicons name="print-outline" size={20} color="#FFFFFF" />
           </Pressable>
         )}
         <Pressable
           style={[styles.iconButton, webShadowStyle, getWebHoverShadow(isBellHovered)]}
           onPress={() => {}}
-          onHoverIn={() => {
-            if (Platform.OS === 'web') setIsBellHovered(true);
-          }}
-          onHoverOut={() => {
-            if (Platform.OS === 'web') setIsBellHovered(false);
-          }}>
+          onHoverIn={() => { if (Platform.OS === 'web') setIsBellHovered(true); }}
+          onHoverOut={() => { if (Platform.OS === 'web') setIsBellHovered(false); }}>
           <Ionicons name="notifications-outline" size={20} color="#FFFFFF" />
         </Pressable>
         <Pressable
           style={[styles.iconButton, webShadowStyle, getWebHoverShadow(isProfileHovered)]}
-          onPress={() => router.push('/profile')}
-          onHoverIn={() => {
-            if (Platform.OS === 'web') setIsProfileHovered(true);
-          }}
-          onHoverOut={() => {
-            if (Platform.OS === 'web') setIsProfileHovered(false);
-          }}>
+          onPress={() => onProfilePress?.()}
+          onHoverIn={() => { if (Platform.OS === 'web') setIsProfileHovered(true); }}
+          onHoverOut={() => { if (Platform.OS === 'web') setIsProfileHovered(false); }}>
           <Ionicons name="person-circle-outline" size={20} color="#FFFFFF" />
         </Pressable>
       </View>
@@ -120,7 +101,6 @@ export default function TopBar({ onRegisterPress }: TopBarProps) {
   );
 }
 
-// 스타일 정의
 const styles = StyleSheet.create({
   container: {
     minHeight: 56,
@@ -143,27 +123,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  logoO: {
-    color: '#FFFFFF',
-    fontSize: 13,
-    fontWeight: '700',
-  },
-  logoText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '700',
-    marginLeft: 7,
-    flexShrink: 0,
-  },
-  right: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flexShrink: 0,
-    gap: 6,
-  },
-  rightCompact: {
-    gap: 4,
-  },
+  logoO: { color: '#FFFFFF', fontSize: 13, fontWeight: '700' },
+  logoText: { color: '#FFFFFF', fontSize: 14, fontWeight: '700', marginLeft: 7, flexShrink: 0 },
+  right: { flexDirection: 'row', alignItems: 'center', flexShrink: 0, gap: 6 },
+  rightCompact: { gap: 4 },
   addButton: {
     backgroundColor: '#1E293B',
     borderWidth: 1,
@@ -172,11 +135,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 6,
   },
-  addButtonText: {
-    color: '#FFFFFF',
-    fontSize: 12,
-    fontWeight: '700',
-  },
+  addButtonText: { color: '#FFFFFF', fontSize: 12, fontWeight: '700' },
   iconButton: {
     backgroundColor: '#1E293B',
     borderRadius: 18,

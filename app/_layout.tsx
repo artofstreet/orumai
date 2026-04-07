@@ -11,6 +11,7 @@ import { bg } from '@/constants/colors';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { registerOpenPanel } from '@/utils/registerEvents';
 import CustomerRegisterScreen from './customer/register';
+import ProfileScreen from './profile';
 import PropertyRegisterScreen from './property/register';
 
 export const unstable_settings = { anchor: '(tabs)' };
@@ -21,11 +22,16 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
   const { width: windowWidth } = useWindowDimensions();
 
-  const [selectModalVisible, setSelectModalVisible] = useState<boolean>(false); // 매물/고객 선택 모달
-  const [registerKind, setRegisterKind] = useState<RegisterKind | null>(null); // 선택된 등록 종류
-  const [registerOpen, setRegisterOpen] = useState<boolean>(false); // 슬라이드 패널 열림
-  const [panelKey, setPanelKey] = useState<number>(0); // 패널 재마운트용 키
-  const [panelEditData, setPanelEditData] = useState<Record<string, unknown> | null>(null); // 편집 데이터
+  const [selectModalVisible, setSelectModalVisible] = useState<boolean>(false);
+  const [registerKind, setRegisterKind] = useState<RegisterKind | null>(null);
+  const [registerOpen, setRegisterOpen] = useState<boolean>(false);
+  const [panelKey, setPanelKey] = useState<number>(0);
+  const [panelEditData, setPanelEditData] = useState<Record<string, unknown> | null>(null);
+
+  // 프로필 패널
+  const [profileOpen, setProfileOpen] = useState<boolean>(false);
+  const [profileKey, setProfileKey] = useState<number>(0);
+  const profileSlideX = useRef(new Animated.Value(0)).current;
 
   const panelW = useMemo(() => {
     if (windowWidth < 768) return windowWidth;
@@ -38,28 +44,27 @@ export default function RootLayout() {
     if (!registerOpen) slideX.setValue(panelW);
   }, [panelW, slideX, registerOpen]);
 
-  /** 패널 열기 — 매물/고객 선택 + editId 옵션 */
+  useEffect(() => {
+    if (!profileOpen) profileSlideX.setValue(panelW);
+  }, [panelW, profileSlideX, profileOpen]);
+
   const openPanel = useCallback((kind: RegisterKind, editId?: string, editData?: Record<string, unknown>) => {
-    console.log('openPanel 호출:', kind, editData); // 디버그
-    setPanelEditData(editData ?? null); // 편집 데이터 직접 저장
+    setPanelEditData(editData ?? null);
     setRegisterKind(kind);
     slideX.setValue(panelW);
     setPanelKey((k) => k + 1);
     setRegisterOpen(true);
   }, [panelW, slideX]);
 
-  /** +등록 버튼 → 선택 모달 열기 */
   const openSelectModal = useCallback(() => {
     setSelectModalVisible(true);
   }, []);
 
-  /** 매물/고객 선택 → 패널 열기 */
   const onSelectKind = useCallback((kind: RegisterKind) => {
     setSelectModalVisible(false);
     openPanel(kind);
   }, [openPanel]);
 
-  /** 전역 패널 열기 함수 등록 — 다른 화면에서 호출 가능 */
   useEffect(() => {
     registerOpenPanel(openPanel);
   }, [openPanel]);
@@ -85,6 +90,30 @@ export default function RootLayout() {
     });
   }, [panelW, slideX]);
 
+  // 프로필 패널 열기/닫기
+  const openProfilePanel = useCallback(() => {
+    profileSlideX.setValue(panelW);
+    setProfileKey((k) => k + 1);
+    setProfileOpen(true);
+    Animated.timing(profileSlideX, {
+      toValue: 0,
+      duration: 280,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start();
+  }, [panelW, profileSlideX]);
+
+  const closeProfilePanel = useCallback(() => {
+    Animated.timing(profileSlideX, {
+      toValue: panelW,
+      duration: 260,
+      easing: Easing.in(Easing.cubic),
+      useNativeDriver: true,
+    }).start(({ finished }) => {
+      if (finished) setProfileOpen(false);
+    });
+  }, [panelW, profileSlideX]);
+
   useEffect(() => {
     if (Platform.OS === 'web' && typeof document !== 'undefined') {
       const style = document.createElement('style');
@@ -97,7 +126,7 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <SafeAreaProvider>
         <SafeAreaView style={styles.container}>
-          <TopBar onRegisterPress={openSelectModal} />
+          <TopBar onRegisterPress={openSelectModal} onProfilePress={openProfilePanel} />
           <View style={styles.content}>
             <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: bg } }}>
               <Stack.Screen name="(tabs)" />
@@ -125,7 +154,7 @@ export default function RootLayout() {
             </Pressable>
           </Modal>
 
-          {/* 전역 슬라이드 패널 */}
+          {/* 등록 슬라이드 패널 */}
           {registerOpen && (
             <>
               <Pressable style={styles.backdrop} onPress={closePanel} accessibilityRole="button" />
@@ -133,6 +162,16 @@ export default function RootLayout() {
                 {registerKind === 'property'
                   ? <PropertyRegisterScreen key={panelKey} embedded initialData={panelEditData} />
                   : <CustomerRegisterScreen key={panelKey} embedded initialData={panelEditData} />}
+              </Animated.View>
+            </>
+          )}
+
+          {/* 프로필 슬라이드 패널 */}
+          {profileOpen && (
+            <>
+              <Pressable style={styles.backdrop} onPress={closeProfilePanel} accessibilityRole="button" />
+              <Animated.View style={[styles.panel, { width: panelW, transform: [{ translateX: profileSlideX }] }]}>
+                <ProfileScreen key={profileKey} embedded />
               </Animated.View>
             </>
           )}
