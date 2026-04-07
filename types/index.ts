@@ -26,6 +26,14 @@ export type Property = {
   deal: string;
   // 가격(표시용 문자열)
   price: string;
+  // 매매가(선택)
+  salePrice?: string;
+  // 전세금(선택)
+  jeonsePrice?: string;
+  // 보증금(월세, 선택)
+  deposit?: string;
+  // 월세(선택)
+  monthly?: string;
   // 면적(예: 84㎡)
   area: string;
   // 층수(예: 25층)
@@ -49,7 +57,6 @@ export type Property = {
   // 메모(자유 텍스트)
   memo: string;
   // 사진 URL 목록(대표사진은 photos[0])
-  // NOTE: 기존 Photo[] 구조 대신 URL 배열로 단순화(테스트/웹 호환)
   photos?: string[];
   // 생성 시각(문자열, ISO 권장)
   createdAt: string;
@@ -68,4 +75,3 @@ export type Customer = {
   // 생성 시각(문자열, ISO 권장)
   createdAt: string;
 };
-
