@@ -1,15 +1,16 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Alert,
   ScrollView,
   Text,
   TouchableOpacity,
   useWindowDimensions,
-  View
+  View,
 } from 'react-native';
 
+import AdCopyModal from '@/components/AdCopyModal';
 import PropertyCarousel from '@/components/PropertyCarousel';
 import { BADGE_COLORS, text } from '@/constants/colors';
 import { DUMMY_PROPERTIES } from '@/constants/dummyData';
@@ -31,13 +32,16 @@ const DEAL_PRICE_COLOR: Record<string, string> = {
 export default function PropertyDetailScreen() {
   const { width: windowWidth } = useWindowDimensions();
   const layoutPadding = useMemo(() => getHorizontalPadding(windowWidth), [windowWidth]);
-  const layoutWidth = useMemo(() => getContentMaxWidth(windowWidth), [windowWidth]);
-  const narrow = windowWidth < 768;
-  const isUltraWide = windowWidth >= 1920;
+  const layoutWidth   = useMemo(() => getContentMaxWidth(windowWidth), [windowWidth]);
+  const narrow        = windowWidth < 768;
+  const isUltraWide   = windowWidth >= 1920;
   const headerTitleSize = windowWidth < 400 ? 18 : windowWidth < 768 ? 20 : 22;
 
   const { id } = useLocalSearchParams<{ id: string }>();
   const property = useMemo(() => DUMMY_PROPERTIES.find((p) => p.id === id), [id]);
+
+  // 광고문구 모달 표시 여부
+  const [adCopyVisible, setAdCopyVisible] = useState<boolean>(false);
 
   const 준비중 = () => Alert.alert('준비 중', '곧 지원될 예정입니다.');
 
@@ -59,17 +63,17 @@ export default function PropertyDetailScreen() {
     );
   }
 
-  const title = property.buildingName ?? property.name;
-  const typeBadge = getBadge(property.type);
-  const dealBadge = getBadge(property.deal);
-  const photos = (property.photos ?? []).slice(0, 10);
+  const title      = property.buildingName ?? property.name;
+  const typeBadge  = getBadge(property.type);
+  const dealBadge  = getBadge(property.deal);
+  const photos     = (property.photos ?? []).slice(0, 10);
   const priceColor = DEAL_PRICE_COLOR[property.deal] ?? '#0F172A';
 
   const specs = [
-    { label: '면적', value: property.area },
+    { label: '면적',       value: property.area },
     { label: '층수/총층수', value: `${property.floor}/${property.totalFloors ?? '—'}` },
-    { label: '방향', value: property.dir ?? '—' },
-    { label: '입주일', value: property.moveInDate ?? '—' },
+    { label: '방향',       value: property.dir ?? '—' },
+    { label: '입주일',     value: property.moveInDate ?? '—' },
   ];
 
   return (
@@ -93,16 +97,19 @@ export default function PropertyDetailScreen() {
               </View>
             </View>
           </View>
+
           <Text style={[styles.headerTitle, { fontSize: headerTitleSize }]} numberOfLines={3}>
             {title}
           </Text>
           <Text style={styles.headerAddr}>📍 {property.addr}</Text>
+
           <View style={[styles.headerBottom, narrow && styles.headerBottomNarrow]}>
             <Text style={[styles.headerPrice, { color: priceColor }]}>
               {property.deal} {property.price}
             </Text>
             <View style={[styles.headerBtnGroup, narrow && styles.headerBtnGroupNarrow]}>
-              <TouchableOpacity style={styles.headerBtn} onPress={준비중}>
+              {/* 광고문구 버튼 — AdCopyModal 오픈 */}
+              <TouchableOpacity style={styles.headerBtn} onPress={() => setAdCopyVisible(true)}>
                 <Text style={styles.headerBtnText}>광고문구</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.headerBtn} onPress={() => printProperty(property)}>
@@ -176,6 +183,7 @@ export default function PropertyDetailScreen() {
               </>
             )}
           </View>
+
           <View
             style={[
               styles.memoBox,
@@ -191,6 +199,13 @@ export default function PropertyDetailScreen() {
           </View>
         </View>
       </View>
+
+      {/* AI 광고문구 모달 */}
+      <AdCopyModal
+        visible={adCopyVisible}
+        property={property}
+        onClose={() => setAdCopyVisible(false)}
+      />
     </ScrollView>
   );
 }
