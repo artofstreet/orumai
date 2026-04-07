@@ -53,8 +53,8 @@ export const detailStyles = StyleSheet.create({
   specCell: {
     flex: 1,
     paddingTop: 12,
-paddingBottom: 20,
-paddingHorizontal: 6,
+    paddingBottom: 20,
+    paddingHorizontal: 6,
     justifyContent: 'flex-start',
     gap: 2,
     minWidth: 0,
