@@ -26,7 +26,7 @@ export const printPropertyList = (properties: Property[]): void => {
       <meta charset="UTF-8"/>
       <title>매물 목록 - 오름AI</title>
       <style>
-        body { font-family: 'Noto Sans KR', sans-serif; padding: 24px; color: #0F172A; font-size: 12px; }
+        body { font-family: 'Noto Sans KR', sans-serif; padding: 24px; color: #0F172A; font-size: 12px; max-width: 794px; margin: 0 auto; }
         .header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 16px; border-bottom: 2px solid #E2E8F0; padding-bottom: 12px; }
         .logo { font-size: 18px; font-weight: 800; color: #1D4ED8; }
         .agent { text-align: right; font-size: 12px; color: #334155; }
@@ -101,7 +101,7 @@ export const printCustomerList = (customers: Customer[]): void => {
       <meta charset="UTF-8"/>
       <title>고객 목록 - 오름AI</title>
       <style>
-        body { font-family: 'Noto Sans KR', sans-serif; padding: 24px; color: #0F172A; font-size: 12px; }
+        body { font-family: 'Noto Sans KR', sans-serif; padding: 24px; color: #0F172A; font-size: 12px; max-width: 794px; margin: 0 auto; }
         .header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 16px; border-bottom: 2px solid #E2E8F0; padding-bottom: 12px; }
         .logo { font-size: 18px; font-weight: 800; color: #1D4ED8; }
         .agent { text-align: right; font-size: 12px; color: #334155; }
