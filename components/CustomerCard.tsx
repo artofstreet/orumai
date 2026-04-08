@@ -4,7 +4,7 @@ import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { Customer } from '@/types';
 
-import { card as cardColor, text2, text3 } from '@/constants/colors';
+import { card as cardColor, text2 } from '@/constants/colors';
 
 // 고객 아바타 배경색(첫 글자 charCode 기반 선택)
 const 아바타배경색배열 = [
@@ -121,14 +121,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   name: {
-    fontSize: 16,
-    fontWeight: '800',
-    color: '#111827',
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#0F172A',
   },
   phone: {
     fontSize: 13,
     fontWeight: '700',
-    color: text3,
+    color: '#64748B',
     marginTop: 2,
   },
   memo: {
@@ -139,6 +139,6 @@ const styles = StyleSheet.create({
   date: {
     fontSize: 12,
     fontWeight: '600',
-    color: text3,
+    color: '#64748B',
   },
 });

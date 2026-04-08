@@ -94,9 +94,9 @@ const styles = StyleSheet.create({
   avatarTxt: { color: '#fff', fontSize: 24, fontWeight: '800' },
   profileInfo: { flex: 1, gap: 4 },
   name: { fontSize: 22, fontWeight: '800', color: '#111827' },
-  phone: { fontSize: 16, fontWeight: '800', color: '#FF6B35' },
+  phone: { fontSize: 16, fontWeight: '600', color: '#64748B' },
   date: { fontSize: 12, color: '#aaa' },
-  memoBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, gap: 8, minHeight: 200, borderWidth: 1, borderColor: '#D8DCE6' },
+  memoBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, gap: 8, minHeight: 200, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 },
   memoLabel: { fontSize: 13, fontWeight: '700', color: '#888' },
   memoTxt: { fontSize: 15, color: '#222', lineHeight: 24 },
 });
