@@ -11,13 +11,16 @@ export type TopBarProps = {
   onProfilePress?: () => void;
   onPrintPress?: () => void;
   notifPanelW?: number;
+  propertyCount?: number;
+  customerCount?: number;
 };
 
-export default function TopBar({ onRegisterPress, onProfilePress, onPrintPress, notifPanelW }: TopBarProps) {
+export default function TopBar({ onRegisterPress, onProfilePress, onPrintPress, notifPanelW, propertyCount = 10, customerCount = 10 }: TopBarProps) {
   const { width } = useWindowDimensions();
   const pad = useMemo(() => getHorizontalPadding(width), [width]);
   const showPrint = width >= 768;
   const compact = width < 400;
+  const showCenter = width >= 600;
 
   const [isAddHovered, setIsAddHovered] = useState<boolean>(false);
   const [isPrintHovered, setIsPrintHovered] = useState<boolean>(false);
@@ -38,6 +41,8 @@ export default function TopBar({ onRegisterPress, onProfilePress, onPrintPress, 
   return (
     <>
       <View style={[styles.container, { paddingHorizontal: pad }]}>
+
+        {/* 왼쪽 로고 */}
         <Pressable style={styles.left} onPress={() => router.push('/')}>
           {Platform.OS === 'web' ? (
             <div style={{ width: 26, height: 26, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#1D4ED8', borderRadius: 6 }}>
@@ -53,6 +58,22 @@ export default function TopBar({ onRegisterPress, onProfilePress, onPrintPress, 
           <Text style={styles.logoText}>오름AI</Text>
         </Pressable>
 
+        {/* 중앙 매물/고객 카운트 */}
+        {showCenter && (
+          <View style={styles.center}>
+            <View style={styles.countBox}>
+              <Text style={styles.countLabel}>🏠 매물</Text>
+              <Text style={styles.countNum}>{propertyCount}</Text>
+            </View>
+            <View style={styles.centerDivider} />
+            <View style={styles.countBox}>
+              <Text style={styles.countLabel}>👤 고객</Text>
+              <Text style={styles.countNum}>{customerCount}</Text>
+            </View>
+          </View>
+        )}
+
+        {/* 오른쪽 버튼들 */}
         <View style={[styles.right, compact && styles.rightCompact]}>
           <Pressable
             style={[styles.addButton, webShadowStyle, getWebHoverShadow(isAddHovered)]}
@@ -78,11 +99,11 @@ export default function TopBar({ onRegisterPress, onProfilePress, onPrintPress, 
             onHoverIn={() => { if (Platform.OS === 'web') setIsBellHovered(true); }}
             onHoverOut={() => { if (Platform.OS === 'web') setIsBellHovered(false); }}>
             <View>
-  <Ionicons name="notifications" size={20} color="#FFC107" />
-  <View style={styles.bellBadge}>
-    <Text style={styles.bellBadgeTxt}>3</Text>
-  </View>
-</View>
+              <Ionicons name="notifications" size={20} color="#FFC107" />
+              <View style={styles.bellBadge}>
+                <Text style={styles.bellBadgeTxt}>3</Text>
+              </View>
+            </View>
           </Pressable>
 
           <Pressable
@@ -106,16 +127,21 @@ export default function TopBar({ onRegisterPress, onProfilePress, onPrintPress, 
 }
 
 const styles = StyleSheet.create({
-  container:     { minHeight: 56, backgroundColor: '#0F172A', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  left:          { flexDirection: 'row', alignItems: 'center', flexShrink: 1, minWidth: 0 },
-  logoBox:       { width: 26, height: 26, borderRadius: 6, backgroundColor: '#1D4ED8', alignItems: 'center', justifyContent: 'center' },
-  logoO:         { color: '#FFFFFF', fontSize: 13, fontWeight: '700' },
-  logoText:      { color: '#FFFFFF', fontSize: 14, fontWeight: '700', marginLeft: 7, flexShrink: 0 },
-  right:         { flexDirection: 'row', alignItems: 'center', flexShrink: 0, gap: 6 },
-  rightCompact:  { gap: 4 },
-  addButton:     { backgroundColor: '#1E293B', borderWidth: 1, borderColor: '#334155', borderRadius: 7, paddingHorizontal: 10, paddingVertical: 6 },
-  addButtonText: { color: '#FFFFFF', fontSize: 12, fontWeight: '700' },
-  iconButton:    { backgroundColor: '#1E293B', borderRadius: 18, width: 32, height: 32, alignItems: 'center', justifyContent: 'center' },
-  bellBadge:     { position: 'absolute', top: -4, right: -4, backgroundColor: '#EF4444', borderRadius: 8, minWidth: 16, height: 16, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 3 },
-  bellBadgeTxt:  { color: '#fff', fontSize: 9, fontWeight: '700' },
+  container:    { minHeight: 56, backgroundColor: '#0F172A', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  left:         { flexDirection: 'row', alignItems: 'center', flexShrink: 1, minWidth: 0 },
+  logoBox:      { width: 26, height: 26, borderRadius: 6, backgroundColor: '#1D4ED8', alignItems: 'center', justifyContent: 'center' },
+  logoO:        { color: '#FFFFFF', fontSize: 13, fontWeight: '700' },
+  logoText:     { color: '#FFFFFF', fontSize: 14, fontWeight: '700', marginLeft: 7, flexShrink: 0 },
+  center:       { flexDirection: 'row', alignItems: 'center', gap: 16, position: 'absolute', left: 0, right: 0, justifyContent: 'center', pointerEvents: 'none' },
+  countBox:     { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  countLabel:   { fontSize: 13, color: 'rgba(255,255,255,0.7)' },
+  countNum:     { fontSize: 16, fontWeight: '800', color: '#FFFFFF' },
+  centerDivider:{ width: 1, height: 28, backgroundColor: 'rgba(255,255,255,0.15)' },
+  right:        { flexDirection: 'row', alignItems: 'center', flexShrink: 0, gap: 6 },
+  rightCompact: { gap: 4 },
+  addButton:    { backgroundColor: '#1E293B', borderWidth: 1, borderColor: '#334155', borderRadius: 7, paddingHorizontal: 10, paddingVertical: 6 },
+  addButtonText:{ color: '#FFFFFF', fontSize: 12, fontWeight: '700' },
+  iconButton:   { backgroundColor: '#1E293B', borderRadius: 18, width: 32, height: 32, alignItems: 'center', justifyContent: 'center' },
+  bellBadge:    { position: 'absolute', top: -4, right: -4, backgroundColor: '#EF4444', borderRadius: 8, minWidth: 16, height: 16, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 3 },
+  bellBadgeTxt: { color: '#fff', fontSize: 9, fontWeight: '700' },
 });
