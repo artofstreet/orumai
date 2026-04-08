@@ -28,7 +28,10 @@ const getInitialQuery = (queryParam: unknown): string => {
 export default function ResultsScreen() {
   const { width: windowWidth } = useWindowDimensions(); // 화면 너비(반응형 컬럼 계산)
   const { properties } = useProperties();
-  const { filteredProperties, filteredCustomers, searchQuery, setSearchQuery } = useSearch({ properties });
+  const { filteredProperties: rawProperties, filteredCustomers: rawCustomers, searchQuery, setSearchQuery } = useSearch({ properties });
+
+const filteredProperties = useMemo(() => [...rawProperties].sort((a, b) => b.createdAt.localeCompare(a.createdAt)), [rawProperties]);
+const filteredCustomers = useMemo(() => [...rawCustomers].sort((a, b) => b.createdAt.localeCompare(a.createdAt)), [rawCustomers]);
 
   const params = useLocalSearchParams<{ query?: string }>();
   const initialQuery = useMemo(() => getInitialQuery(params.query), [params.query]);
