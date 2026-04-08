@@ -136,9 +136,7 @@ const styles = StyleSheet.create({
     borderColor: '#E2E8F0',
     padding: 12,
     gap: 0,
-    ...(Platform.OS !== 'web'
-      ? { elevation: 2, shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 8, shadowOffset: { width: 0, height: 2 } }
-      : null),
+    elevation: 2, shadowColor: '#000', shadowOpacity: 0.06, shadowRadius: 8, shadowOffset: { width: 0, height: 2 },
   },
   photo: {
     borderRadius: 8,

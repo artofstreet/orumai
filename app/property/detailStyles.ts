@@ -4,7 +4,7 @@ import { bg, border, red, text, text2 } from '@/constants/colors';
 
 /** 매물 상세 화면 StyleSheet — [id].tsx 전용 */
 export const detailStyles = StyleSheet.create({
-  page: { flex: 1, backgroundColor: '#F4F6F9' },
+  page: { flex: 1, backgroundColor: bg },
   pageScrollContent: { flexGrow: 1 },
   container: { width: '100%', alignSelf: 'center' },
   notFound: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 16 },
