@@ -132,6 +132,7 @@ export default function RootLayout() {
             onRegisterPress={openSelectModal}
             onProfilePress={openProfilePanel}
             onPrintPress={() => setPrintModalVisible(true)}
+            notifPanelW={panelW}
           />
           <View style={styles.content}>
             <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: bg } }}>

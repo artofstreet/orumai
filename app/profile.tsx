@@ -120,12 +120,10 @@ export default function ProfileScreen({ embedded = false }: ScreenProps) {
                 <Text style={styles.avatarTxt}>{firstChar}</Text>
               </View>
               <View style={styles.profileInfo}>
-                {/* 이름 + 직급 한 줄 */}
                 <Text style={styles.nameText}>
-  {profile.agentName || '이름 없음'}
-  {profile.position ? <Text style={{ fontSize: 14, fontWeight: '400', color: 'rgba(255,255,255,0.72)' }}>  {profile.position}</Text> : null}
-</Text>
-                {/* 상호만 아래 줄 */}
+                  {profile.agentName || '이름 없음'}
+                  {profile.position ? <Text style={{ fontSize: 14, fontWeight: '400', color: 'rgba(255,255,255,0.72)' }}>  {profile.position}</Text> : null}
+                </Text>
                 <Text style={styles.subText}>{profile.officeName}</Text>
                 <Text style={styles.subText}>{profile.phone}</Text>
               </View>
@@ -182,6 +180,7 @@ export default function ProfileScreen({ embedded = false }: ScreenProps) {
               value={profile.memo}
               onChangeText={(v) => setProfile((p) => ({ ...p, memo: v }))}
               multiline
+              scrollEnabled={false}
               placeholder="메모를 입력하세요"
               placeholderTextColor="#94A3B8"
             />
@@ -205,7 +204,7 @@ const styles = StyleSheet.create({
   editBtnTxt: { fontSize: 14, color: '#1E293B', fontWeight: '600' },
   doneBtn: { backgroundColor: NAVY, borderRadius: 8, paddingHorizontal: 16, paddingVertical: 7 },
   doneBtnTxt: { color: '#fff', fontWeight: '800', fontSize: 14 },
-  idCard: { backgroundColor: NAVY, borderRadius: 16, padding: 28, gap: 20 },
+  idCard: { backgroundColor: NAVY, borderRadius: 16, padding: 28, gap: 20, borderWidth: 1.5, borderColor: '#4DA6FF' },
   profileRow: { flexDirection: 'row', alignItems: 'center', gap: 20 },
   avatar: { width: 72, height: 72, borderRadius: 999, borderWidth: 2, borderColor: 'rgba(255,255,255,0.85)', alignItems: 'center', justifyContent: 'center' },
   avatarTxt: { color: '#fff', fontSize: 28, fontWeight: '800' },
