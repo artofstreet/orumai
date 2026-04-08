@@ -8,7 +8,7 @@ import { router } from 'expo-router';
 export type TopBarProps = {
   onRegisterPress?: () => void;
   onProfilePress?: () => void;
-  onPrintPress?: () => void; // 인쇄 버튼 콜백
+  onPrintPress?: () => void;
 };
 
 export default function TopBar({ onRegisterPress, onProfilePress, onPrintPress }: TopBarProps) {
@@ -89,14 +89,14 @@ export default function TopBar({ onRegisterPress, onProfilePress, onPrintPress }
 }
 
 const styles = StyleSheet.create({
-  container: { minHeight: 56, backgroundColor: '#0F172A', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  left: { flexDirection: 'row', alignItems: 'center', flexShrink: 1, minWidth: 0 },
-  logoBox: { width: 26, height: 26, borderRadius: 6, backgroundColor: '#1D4ED8', alignItems: 'center', justifyContent: 'center' },
-  logoO: { color: '#FFFFFF', fontSize: 13, fontWeight: '700' },
-  logoText: { color: '#FFFFFF', fontSize: 14, fontWeight: '700', marginLeft: 7, flexShrink: 0 },
-  right: { flexDirection: 'row', alignItems: 'center', flexShrink: 0, gap: 6 },
-  rightCompact: { gap: 4 },
-  addButton: { backgroundColor: '#1E293B', borderWidth: 1, borderColor: '#334155', borderRadius: 7, paddingHorizontal: 10, paddingVertical: 6 },
+  container:     { minHeight: 56, backgroundColor: '#0F172A', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  left:          { flexDirection: 'row', alignItems: 'center', flexShrink: 1, minWidth: 0 },
+  logoBox:       { width: 26, height: 26, borderRadius: 6, backgroundColor: '#1D4ED8', alignItems: 'center', justifyContent: 'center' },
+  logoO:         { color: '#FFFFFF', fontSize: 13, fontWeight: '700' },
+  logoText:      { color: '#FFFFFF', fontSize: 14, fontWeight: '700', marginLeft: 7, flexShrink: 0 },
+  right:         { flexDirection: 'row', alignItems: 'center', flexShrink: 0, gap: 6 },
+  rightCompact:  { gap: 4 },
+  addButton:     { backgroundColor: '#1E293B', borderWidth: 1, borderColor: '#334155', borderRadius: 7, paddingHorizontal: 10, paddingVertical: 6 },
   addButtonText: { color: '#FFFFFF', fontSize: 12, fontWeight: '700' },
-  iconButton: { backgroundColor: '#1E293B', borderRadius: 18, width: 32, height: 32, alignItems: 'center', justifyContent: 'center' },
+  iconButton:    { backgroundColor: '#1E293B', borderRadius: 18, width: 32, height: 32, alignItems: 'center', justifyContent: 'center' },
 });

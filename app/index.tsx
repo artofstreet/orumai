@@ -14,17 +14,16 @@ export default function HomeScreen() {
   const logoFontSize = windowWidth < 400 ? 36 : windowWidth < 768 ? 44 : 52;
   const paddingTop = Math.min(220, Math.max(72, Math.floor(windowHeight * 0.2)));
 
-  const [검색어, set검색어] = useState<string>(''); // 검색 입력값 상태
+  const [검색어, set검색어] = useState<string>('');
 
   const 검색실행 = () => {
-    // TODO-DB: 나중에 Supabase에서 매물 데이터 로드
     router.push(
       {
         pathname: '/results',
         params: { query: 검색어 },
       } as unknown as Parameters<typeof router.push>[0],
     );
-  }; // 검색 실행(라우팅) 함수
+  };
 
   return (
     <View style={styles.page}>
@@ -55,7 +54,7 @@ const styles = StyleSheet.create({
   page: {
     flex: 1,
     backgroundColor: bg,
-  }, // 전체 배경
+  },
   main: {
     flex: 1,
     alignItems: 'center',
@@ -66,14 +65,13 @@ const styles = StyleSheet.create({
   },
   logoO: {
     color: text,
-  }, // "오름" 텍스트 색상
+  },
   logoAI: {
     color: primary,
-  }, // "AI" 텍스트 색상
+  },
   subtitle: {
     color: text2,
     fontSize: 16,
     fontWeight: '600',
-  }, // 부제목 텍스트
+  },
 });
-
