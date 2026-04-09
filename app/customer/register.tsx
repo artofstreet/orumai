@@ -5,12 +5,13 @@
  */
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Keyboard, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { detailStyles } from '@/components/property/detailStyles';
 import { formatPhoneHyphen } from '@/components/property/registerMocks';
 import { registerStyles as styles } from '@/components/property/registerStyles';
-import { clearEditData } from '@/utils/registerEvents';
+import { clearEditData, closeRegisterPanel } from '@/utils/registerEvents';
 
 type ScreenProps = {
   embedded?: boolean;
@@ -32,15 +33,18 @@ export default function CustomerRegisterScreen({ embedded = false, initialData }
   const onPhoneChange = (t: string) => setPhone(formatPhoneHyphen(t));
 
   const onSave = () => {
+    Keyboard.dismiss();
     clearEditData();
     // TODO-DB: isEdit ? supabase.update() : supabase.insert()
+    closeRegisterPanel();
   };
 
   return (
-    <ScrollView
-      style={[styles.page, embedded ? { flex: 1, width: '100%' } : { maxWidth: 480, alignSelf: 'center', width: '100%' }]}
-      contentContainerStyle={styles.scrollContent}
-      keyboardShouldPersistTaps="handled">
+    <SafeAreaView style={{ flex: 1 }}>
+      <ScrollView
+        style={[styles.page, embedded ? { flex: 1, width: '100%' } : { maxWidth: 480, alignSelf: 'center', width: '100%' }]}
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled">
       {!embedded && (
         <TouchableOpacity style={styles.backRow} onPress={() => router.back()}>
           <Text style={styles.backTxt}>← 뒤로</Text>
@@ -121,6 +125,7 @@ export default function CustomerRegisterScreen({ embedded = false, initialData }
         )}
       </View>
       <Text style={styles.hint}>TODO-DB: 저장 시 서버 스키마에 맞게 필드 매핑</Text>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }

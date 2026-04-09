@@ -4,6 +4,8 @@ type OpenPanelFn = (kind: 'property' | 'customer', editId?: string, editData?: R
 
 let 전역패널열기: OpenPanelFn | null = null; // _layout에서 등록한 함수 보관
 
+let 전역패널닫기: (() => void) | null = null;
+
 /** _layout.tsx 에서 패널 열기 함수 등록 */
 export function registerOpenPanel(fn: OpenPanelFn): void {
   전역패널열기 = fn;
@@ -17,6 +19,16 @@ export function openRegisterPanel(
 ): void {
   if (전역패널열기) {
     전역패널열기(kind, editId, editData); // editData를 직접 인자로 전달
+  }
+}
+
+export function registerClosePanel(fn: () => void): void {
+  전역패널닫기 = fn;
+}
+
+export function closeRegisterPanel(): void {
+  if (전역패널닫기) {
+    전역패널닫기();
   }
 }
 

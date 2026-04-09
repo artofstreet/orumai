@@ -1,4 +1,4 @@
-import { router, useFocusEffect } from 'expo-router';
+import { router } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Platform, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
 
@@ -25,13 +25,6 @@ export default function HomeScreen() {
   const focusInput = useCallback(() => {
     setTimeout(() => inputRef.current?.focus(), 300);
   }, []);
-
-  // 네비게이션 복귀 시 포커스
-  useFocusEffect(
-    useCallback(() => {
-      focusInput();
-    }, [focusInput])
-  );
 
   // 브라우저 window focus (web 전용) → 인쇄 후 iframe 닫히면 자동 트리거
   useEffect(() => {

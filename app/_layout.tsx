@@ -12,7 +12,7 @@ import { DUMMY_CUSTOMERS } from '@/constants/dummyCustomers';
 import { DUMMY_PROPERTIES } from '@/constants/dummyProperties';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { printCustomerList, printPropertyList } from '@/utils/printList';
-import { registerOpenPanel } from '@/utils/registerEvents';
+import { registerOpenPanel, registerClosePanel } from '@/utils/registerEvents';
 import CustomerRegisterScreen from './customer/register';
 import ProfileScreen from './profile';
 import PropertyRegisterScreen from './property/register';
@@ -80,10 +80,6 @@ export default function RootLayout() {
   }, [openPanel]);
 
   useEffect(() => {
-    registerOpenPanel(openPanel);
-  }, [openPanel]);
-
-  useEffect(() => {
     if (!registerOpen) return;
     Animated.timing(slideX, {
       toValue: 0,
@@ -103,6 +99,11 @@ export default function RootLayout() {
       if (finished) setRegisterOpen(false);
     });
   }, [panelW, slideX]);
+
+  useEffect(() => {
+    registerOpenPanel(openPanel);
+    registerClosePanel(closePanel);
+  }, [openPanel, closePanel]);
 
   const openProfilePanel = useCallback(() => {
     profileSlideX.setValue(panelW);
