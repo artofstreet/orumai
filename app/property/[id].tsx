@@ -11,22 +11,22 @@ import {
 } from 'react-native';
 
 import AdCopyModal from '@/components/AdCopyModal';
+import { detailStyles as styles } from '@/components/property/detailStyles';
 import PropertyCarousel from '@/components/PropertyCarousel';
 import { BADGE_COLORS, text } from '@/constants/colors';
 import { DUMMY_PROPERTIES } from '@/constants/dummyData';
 import { getContentMaxWidth, getHorizontalPadding } from '@/constants/theme';
 import { printProperty } from '@/utils/printProperty';
 import { openRegisterPanel } from '@/utils/registerEvents';
-import { detailStyles as styles } from './detailStyles';
 
 // TODO-DB: supabase.from('properties').select().eq('id', id).single() 로 교체 예정
 const getBadge = (key: string) =>
   key in BADGE_COLORS ? BADGE_COLORS[key as keyof typeof BADGE_COLORS] : BADGE_COLORS.기본;
 
 const DEAL_PRICE_COLOR: Record<string, string> = {
-  매매: '#1D4ED8', // 파란색
-  전세: '#16A34A', // 초록색
-  월세: '#DB2777', // 분홍색
+  매매: '#1D4ED8',
+  전세: '#16A34A',
+  월세: '#DB2777',
 };
 
 export default function PropertyDetailScreen() {
@@ -40,7 +40,6 @@ export default function PropertyDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const property = useMemo(() => DUMMY_PROPERTIES.find((p) => p.id === id), [id]);
 
-  // 광고문구 모달 표시 여부
   const [adCopyVisible, setAdCopyVisible] = useState<boolean>(false);
 
   const 준비중 = () => Alert.alert('준비 중', '곧 지원될 예정입니다.');
@@ -108,7 +107,6 @@ export default function PropertyDetailScreen() {
               {property.deal} {property.price}
             </Text>
             <View style={[styles.headerBtnGroup, narrow && styles.headerBtnGroupNarrow]}>
-              {/* 광고문구 버튼 — AdCopyModal 오픈 */}
               <TouchableOpacity style={styles.headerBtn} onPress={() => setAdCopyVisible(true)}>
                 <Text style={styles.headerBtnText}>광고문구</Text>
               </TouchableOpacity>
@@ -200,7 +198,6 @@ export default function PropertyDetailScreen() {
         </View>
       </View>
 
-      {/* AI 광고문구 모달 */}
       <AdCopyModal
         visible={adCopyVisible}
         property={property}

@@ -7,29 +7,27 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
+import { detailStyles } from '@/components/property/detailStyles';
+import { formatPhoneHyphen } from '@/components/property/registerMocks';
+import { registerStyles as styles } from '@/components/property/registerStyles';
 import { clearEditData } from '@/utils/registerEvents';
-import { detailStyles } from '../property/detailStyles';
-import { formatPhoneHyphen } from '../property/registerMocks';
-import { registerStyles as styles } from '../property/registerStyles';
 
 type ScreenProps = {
-  embedded?: boolean; // true면 뒤로가기 숨김
-  initialData?: Record<string, unknown> | null; // 편집 시 기존 데이터
+  embedded?: boolean;
+  initialData?: Record<string, unknown> | null;
 };
 
-/** 문자열 안전 추출 헬퍼 */
 const str = (v: unknown): string => (typeof v === 'string' ? v : '');
 
-/** 고객 등록/편집 화면 */
 export default function CustomerRegisterScreen({ embedded = false, initialData }: ScreenProps) {
   const router = useRouter();
 
-  const d = initialData ?? null; // 편집 데이터
-  const isEdit = d !== null; // 편집 모드 여부
+  const d = initialData ?? null;
+  const isEdit = d !== null;
 
-  const [name, setName] = useState<string>(() => str(d?.name)); // 고객 이름
-  const [phone, setPhone] = useState<string>(() => str(d?.phone)); // 전화번호
-  const [memo, setMemo] = useState<string>(() => str(d?.memo)); // 메모
+  const [name, setName] = useState<string>(() => str(d?.name));
+  const [phone, setPhone] = useState<string>(() => str(d?.phone));
+  const [memo, setMemo] = useState<string>(() => str(d?.memo));
 
   const onPhoneChange = (t: string) => setPhone(formatPhoneHyphen(t));
 

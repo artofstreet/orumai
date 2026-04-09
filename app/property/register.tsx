@@ -8,39 +8,37 @@ import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
+import { detailStyles } from '@/components/property/detailStyles';
+import { RegisterDealChips, RegisterPropChips } from '@/components/property/registerChipBlocks';
+import { MOCK_ADDRESS_ROWS, formatPhoneHyphen } from '@/components/property/registerMocks';
+import { RegisterMoreFields, formatAreaSqmInput, formatFloorInput } from '@/components/property/registerMoreFields';
+import { registerStyles as styles } from '@/components/property/registerStyles';
+import type { DealKind, PropKind, RelationKind } from '@/components/property/registerTypes';
 import { clearEditData } from '@/utils/registerEvents';
-import { detailStyles } from './detailStyles';
-import { RegisterDealChips, RegisterPropChips } from './registerChipBlocks';
-import { MOCK_ADDRESS_ROWS, formatPhoneHyphen } from './registerMocks';
-import { RegisterMoreFields, formatAreaSqmInput, formatFloorInput } from './registerMoreFields';
-import { registerStyles as styles } from './registerStyles';
-import type { DealKind, PropKind, RelationKind } from './registerTypes';
 
 type ScreenProps = {
-  embedded?: boolean; // true면 뒤로가기 숨김
-  initialData?: Record<string, unknown> | null; // 편집 시 기존 데이터
+  embedded?: boolean;
+  initialData?: Record<string, unknown> | null;
 };
 
-/** 문자열 안전 추출 헬퍼 */
 const str = (v: unknown): string => (typeof v === 'string' ? v : '');
 
-/** 매물 등록/편집 화면 */
 export default function PropertyRegisterScreen({ embedded = false, initialData }: ScreenProps) {
   const router = useRouter();
 
-  const d = initialData ?? null; // 편집 데이터
-  const isEdit = d !== null; // 편집 모드 여부
+  const d = initialData ?? null;
+  const isEdit = d !== null;
 
-  const stripUnit = (v: unknown) => str(v).replace('㎡', '').trim(); // ㎡ 제거
+  const stripUnit = (v: unknown) => str(v).replace('㎡', '').trim();
 
   const [address, setAddress] = useState<string>(() => str(d?.addr));
-  const [buildingName, setBuildingName] = useState<string>(() => str(d?.buildingName)); // 건물명
+  const [buildingName, setBuildingName] = useState<string>(() => str(d?.buildingName));
   const [deal, setDeal] = useState<DealKind>(() => (str(d?.deal) as DealKind) || '월세');
   const [propType, setPropType] = useState<PropKind>(() => (str(d?.type) as PropKind) || '아파트');
-  const [salePrice, setSalePrice] = useState<string>(() => str(d?.salePrice)); // 편집 시 복원
-  const [jeonsePrice, setJeonsePrice] = useState<string>(() => str(d?.jeonsePrice)); // 편집 시 복원
-  const [deposit, setDeposit] = useState<string>(() => str(d?.deposit)); // 편집 시 복원
-  const [monthly, setMonthly] = useState<string>(() => str(d?.monthly)); // 편집 시 복원
+  const [salePrice, setSalePrice] = useState<string>(() => str(d?.salePrice));
+  const [jeonsePrice, setJeonsePrice] = useState<string>(() => str(d?.jeonsePrice));
+  const [deposit, setDeposit] = useState<string>(() => str(d?.deposit));
+  const [monthly, setMonthly] = useState<string>(() => str(d?.monthly));
   const [areaSqm, setAreaSqm] = useState<string>(() => stripUnit(d?.area));
   const [floor, setFloor] = useState<string>(() => str(d?.floor));
   const [totalFloors, setTotalFloors] = useState<string>(() => str(d?.totalFloors));

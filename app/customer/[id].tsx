@@ -2,9 +2,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+import { detailStyles } from '@/components/property/detailStyles';
 import { DUMMY_CUSTOMERS } from '@/constants/dummyData';
 import { openRegisterPanel } from '@/utils/registerEvents';
-import { detailStyles } from '../property/detailStyles';
 
 const 아바타배경색배열: string[] = [
   '#5B8DEF', '#52B788', '#9B72CF', '#F4845F',
@@ -77,20 +77,20 @@ export default function CustomerDetailScreen() {
 }
 
 const styles = StyleSheet.create({
-  page: { flex: 1, backgroundColor: '#F0F4FF' },
-  content: { padding: 32, gap: 20, maxWidth: 1200, width: '100%', alignSelf: 'center' },
-  errorWrap: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 12 },
-  errorTxt: { fontSize: 16, color: '#888' },
-  backLink: { fontSize: 14, color: '#FF6B35' },
-  backBtn: { paddingVertical: 8 },
+  page:       { flex: 1, backgroundColor: '#F0F4FF' },
+  content:    { padding: 32, gap: 20, maxWidth: 1200, width: '100%', alignSelf: 'center' },
+  errorWrap:  { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 12 },
+  errorTxt:   { fontSize: 16, color: '#888' },
+  backLink:   { fontSize: 14, color: '#FF6B35' },
+  backBtn:    { paddingVertical: 8 },
   profileRow: { flexDirection: 'row', alignItems: 'center', gap: 16 },
-  avatar: { width: 64, height: 64, borderRadius: 999, alignItems: 'center', justifyContent: 'center' },
-  avatarTxt: { color: '#fff', fontSize: 24, fontWeight: '800' },
-  profileInfo: { flex: 1, gap: 4 },
-  name: { fontSize: 22, fontWeight: '800', color: '#111827' },
-  phone: { fontSize: 16, fontWeight: '600', color: '#64748B' },
-  date: { fontSize: 12, color: '#aaa' },
-  memoBox: { backgroundColor: '#F8FAFF', borderRadius: 12, padding: 16, gap: 8, minHeight: 200, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 },
-  memoLabel: { fontSize: 13, fontWeight: '700', color: '#888' },
-  memoTxt: { fontSize: 15, color: '#222', lineHeight: 24 },
+  avatar:     { width: 64, height: 64, borderRadius: 999, alignItems: 'center', justifyContent: 'center' },
+  avatarTxt:  { color: '#fff', fontSize: 24, fontWeight: '800' },
+  profileInfo:{ flex: 1, gap: 4 },
+  name:       { fontSize: 22, fontWeight: '800', color: '#111827' },
+  phone:      { fontSize: 16, fontWeight: '600', color: '#64748B' },
+  date:       { fontSize: 12, color: '#aaa' },
+  memoBox:    { backgroundColor: '#F8FAFF', borderRadius: 12, padding: 16, gap: 8, minHeight: 200, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 },
+  memoLabel:  { fontSize: 13, fontWeight: '700', color: '#888' },
+  memoTxt:    { fontSize: 15, color: '#222', lineHeight: 24 },
 });

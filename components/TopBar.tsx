@@ -38,6 +38,11 @@ export default function TopBar({ onRegisterPress, onProfilePress, onPrintPress, 
     return (isHovered ? { boxShadow: '0 4px 12px rgba(0,0,0,0.4)' } : { boxShadow: 'none' }) as unknown as object;
   };
 
+  // 목록 페이지 이동 (타입 우회)
+  const goToList = (type: string) => {
+    (router.push as Function)({ pathname: '/list', params: { type } });
+  };
+
   return (
     <>
       <View style={[styles.container, { paddingHorizontal: pad }]}>
@@ -58,18 +63,18 @@ export default function TopBar({ onRegisterPress, onProfilePress, onPrintPress, 
           <Text style={styles.logoText}>오름AI</Text>
         </Pressable>
 
-        {/* 중앙 매물/고객 카운트 */}
+        {/* 중앙 매물/고객 카운트 — 클릭 시 전체 목록 이동 */}
         {showCenter && (
           <View style={styles.center}>
-            <View style={styles.countBox}>
+            <Pressable style={styles.countBox} onPress={() => goToList('properties')}>
               <Text style={styles.countLabel}>🏠 매물</Text>
               <Text style={styles.countNum}>{propertyCount}</Text>
-            </View>
+            </Pressable>
             <View style={styles.centerDivider} />
-            <View style={styles.countBox}>
+            <Pressable style={styles.countBox} onPress={() => goToList('customers')}>
               <Text style={styles.countLabel}>👤 고객</Text>
               <Text style={styles.countNum}>{customerCount}</Text>
-            </View>
+            </Pressable>
           </View>
         )}
 
@@ -132,8 +137,8 @@ const styles = StyleSheet.create({
   logoBox:      { width: 26, height: 26, borderRadius: 6, backgroundColor: '#1D4ED8', alignItems: 'center', justifyContent: 'center' },
   logoO:        { color: '#FFFFFF', fontSize: 13, fontWeight: '700' },
   logoText:     { color: '#FFFFFF', fontSize: 14, fontWeight: '700', marginLeft: 7, flexShrink: 0 },
-  center:       { flexDirection: 'row', alignItems: 'center', gap: 16, position: 'absolute', left: 0, right: 0, justifyContent: 'center', pointerEvents: 'none' },
-  countBox:     { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  center:       { flexDirection: 'row', alignItems: 'center', gap: 16, position: 'absolute', left: 0, right: 0, justifyContent: 'center' },
+  countBox:     { flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 4, paddingHorizontal: 8, borderRadius: 6 },
   countLabel:   { fontSize: 13, color: 'rgba(255,255,255,0.7)' },
   countNum:     { fontSize: 16, fontWeight: '800', color: '#FFFFFF' },
   centerDivider:{ width: 1, height: 28, backgroundColor: 'rgba(255,255,255,0.15)' },
