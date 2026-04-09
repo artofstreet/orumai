@@ -1,6 +1,18 @@
 import { loadAgentProfile } from '@/app/profile';
 import type { Customer, Property } from '@/types';
 
+// 공통 iframe 인쇄 함수
+const printViaIframe = (html: string): void => {
+  const iframe = document.createElement('iframe');
+  iframe.style.display = 'none';
+  document.body.appendChild(iframe);
+  iframe.contentDocument!.write(html);
+  iframe.contentDocument!.close();
+  iframe.contentWindow!.focus();
+  iframe.contentWindow!.print();
+  setTimeout(() => document.body.removeChild(iframe), 1000);
+};
+
 // 매물 목록 전체 인쇄
 export const printPropertyList = (properties: Property[]): void => {
   const agent = loadAgentProfile();
@@ -73,12 +85,7 @@ export const printPropertyList = (properties: Property[]): void => {
     </html>
   `;
 
-  const win = window.open('', '_blank');
-  if (!win) return;
-  win.document.write(html);
-  win.document.close();
-  win.focus();
-  setTimeout(() => win.print(), 500);
+  printViaIframe(html);
 };
 
 // 고객 목록 전체 인쇄
@@ -143,10 +150,5 @@ export const printCustomerList = (customers: Customer[]): void => {
     </html>
   `;
 
-  const win = window.open('', '_blank');
-  if (!win) return;
-  win.document.write(html);
-  win.document.close();
-  win.focus();
-  setTimeout(() => win.print(), 500);
+  printViaIframe(html);
 };
