@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { View, Text, Image, Modal, TouchableOpacity, StyleSheet, Dimensions, ActivityIndicator } from 'react-native'
+import { ActivityIndicator, Dimensions, Image, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
 const { width: SCREEN_W } = Dimensions.get('window')
 const COLOR_ORANGE = '#FF6B35'
@@ -103,7 +103,7 @@ export default function PhotoDetailModal({ visible, photo, photoIndex, totalPhot
 
 const styles = StyleSheet.create({
   overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.72)', justifyContent: 'center', alignItems: 'center', padding: 16 },
-  card: { backgroundColor: '#fff', borderRadius: 14, padding: 16, width: '100%', maxWidth: 480 },
+  card: { backgroundColor: '#FFFFFF', borderRadius: 14, padding: 16, width: '100%', maxWidth: 480 },
   closeBtn: { position: 'absolute', top: 10, right: 10, zIndex: 10, width: 28, height: 28, borderRadius: 14, backgroundColor: '#f0f0f0', alignItems: 'center', justifyContent: 'center' },
   closeTxt: { fontSize: 14, color: '#444' },
   photo: { width: '100%', borderRadius: 10, backgroundColor: '#eee' },

@@ -10,8 +10,8 @@ export const text = '#18202E'; // 본문
 export const text2 = '#6B7585'; // 보조 텍스트
 export const text3 = '#9AA5B4'; // 힌트, 플레이스홀더
 export const border = '#D8DCE6'; // 구분선, 테두리
-export const bg = '#FFFFFF'; // 화면 배경
-export const card = '#FFFFFF'; // 카드 배경
+export const bg = '#F0F4FF'; // 화면 배경
+export const card = '#F8FAFF'; // 카드 배경
 export const topbar = '#111827'; // 상단 바
 
 // 뱃지 색상 - 네이비 단일 계열로 통일
@@ -34,4 +34,3 @@ export const BADGE_COLORS = {
 
 // 가격 색상 - 단일 네이비 계열
 export const PRICE_COLOR = '#1D4ED8'; // 모든 거래유형 동일 색상
-

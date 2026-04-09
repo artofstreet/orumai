@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
   closeBtn:               { padding: 4 },
   closeBtnText:           { fontSize: 18, color: '#94A3B8' },
   tabRow:                 { flexDirection: 'row', paddingHorizontal: 16, paddingTop: 12, gap: 8 },
-  tab:                    { flex: 1, paddingVertical: 8, borderRadius: 8, backgroundColor: '#F8FAFC', alignItems: 'center' },
+  tab:                    { flex: 1, paddingVertical: 8, borderRadius: 8, backgroundColor: '#FFFFFF', alignItems: 'center' },
   tabActive:              { backgroundColor: '#FFF7ED', borderWidth: 1, borderColor: '#F97316' },
   tabText:                { fontSize: 13, fontWeight: '600', color: '#94A3B8' },
   tabTextActive:          { color: '#F97316' },

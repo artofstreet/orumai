@@ -92,7 +92,7 @@ const NAVY = '#1E3A5F';
 const styles = StyleSheet.create({
   overlay:       { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 999, flexDirection: 'row', justifyContent: 'flex-end' },
   backdrop:      { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)' },
-  panel:         { backgroundColor: '#fff', height: '100%', shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 12, shadowOffset: { width: -2, height: 0 } },
+  panel:         { backgroundColor: '#F0F4FF', height: '100%', shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 12, shadowOffset: { width: -2, height: 0 } },
   header:        { flexDirection: 'row', alignItems: 'center', padding: 20, borderBottomWidth: 0.5, borderBottomColor: '#E2E8F0' },
   title:         { fontSize: 18, fontWeight: '800', color: '#0F172A' },
   list:          { flex: 1, padding: 16 },

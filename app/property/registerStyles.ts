@@ -2,14 +2,14 @@ import { StyleSheet } from 'react-native';
 
 /** 매물 등록 화면 전용 스타일 */
 export const registerStyles = StyleSheet.create({
-  page: { flex: 1, backgroundColor: '#F4F6F9' },
+  page: { flex: 1, backgroundColor: '#F0F4FF' },
   scrollContent: { padding: 16, paddingBottom: 40, gap: 14 },
   title: { fontSize: 20, fontWeight: '800', color: '#111827' },
   sub: { fontSize: 13, color: '#6B7585', marginTop: 4 },
-  section: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 14, gap: 10, borderWidth: 1, borderColor: '#E2E8F0' },
+  section: { backgroundColor: '#F8FAFF', borderRadius: 12, padding: 14, gap: 10, borderWidth: 1, borderColor: '#E2E8F0' },
   sectionLabel: { fontSize: 13, fontWeight: '700', color: '#334155' },
   rowChips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  chip: { paddingHorizontal: 12, paddingVertical: 8, borderRadius: 999, borderWidth: 1.5, borderColor: '#D8DCE6', backgroundColor: '#F8FAFC' },
+  chip: { paddingHorizontal: 12, paddingVertical: 8, borderRadius: 999, borderWidth: 1.5, borderColor: '#D8DCE6', backgroundColor: '#F8FAFF' },
   chipOn: { borderColor: '#1A56DB', backgroundColor: '#EEF3FD' },
   chipTxt: { fontSize: 13, fontWeight: '600', color: '#475569' },
   chipTxtOn: { color: '#1A56DB' },
@@ -21,7 +21,7 @@ export const registerStyles = StyleSheet.create({
     paddingVertical: 10,
     fontSize: 15,
     color: '#18202E',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#F8FAFF',
   },
   inputMultiline: { minHeight: 100, textAlignVertical: 'top' },
   voiceBtn: { backgroundColor: '#1A56DB', borderRadius: 10, paddingVertical: 14, alignItems: 'center' },
@@ -53,7 +53,7 @@ export const registerStyles = StyleSheet.create({
   modalCard: {
     width: '100%',
     maxWidth: 320,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#F8FAFF',
     borderRadius: 12,
     paddingVertical: 8,
     borderWidth: 1,

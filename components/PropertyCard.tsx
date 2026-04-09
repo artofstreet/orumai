@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#F8FAFF',
     borderRadius: 12,
     borderWidth: 1,
     borderColor: '#E2E8F0',

@@ -1,3 +1,4 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
@@ -37,16 +38,6 @@ export const saveAgentProfile = (profile: AgentProfile): void => {
   } catch {}
 };
 
-const AVATAR_COLORS: string[] = [
-  '#5B8DEF', '#52B788', '#9B72CF', '#F4845F',
-  '#F06595', '#4DABF7', '#63C9A8', '#FFB347',
-];
-
-const getAvatarBg = (name: string): string => {
-  const code = name.trim().charCodeAt(0) || 0;
-  return AVATAR_COLORS[code % AVATAR_COLORS.length];
-};
-
 type ScreenProps = {
   embedded?: boolean;
 };
@@ -77,7 +68,6 @@ export default function ProfileScreen({ embedded = false }: ScreenProps) {
     setProfile((p) => ({ ...p, phone: formatted }));
   };
 
-  const avatarBg = getAvatarBg(profile.agentName || '김');
   const firstChar = (profile.agentName || '?').trim()[0];
 
   const webMemoStyle = {
@@ -114,15 +104,19 @@ export default function ProfileScreen({ embedded = false }: ScreenProps) {
 
       {!isEdit && (
         <>
-          <View style={styles.idCard}>
+          <LinearGradient
+            colors={['#6B7280', '#D1D5DB', '#9CA3AF', '#E5E7EB', '#6B7280']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.idCard}>
             <View style={styles.profileRow}>
-              <View style={[styles.avatar, { backgroundColor: avatarBg }]}>
+              <View style={styles.avatar}>
                 <Text style={styles.avatarTxt}>{firstChar}</Text>
               </View>
               <View style={styles.profileInfo}>
                 <Text style={styles.nameText}>
                   {profile.agentName || '이름 없음'}
-                  {profile.position ? <Text style={{ fontSize: 14, fontWeight: '400', color: 'rgba(255,255,255,0.72)' }}>  {profile.position}</Text> : null}
+                  {profile.position ? <Text style={{ fontSize: 14, fontWeight: '400', color: '#555555' }}>  {profile.position}</Text> : null}
                 </Text>
                 <Text style={styles.subText}>{profile.officeName}</Text>
                 <Text style={styles.subText}>{profile.phone}</Text>
@@ -135,7 +129,7 @@ export default function ProfileScreen({ embedded = false }: ScreenProps) {
                 <Text style={styles.planBadgeTxt}>{profile.plan || 'FREE'}</Text>
               </View>
             </View>
-          </View>
+          </LinearGradient>
 
           <View style={styles.memoBox}>
             <Text style={styles.memoLabel}>메모</Text>
@@ -191,10 +185,10 @@ export default function ProfileScreen({ embedded = false }: ScreenProps) {
   );
 }
 
-const NAVY = '#1E3A5F';
+const SILVER = '#9CA3AF';
 
 const styles = StyleSheet.create({
-  page: { flex: 1, backgroundColor: '#F4F6F9' },
+  page: { flex: 1, backgroundColor: '#F0F4FF' },
   content: { padding: 24, gap: 16, maxWidth: 480, alignSelf: 'center', width: '100%' },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 },
   backBtn: { padding: 4 },
@@ -202,24 +196,24 @@ const styles = StyleSheet.create({
   title: { fontSize: 20, fontWeight: '800', color: '#0F172A', flex: 1, marginLeft: 4 },
   editBtn: { borderWidth: 1, borderColor: '#D8DCE6', borderRadius: 8, paddingHorizontal: 14, paddingVertical: 6 },
   editBtnTxt: { fontSize: 14, color: '#1E293B', fontWeight: '600' },
-  doneBtn: { backgroundColor: NAVY, borderRadius: 8, paddingHorizontal: 16, paddingVertical: 7 },
+  doneBtn: { backgroundColor: SILVER, borderRadius: 8, paddingHorizontal: 16, paddingVertical: 7 },
   doneBtnTxt: { color: '#fff', fontWeight: '800', fontSize: 14 },
-  idCard: { backgroundColor: NAVY, borderRadius: 16, padding: 28, gap: 20, borderWidth: 1.5, borderColor: '#4DA6FF' },
+  idCard: { borderRadius: 16, padding: 28, gap: 20, borderWidth: 1.5, borderColor: '#E5E7EB' },
   profileRow: { flexDirection: 'row', alignItems: 'center', gap: 20 },
-  avatar: { width: 72, height: 72, borderRadius: 999, borderWidth: 2, borderColor: 'rgba(255,255,255,0.85)', alignItems: 'center', justifyContent: 'center' },
+  avatar: { width: 72, height: 72, borderRadius: 999, borderWidth: 2, borderColor: 'rgba(255,255,255,0.9)', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.3)' },
   avatarTxt: { color: '#fff', fontSize: 28, fontWeight: '800' },
   profileInfo: { flex: 1, gap: 5 },
-  nameText: { fontSize: 22, fontWeight: '800', color: '#fff' },
-  subText: { fontSize: 15, color: 'rgba(255,255,255,0.72)' },
-  divider: { borderTopWidth: 0.5, borderTopColor: 'rgba(255,255,255,0.2)' },
+  nameText: { fontSize: 22, fontWeight: '800', color: '#1A1A1A' },
+  subText: { fontSize: 15, color: '#444444' },
+  divider: { borderTopWidth: 0.5, borderTopColor: 'rgba(0,0,0,0.15)' },
   planRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  planLabel: { fontSize: 14, color: 'rgba(255,255,255,0.72)' },
+  planLabel: { fontSize: 14, color: '#444444' },
   planBadge: { backgroundColor: '#FFC107', borderRadius: 20, paddingHorizontal: 14, paddingVertical: 4 },
   planBadgeTxt: { fontSize: 13, fontWeight: '700', color: '#7B4F00' },
-  memoBox: { backgroundColor: '#fff', borderRadius: 12, borderLeftWidth: 4, borderLeftColor: NAVY, padding: 20, gap: 10 },
+  memoBox: { backgroundColor: '#F8FAFF', borderRadius: 12, borderLeftWidth: 4, borderLeftColor: SILVER, padding: 20, gap: 10 },
   memoLabel: { fontSize: 13, fontWeight: '700', color: '#888' },
   memoTxt: { fontSize: 15, color: '#222', lineHeight: 24 },
-  card: { backgroundColor: '#fff', borderRadius: 16, padding: 20, gap: 8, borderWidth: 1, borderColor: '#E2E8F0' },
+  card: { backgroundColor: '#F8FAFF', borderRadius: 16, padding: 20, gap: 8, borderWidth: 1, borderColor: '#E2E8F0' },
   label: { fontSize: 12, color: '#64748B', fontWeight: '600', marginTop: 8 },
-  input: { borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 8, padding: 10, fontSize: 15, color: '#0F172A', backgroundColor: '#F8FAFC' },
+  input: { borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 8, padding: 10, fontSize: 15, color: '#0F172A', backgroundColor: '#F8FAFF' },
 });
