@@ -23,8 +23,23 @@ const DEAL_PRICE_COLOR: Record<string, string> = { 매매: '#1D4ED8', 전세: '#
 
 /** 매물 스펙 라벨·값 — detailStyles 위에 절대 크기·굵기 덮어씀 */
 const specFontStyles = StyleSheet.create({
-  specLabel: { fontSize: 14 }, // 면적·층수 등 라벨
-  specValue: { fontSize: 18, fontWeight: '600' }, // 49㎡ 등 값만 굵기 600
+  specLabel: { fontSize: 14, lineHeight: 16 }, // 면적·층수 등 라벨
+  specValue: { fontSize: 15, fontWeight: '600' }, // 49㎡ 등 값만 굵기 600
+});
+
+/** 스펙 행·칸 정렬 (detailStyles.specRow/specCell 위에만 적용) */
+const specLayoutStyles = StyleSheet.create({
+  specRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
+  },
+  specItem: {
+    flex: 1,
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
+  },
+  specTextVertical: { textAlignVertical: 'top' },
 });
 
 export default function PropertyDetailScreen() {
@@ -68,7 +83,7 @@ export default function PropertyDetailScreen() {
 
   const specs = [
     { label: '면적', value: property.area },
-    { label: '층수/총층수', value: `${property.floor}/${property.totalFloors ?? '—'}` },
+    { label: '층/총층', value: `${property.floor}/${property.totalFloors ?? '—'}` },
     { label: '방향', value: property.dir ?? '—' },
     { label: '입주일', value: property.moveInDate ?? '—' },
   ];
@@ -148,14 +163,14 @@ export default function PropertyDetailScreen() {
             {isUltraWide ? (
               <>
                 {[0, 1].map((row) => (
-                  <View key={row} style={[styles.specRow, row < 3 && styles.specRowBottom]}>
+                  <View key={row} style={[styles.specRow, row < 3 && styles.specRowBottom, specLayoutStyles.specRow]}>
                     {[0, 1].map((col) => {
                       const idx = row * 2 + col;
                       const { label, value } = specs[idx];
                       return (
-                        <View key={label} style={[styles.specCellUltra2col, col === 0 && styles.specCellRight]}>
-                          <Text style={[styles.specLabel, specFontStyles.specLabel]}>{label}</Text>
-                          <Text style={[styles.specValue, specFontStyles.specValue]} numberOfLines={2}>{value}</Text>
+                        <View key={label} style={[styles.specCellUltra2col, specLayoutStyles.specItem, col === 0 && styles.specCellRight]}>
+                          <Text style={[styles.specLabel, specFontStyles.specLabel, specLayoutStyles.specTextVertical]}>{label}</Text>
+                          <Text style={[styles.specValue, specFontStyles.specValue, specLayoutStyles.specTextVertical]} numberOfLines={2}>{value}</Text>
                         </View>
                       );
                     })}
@@ -163,22 +178,14 @@ export default function PropertyDetailScreen() {
                 ))}
               </>
             ) : (
-              <>
-                {[0, 1].map((row) => (
-                  <View key={row} style={[styles.specRow, row < 3 && styles.specRowBottom]}>
-                    {[0, 1].map((col) => {
-                      const idx = row * 2 + col;
-                      const { label, value } = specs[idx];
-                      return (
-                        <View key={label} style={[styles.specCell, col === 0 && styles.specCellRight]}>
-                          <Text style={[styles.specLabel, specFontStyles.specLabel]}>{label}</Text>
-                          <Text style={[styles.specValue, specFontStyles.specValue]}>{value}</Text>
-                        </View>
-                      );
-                    })}
+              <View style={[styles.specRow, specLayoutStyles.specRow]}>
+                {specs.map((spec, idx) => (
+                  <View key={spec.label} style={[styles.specCell, specLayoutStyles.specItem, idx < specs.length - 1 && styles.specCellRight]}>
+                    <Text style={[styles.specLabel, specFontStyles.specLabel]}>{spec.label}</Text>
+                    <Text style={[styles.specValue, specFontStyles.specValue]}>{spec.value}</Text>
                   </View>
                 ))}
-              </>
+              </View>
             )}
           </View>
 

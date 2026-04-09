@@ -51,7 +51,7 @@ export const detailStyles = StyleSheet.create({
   specRowBottom:         { borderBottomWidth: 1, borderBottomColor: '#F1F5F9' },
   specCell:              { flex: 1, paddingTop: 12, paddingBottom: 20, paddingHorizontal: 6, justifyContent: 'flex-start', gap: 2, minWidth: 0 },
   specCellRight:         { borderRightWidth: 1, borderRightColor: '#F1F5F9' },
-  specLabel:             { fontSize: 11, color: '#94A3B8', fontWeight: '500', marginBottom: 4 },
+  specLabel:             { fontSize: 11, color: '#94A3B8', fontWeight: '500', marginBottom: 8 },
   specValue:             { fontSize: 12, fontWeight: '700', color: '#1E293B', flexWrap: 'wrap' },
   memoBox: {
     minHeight: 60,
