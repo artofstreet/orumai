@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
-import { Alert, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { Alert, Linking, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 
 import AdCopyModal from '@/components/AdCopyModal';
 import { detailStyles as styles } from '@/components/property/detailStyles';
@@ -131,9 +131,11 @@ export default function PropertyDetailScreen() {
               <TouchableOpacity style={styles.headerBtn} onPress={() => setAdCopyVisible(true)}>
                 <Text style={styles.headerBtnText}>광고문구</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.headerBtn} onPress={() => printProperty(property)}>
-                <Text style={styles.headerBtnText}>A4인쇄</Text>
-              </TouchableOpacity>
+              {Platform.OS === 'web' && (
+                <TouchableOpacity style={styles.headerBtn} onPress={() => printProperty(property)}>
+                  <Text style={styles.headerBtnText}>A4인쇄</Text>
+                </TouchableOpacity>
+              )}
               <TouchableOpacity style={styles.headerBtn} onPress={() => openRegisterPanel('property', property.id, property as Record<string, unknown>)}>
                 <Text style={styles.headerBtnText}>편집</Text>
               </TouchableOpacity>
