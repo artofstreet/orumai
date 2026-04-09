@@ -1,12 +1,16 @@
 import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { useRouter } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
-import { Platform, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 
 import { getHorizontalPadding } from '@/constants/theme';
 import NotificationPanel from './NotificationPanel';
 
+// TODO-AUTH: 로그인·역할에 따라 헤더 액션 노출 제어 시 이 컴포넌트에서 분기
+// TODO-STORAGE: 마지막 선택 탭 등 로컬 상태 연동 시 props 확장
+
 export type TopBarProps = {
+  onLogoPress?:     () => void; // 로고(홈) 탭 콜백
   onRegisterPress?: () => void;
   onProfilePress?:  () => void;
   onPrintPress?:    () => void;
@@ -18,6 +22,7 @@ export type TopBarProps = {
 };
 
 export default function TopBar({
+  onLogoPress,
   onRegisterPress,
   onProfilePress,
   onPrintPress,
@@ -26,6 +31,7 @@ export default function TopBar({
   customerCount = 10,
   notifCount    = 0,
 }: TopBarProps) {
+  const router = useRouter(); // expo-router 인스턴스 (목록 이동)
   const { width } = useWindowDimensions();
   const pad        = useMemo(() => getHorizontalPadding(width), [width]);
   const showPrint  = width >= 768;
@@ -56,29 +62,39 @@ export default function TopBar({
   // 전체 목록 페이지 이동
   const goToList = useCallback((type: 'properties' | 'customers') => {
     router.push(`/list?type=${type}`);
-  }, []);
+  }, [router]);
+
+  // 로고 영역 탭 → 부모 onLogoPress
+  const handleLogoPress = useCallback(() => {
+    onLogoPress?.();
+  }, [onLogoPress]);
 
   return (
     <>
       <View style={[styles.container, { paddingHorizontal: pad }]}>
 
-        {/* 왼쪽 로고 — 웹/네이티브 동일하게 View로 처리 */}
-        <Pressable style={styles.left} onPress={() => router.push('/')}>
+        {/* 왼쪽 로고: 아이콘+텍스트를 TouchableOpacity로 감쌈 */}
+        <TouchableOpacity
+          style={styles.left}
+          activeOpacity={0.85}
+          onPress={handleLogoPress}
+          accessibilityRole="link"
+          accessibilityLabel="홈으로">
           <View style={styles.logoBox}>
-            <Text style={styles.logoO}>↗</Text>
+            <Text style={styles.logoO}>오</Text>
           </View>
           <Text style={styles.logoText}>오름AI</Text>
-        </Pressable>
+        </TouchableOpacity>
 
         {/* 중앙 매물/고객 카운트 — 클릭 시 전체 목록 이동 */}
         {showCenter && (
           <View style={styles.center}>
-            <Pressable style={styles.countBox} onPress={() => goToList('properties')}>
+            <Pressable style={[styles.countBox, styles.countPressable]} onPress={() => goToList('properties')}>
               <Text style={styles.countLabel}>🏠 매물</Text>
               <Text style={styles.countNum}>{propertyCount}</Text>
             </Pressable>
             <View style={styles.centerDivider} />
-            <Pressable style={styles.countBox} onPress={() => goToList('customers')}>
+            <Pressable style={[styles.countBox, styles.countPressable]} onPress={() => goToList('customers')}>
               <Text style={styles.countLabel}>👤 고객</Text>
               <Text style={styles.countNum}>{customerCount}</Text>
             </Pressable>
@@ -130,7 +146,6 @@ export default function TopBar({
         </View>
       </View>
 
-      {/* 알림 패널 */}
       <NotificationPanel
         visible={showNotification}
         onClose={() => setShowNotification(false)}
@@ -144,10 +159,11 @@ const styles = StyleSheet.create({
   container:     { minHeight: 56, backgroundColor: '#0F172A', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   left:          { flexDirection: 'row', alignItems: 'center', flexShrink: 1, minWidth: 0 },
   logoBox:       { width: 26, height: 26, borderRadius: 6, backgroundColor: '#1D4ED8', alignItems: 'center', justifyContent: 'center' },
-  logoO:         { color: '#FFFFFF', fontSize: 14, fontWeight: '900' },
+  logoO:         { color: '#FFFFFF', fontSize: 13, fontWeight: '700' },
   logoText:      { color: '#FFFFFF', fontSize: 14, fontWeight: '700', marginLeft: 7, flexShrink: 0 },
-  center:        { flexDirection: 'row', alignItems: 'center', gap: 16, position: 'absolute', left: 0, right: 0, justifyContent: 'center' },
+  center:        { flexDirection: 'row', alignItems: 'center', gap: 16, position: 'absolute', left: 0, right: 0, justifyContent: 'center', pointerEvents: 'none' },
   countBox:      { flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 4, paddingHorizontal: 8, borderRadius: 6 },
+  countPressable: { pointerEvents: 'auto' },
   countLabel:    { fontSize: 13, color: 'rgba(255,255,255,0.7)' },
   countNum:      { fontSize: 16, fontWeight: '800', color: '#FFFFFF' },
   centerDivider: { width: 1, height: 28, backgroundColor: 'rgba(255,255,255,0.15)' },

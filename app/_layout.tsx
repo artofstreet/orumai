@@ -1,5 +1,5 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Easing, Modal, Platform, Pressable, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
@@ -28,6 +28,7 @@ const makeShadow = (h: number, r: number, o: number, elev: number) =>
     : { shadowColor: '#000' as const, shadowOffset: { width: 0, height: h }, shadowOpacity: o, shadowRadius: r, elevation: elev };
 
 export default function RootLayout() {
+  const router = useRouter();
   const colorScheme = useColorScheme();
   const { width: windowWidth } = useWindowDimensions();
 
@@ -140,6 +141,7 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <SafeAreaView style={styles.container}>
           <TopBar
+            onLogoPress={() => router.replace('/')}
             onRegisterPress={openSelectModal}
             onProfilePress={openProfilePanel}
             onPrintPress={() => setPrintModalVisible(true)}
