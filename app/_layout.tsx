@@ -21,19 +21,25 @@ export const unstable_settings = { anchor: '(tabs)' };
 
 type RegisterKind = 'property' | 'customer';
 
+// 플랫폼별 그림자 유틸
+const makeShadow = (h: number, r: number, o: number, elev: number) =>
+  Platform.OS === 'web'
+    ? ({ boxShadow: `0 ${h}px ${r * 2}px rgba(0,0,0,${o})` } as object)
+    : { shadowColor: '#000' as const, shadowOffset: { width: 0, height: h }, shadowOpacity: o, shadowRadius: r, elevation: elev };
+
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const { width: windowWidth } = useWindowDimensions();
 
   const [selectModalVisible, setSelectModalVisible] = useState<boolean>(false);
-  const [printModalVisible, setPrintModalVisible] = useState<boolean>(false);
-  const [registerKind, setRegisterKind] = useState<RegisterKind | null>(null);
-  const [registerOpen, setRegisterOpen] = useState<boolean>(false);
-  const [panelKey, setPanelKey] = useState<number>(0);
-  const [panelEditData, setPanelEditData] = useState<Record<string, unknown> | null>(null);
+  const [printModalVisible,  setPrintModalVisible]  = useState<boolean>(false);
+  const [registerKind,       setRegisterKind]       = useState<RegisterKind | null>(null);
+  const [registerOpen,       setRegisterOpen]       = useState<boolean>(false);
+  const [panelKey,           setPanelKey]           = useState<number>(0);
+  const [panelEditData,      setPanelEditData]      = useState<Record<string, unknown> | null>(null);
 
   const [profileOpen, setProfileOpen] = useState<boolean>(false);
-  const [profileKey, setProfileKey] = useState<number>(0);
+  const [profileKey,  setProfileKey]  = useState<number>(0);
   const profileSlideX = useRef(new Animated.Value(0)).current;
 
   // 실제 매물/고객 수 (TODO-DB: Supabase 연결 후 실데이터로 교체)
@@ -120,7 +126,7 @@ export default function RootLayout() {
     });
   }, [panelW, profileSlideX]);
 
-  // input focus outline 제거 (web 전용)
+  // input focus outline 제거 (웹 전용)
   useEffect(() => {
     if (Platform.OS === 'web' && typeof document !== 'undefined') {
       const style = document.createElement('style');
@@ -217,9 +223,9 @@ const styles = StyleSheet.create({
   container:      { flex: 1, backgroundColor: bg },
   content:        { flex: 1 },
   backdrop:       { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(15, 23, 42, 0.45)', zIndex: 20 },
-  panel:          { position: 'absolute', right: 0, top: 0, bottom: 0, backgroundColor: '#FFFFFF', zIndex: 21, borderLeftWidth: 1, borderLeftColor: '#E2E8F0', shadowColor: '#000', shadowOffset: { width: -4, height: 0 }, shadowOpacity: 0.12, shadowRadius: 12, elevation: 12 },
+  panel:          { position: 'absolute', right: 0, top: 0, bottom: 0, backgroundColor: '#FFFFFF', zIndex: 21, borderLeftWidth: 1, borderLeftColor: '#E2E8F0', ...makeShadow(0, 12, 0.12, 12) },
   modalBackdrop:  { flex: 1, justifyContent: 'flex-start', alignItems: 'flex-end', paddingTop: 56, paddingRight: 16 },
-  modalCard:      { backgroundColor: '#FFFFFF', borderRadius: 12, paddingVertical: 4, borderWidth: 1, borderColor: '#E2E8F0', minWidth: 160, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.12, shadowRadius: 12, elevation: 8 },
+  modalCard:      { backgroundColor: '#FFFFFF', borderRadius: 12, paddingVertical: 4, borderWidth: 1, borderColor: '#E2E8F0', minWidth: 160, ...makeShadow(4, 12, 0.12, 8) },
   modalOptionRow: { paddingVertical: 14, paddingHorizontal: 20 },
   modalOptionTxt: { fontSize: 15, fontWeight: '600', color: '#1E293B' },
 });

@@ -2,20 +2,19 @@ import { useRouter } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { card as cardColor, text2 } from '@/constants/colors';
 import type { Customer } from '@/types';
 
-import { card as cardColor, text2 } from '@/constants/colors';
+// 플랫폼별 그림자 유틸
+const makeShadow = (h: number, r: number, o: number, elev: number) =>
+  Platform.OS === 'web'
+    ? ({ boxShadow: `0 ${h}px ${r * 2}px rgba(0,0,0,${o})` } as object)
+    : { shadowColor: '#000' as const, shadowOffset: { width: 0, height: h }, shadowOpacity: o, shadowRadius: r, elevation: elev };
 
 // 고객 아바타 배경색(첫 글자 charCode 기반 선택)
 const 아바타배경색배열 = [
-  '#1A56DB',
-  '#0E7A4F',
-  '#7E22CE',
-  '#C2610C',
-  '#BE123C',
-  '#0369A1',
-  '#166534',
-  '#92400E',
+  '#1A56DB', '#0E7A4F', '#7E22CE', '#C2610C',
+  '#BE123C', '#0369A1', '#166534', '#92400E',
 ];
 
 const getInitialChar = (name: string): string => {
@@ -35,15 +34,15 @@ const formatCreatedAt = (createdAt: string): string => {
 };
 
 export type CustomerCardProps = {
-  item: Customer; // 카드에 표시할 고객
-  width?: number; // 카드 너비(results.tsx에서 반응형 계산 후 전달)
+  item: Customer;  // 카드에 표시할 고객
+  width?: number;  // 카드 너비(results.tsx에서 반응형 계산 후 전달)
 };
 
 export default function CustomerCard({ item, width }: CustomerCardProps) {
   const router = useRouter();
 
-  const initial = useMemo(() => getInitialChar(item.name), [item.name]);
-  const avatarBg = useMemo(() => getAvatarBackgroundColor(item.name), [item.name]);
+  const initial         = useMemo(() => getInitialChar(item.name), [item.name]);
+  const avatarBg        = useMemo(() => getAvatarBackgroundColor(item.name), [item.name]);
   const createdDateText = useMemo(() => formatCreatedAt(item.createdAt), [item.createdAt]);
 
   const [isHovered, setIsHovered] = useState<boolean>(false);
@@ -66,21 +65,12 @@ export default function CustomerCard({ item, width }: CustomerCardProps) {
         <View style={[styles.avatar, { backgroundColor: avatarBg }]}>
           <Text style={styles.avatarText}>{initial}</Text>
         </View>
-
         <View style={styles.textArea}>
-          <Text style={styles.name} numberOfLines={1}>
-            {item.name}
-          </Text>
-          <Text style={styles.phone} numberOfLines={1}>
-            {item.phone}
-          </Text>
+          <Text style={styles.name} numberOfLines={1}>{item.name}</Text>
+          <Text style={styles.phone} numberOfLines={1}>{item.phone}</Text>
         </View>
       </View>
-
-      <Text style={styles.memo} numberOfLines={2} ellipsizeMode="tail">
-        {item.memo}
-      </Text>
-
+      <Text style={styles.memo} numberOfLines={2} ellipsizeMode="tail">{item.memo}</Text>
       <Text style={styles.date}>{createdDateText}</Text>
     </Pressable>
   );
@@ -94,51 +84,14 @@ const styles = StyleSheet.create({
     gap: 10,
     borderWidth: 1,
     borderColor: '#EEF0F5',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    elevation: 2,
+    ...makeShadow(2, 8, 0.06, 2),
   },
-  leftRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
-  avatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 999,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarText: {
-    color: '#FFFFFF',
-    fontSize: 16,
-    fontWeight: '800',
-  },
-  textArea: {
-    flex: 1,
-  },
-  name: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#0F172A',
-  },
-  phone: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#64748B',
-    marginTop: 2,
-  },
-  memo: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: text2,
-  },
-  date: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#64748B',
-  },
+  leftRow:    { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  avatar:     { width: 44, height: 44, borderRadius: 999, alignItems: 'center', justifyContent: 'center' },
+  avatarText: { color: '#FFFFFF', fontSize: 16, fontWeight: '800' },
+  textArea:   { flex: 1 },
+  name:       { fontSize: 15, fontWeight: '600', color: '#0F172A' },
+  phone:      { fontSize: 13, fontWeight: '700', color: '#64748B', marginTop: 2 },
+  memo:       { fontSize: 13, fontWeight: '600', color: text2 },
+  date:       { fontSize: 12, fontWeight: '600', color: '#64748B' },
 });

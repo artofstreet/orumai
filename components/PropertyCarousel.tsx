@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import PhotoDetailModal from './PhotoDetailModal';
+import PhotoDetailModal, { SavePayload } from './PhotoDetailModal';
 
-const COLOR_ORANGE = '#FF6B35';
-const COLOR_BADGE_BG = 'rgba(0,0,0,0.55)';
-const THUMB_COUNT = 4;
+const COLOR_ORANGE    = '#FF6B35';
+const COLOR_BADGE_BG  = 'rgba(0,0,0,0.55)';
+const THUMB_COUNT     = 4;
 const SAMPLE = [
   'https://picsum.photos/seed/a1/400/700',
   'https://picsum.photos/seed/a2/400/700',
@@ -26,7 +26,7 @@ type SavedPhoto = {
 
 export default function PropertyCarousel({ photos = [] }: { photos: string[] }) {
   const list = photos.length > 0 ? photos : SAMPLE;
-  const [startIdx, setStartIdx] = useState<number>(0);
+  const [startIdx, setStartIdx]       = useState<number>(0);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [selectedIdx, setSelectedIdx] = useState<number>(0);
   const [savedPhotos, setSavedPhotos] = useState<SavedPhoto[]>([]);
@@ -90,10 +90,9 @@ export default function PropertyCarousel({ photos = [] }: { photos: string[] }) 
         visible={modalVisible}
         photo={list[selectedIdx]}
         photoIndex={selectedIdx}
-        photos={list}
         totalPhotos={list.length}
         onClose={() => setModalVisible(false)}
-        onSave={(p: Omit<SavedPhoto, 'id'>) => setSavedPhotos(prev => [{ ...p, id: Date.now() }, ...prev])}
+        onSave={(p: SavePayload) => setSavedPhotos(prev => [{ ...p, id: Date.now() }, ...prev])}
       />
     </View>
   );

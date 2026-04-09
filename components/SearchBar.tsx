@@ -5,6 +5,12 @@ import { Platform, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { border, card, primary, text, text3 } from '@/constants/colors';
 
+// 플랫폼별 그림자 유틸
+const makeShadow = (h: number, r: number, o: number, elev: number) =>
+  Platform.OS === 'web'
+    ? ({ boxShadow: `0 ${h}px ${r * 2}px rgba(0,0,0,${o})` } as object)
+    : { shadowColor: '#000' as const, shadowOffset: { width: 0, height: h }, shadowOpacity: o, shadowRadius: r, elevation: elev };
+
 export type SearchBarProps = {
   value: string;
   onChangeText: (text: string) => void;
@@ -60,9 +66,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     paddingHorizontal: 14,
     paddingVertical: 0,
-    ...(Platform.OS === 'web'
-      ? ({ boxShadow: '0 2px 8px rgba(0,0,0,0.08)' } as unknown as object)
-      : { elevation: 3, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 8 }),
+    ...makeShadow(2, 8, 0.08, 3),
   },
   input: {
     flex: 1,

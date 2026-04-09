@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 import { Alert, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
+// 플랫폼별 그림자 유틸
+const makeShadow = (h: number, r: number, o: number, elev: number) =>
+  Platform.OS === 'web'
+    ? ({ boxShadow: `0 ${h}px ${r * 2}px rgba(0,0,0,${o})` } as object)
+    : { shadowColor: '#000' as const, shadowOffset: { width: 0, height: h }, shadowOpacity: o, shadowRadius: r, elevation: elev };
+
 // TODO-DB: 나중에 Supabase로 교체
 export type Notice = {
   id: string;
@@ -11,15 +17,15 @@ export type Notice = {
 };
 
 const DUMMY_NOTICES: Notice[] = [
-  { id: '1', type: 'notice', title: '앱 업데이트 안내', body: '오름AI v2.0이 출시되었습니다. 새로운 AI 광고문구 기능을 확인해보세요!', date: '2026-04-09' },
-  { id: '2', type: 'event', title: '봄 프로모션 🌸', body: 'PRO 플랜 첫 달 50% 할인! 4월 30일까지 적용됩니다.', date: '2026-04-07' },
-  { id: '3', type: 'notice', title: '서버 점검 안내', body: '4월 15일 새벽 2시~4시 서버 점검이 있을 예정입니다.', date: '2026-04-05' },
+  { id: '1', type: 'notice', title: '앱 업데이트 안내',  body: '오름AI v2.0이 출시되었습니다. 새로운 AI 광고문구 기능을 확인해보세요!', date: '2026-04-09' },
+  { id: '2', type: 'event',  title: '봄 프로모션 🌸',   body: 'PRO 플랜 첫 달 50% 할인! 4월 30일까지 적용됩니다.',                   date: '2026-04-07' },
+  { id: '3', type: 'notice', title: '서버 점검 안내',    body: '4월 15일 새벽 2시~4시 서버 점검이 있을 예정입니다.',                  date: '2026-04-05' },
 ];
 
 type Props = {
   visible: boolean;
   onClose: () => void;
-  panelW?: number; // ← _layout에서 받아오는 너비
+  panelW?: number;
 };
 
 export default function NotificationPanel({ visible, onClose, panelW = 340 }: Props) {
@@ -38,11 +44,7 @@ export default function NotificationPanel({ visible, onClose, panelW = 340 }: Pr
         '정말 삭제하시겠습니까?',
         [
           { text: '취소', style: 'cancel' },
-          {
-            text: '삭제',
-            style: 'destructive',
-            onPress: () => setNotices((prev) => prev.filter((n) => n.id !== id)),
-          },
+          { text: '삭제', style: 'destructive', onPress: () => setNotices((prev) => prev.filter((n) => n.id !== id)) },
         ],
       );
     }
@@ -87,12 +89,10 @@ export default function NotificationPanel({ visible, onClose, panelW = 340 }: Pr
   );
 }
 
-const NAVY = '#1E3A5F';
-
 const styles = StyleSheet.create({
   overlay:       { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 999, flexDirection: 'row', justifyContent: 'flex-end' },
   backdrop:      { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)' },
-  panel:         { backgroundColor: '#F0F4FF', height: '100%', shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 12, shadowOffset: { width: -2, height: 0 } },
+  panel:         { backgroundColor: '#F0F4FF', height: '100%', ...makeShadow(0, 12, 0.2, 8) },
   header:        { flexDirection: 'row', alignItems: 'center', padding: 20, borderBottomWidth: 0.5, borderBottomColor: '#E2E8F0' },
   title:         { fontSize: 18, fontWeight: '800', color: '#0F172A' },
   list:          { flex: 1, padding: 16 },

@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { ActivityIndicator, Dimensions, Image, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const { width: SCREEN_W } = Dimensions.get('window');
-const COLOR_ORANGE = '#FF6B35';
+const COLOR_ORANGE    = '#FF6B35';
 const COLOR_ORANGE_BG = 'rgba(255,107,53,0.10)';
-const COLOR_GRAY = '#888';
-const COLOR_BORDER = '#e0e0e0';
+const COLOR_GRAY      = '#888';
+const COLOR_BORDER    = '#e0e0e0';
 
 // AI 인테리어 스타일 타입
 type AiStyle = {
@@ -15,7 +15,7 @@ type AiStyle = {
 };
 
 // 저장할 사진 타입
-type SavePayload = {
+export type SavePayload = {
   uri: string;
   style: string;
   emoji: string;
@@ -27,7 +27,6 @@ type Props = {
   visible: boolean;
   photo: string;
   photoIndex: number;
-  photos: string[];
   totalPhotos: number;
   onClose: () => void;
   onSave: (p: SavePayload) => void;
@@ -43,7 +42,7 @@ const AI_STYLES: AiStyle[] = [
 ];
 
 export default function PhotoDetailModal({ visible, photo, photoIndex, totalPhotos, onClose, onSave }: Props) {
-  const [phase, setPhase] = useState<Phase>('view');
+  const [phase, setPhase]               = useState<Phase>('view');
   const [selectedStyle, setSelectedStyle] = useState<AiStyle | null>(null);
   const [generatedUri, setGeneratedUri] = useState<string | null>(null);
   const photoH = Math.floor(Math.min(SCREEN_W, 480) * 1.2);
@@ -59,6 +58,7 @@ export default function PhotoDetailModal({ visible, photo, photoIndex, totalPhot
     if (!selectedStyle) return;
     setPhase('loading');
     try {
+      // TODO-STORAGE: picsum 목업 → Replicate API(img2img)로 교체
       await new Promise(r => setTimeout(r, 2500));
       setGeneratedUri('https://picsum.photos/seed/' + selectedStyle.id + '_result/600/450');
       setPhase('result');
