@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
-import { Alert, Linking, ScrollView, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import { Alert, Linking, ScrollView, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 
 import AdCopyModal from '@/components/AdCopyModal';
 import { detailStyles as styles } from '@/components/property/detailStyles';
@@ -20,6 +20,12 @@ const getBadge = (key: string) =>
   key in BADGE_COLORS ? BADGE_COLORS[key as keyof typeof BADGE_COLORS] : BADGE_COLORS.기본;
 
 const DEAL_PRICE_COLOR: Record<string, string> = { 매매: '#1D4ED8', 전세: '#16A34A', 월세: '#DB2777' };
+
+/** 매물 스펙 라벨·값 — detailStyles 위에 절대 크기·굵기 덮어씀 */
+const specFontStyles = StyleSheet.create({
+  specLabel: { fontSize: 14 }, // 면적·층수 등 라벨
+  specValue: { fontSize: 18, fontWeight: '600' }, // 49㎡ 등 값만 굵기 600
+});
 
 export default function PropertyDetailScreen() {
   const { width: windowWidth } = useWindowDimensions();
@@ -148,8 +154,8 @@ export default function PropertyDetailScreen() {
                       const { label, value } = specs[idx];
                       return (
                         <View key={label} style={[styles.specCellUltra2col, col === 0 && styles.specCellRight]}>
-                          <Text style={styles.specLabel}>{label}</Text>
-                          <Text style={styles.specValue} numberOfLines={2}>{value}</Text>
+                          <Text style={[styles.specLabel, specFontStyles.specLabel]}>{label}</Text>
+                          <Text style={[styles.specValue, specFontStyles.specValue]} numberOfLines={2}>{value}</Text>
                         </View>
                       );
                     })}
@@ -165,8 +171,8 @@ export default function PropertyDetailScreen() {
                       const { label, value } = specs[idx];
                       return (
                         <View key={label} style={[styles.specCell, col === 0 && styles.specCellRight]}>
-                          <Text style={styles.specLabel}>{label}</Text>
-                          <Text style={styles.specValue}>{value}</Text>
+                          <Text style={[styles.specLabel, specFontStyles.specLabel]}>{label}</Text>
+                          <Text style={[styles.specValue, specFontStyles.specValue]}>{value}</Text>
                         </View>
                       );
                     })}
