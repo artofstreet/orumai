@@ -26,12 +26,18 @@ const getInitialQuery = (queryParam: unknown): string => {
 };
 
 export default function ResultsScreen() {
-  const { width: windowWidth } = useWindowDimensions(); // 화면 너비(반응형 컬럼 계산)
+  const { width: windowWidth } = useWindowDimensions();
   const { properties } = useProperties();
   const { filteredProperties: rawProperties, filteredCustomers: rawCustomers, searchQuery, setSearchQuery } = useSearch({ properties });
 
-const filteredProperties = useMemo(() => [...rawProperties].sort((a, b) => b.createdAt.localeCompare(a.createdAt)), [rawProperties]);
-const filteredCustomers = useMemo(() => [...rawCustomers].sort((a, b) => b.createdAt.localeCompare(a.createdAt)), [rawCustomers]);
+  const filteredProperties = useMemo(
+    () => [...rawProperties].sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
+    [rawProperties],
+  );
+  const filteredCustomers = useMemo(
+    () => [...rawCustomers].sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
+    [rawCustomers],
+  );
 
   const params = useLocalSearchParams<{ query?: string }>();
   const initialQuery = useMemo(() => getInitialQuery(params.query), [params.query]);
@@ -42,8 +48,8 @@ const filteredCustomers = useMemo(() => [...rawCustomers].sort((a, b) => b.creat
     setSearchQuery(initialQuery);
   }, [initialQuery, setSearchQuery]);
 
-  const tabCountProperties = filteredProperties.length; // 매물 결과 건수
-  const tabCountCustomers = filteredCustomers.length; // 고객 결과 건수
+  const tabCountProperties = filteredProperties.length;
+  const tabCountCustomers = filteredCustomers.length;
 
   const isUltraWide = windowWidth >= 1920;
   const columns = useMemo(() => {
@@ -66,7 +72,6 @@ const filteredCustomers = useMemo(() => [...rawCustomers].sort((a, b) => b.creat
 
   const renderPropertyItem = useCallback(
     ({ item }: { item: Property }) => {
-      // TODO-ROUTE: /property/[id] 라우트 추가 후 타입 안전하게 제거 예정
       const onPress = () => router.push({ pathname: '/property/[id]', params: { id: item.id } });
       return <PropertyCard property={item} width={cardWidth} onPress={onPress} />;
     },
@@ -74,13 +79,9 @@ const filteredCustomers = useMemo(() => [...rawCustomers].sort((a, b) => b.creat
   );
 
   const renderCustomerItem = useCallback(
-    ({ item }: { item: Customer }) => {
-      return <CustomerCard item={item} width={cardWidth} />;
-    },
+    ({ item }: { item: Customer }) => <CustomerCard item={item} width={cardWidth} />,
     [cardWidth],
   );
-
-  const emptyText = '검색 결과가 없어요';
 
   return (
     <View style={styles.page}>
@@ -103,7 +104,6 @@ const filteredCustomers = useMemo(() => [...rawCustomers].sort((a, b) => b.creat
             매물 <Text style={styles.summaryCount}>{tabCountProperties}</Text>건 · 고객{' '}
             <Text style={styles.summaryCount}>{tabCountCustomers}</Text>건 검색됨
           </Text>
-
           <View style={styles.tabRow}>
             <Pressable
               style={[styles.tabButton, tab === 'properties' && styles.tabButtonActive]}
@@ -119,7 +119,7 @@ const filteredCustomers = useMemo(() => [...rawCustomers].sort((a, b) => b.creat
         </View>
 
         {tab === 'properties' ? (
-          <FlatList
+          <FlatList<Property>
             data={filteredProperties}
             keyExtractor={(item) => item.id}
             renderItem={renderPropertyItem}
@@ -127,11 +127,11 @@ const filteredCustomers = useMemo(() => [...rawCustomers].sort((a, b) => b.creat
             numColumns={columns}
             columnWrapperStyle={columns > 1 ? styles.gridRow : undefined}
             contentContainerStyle={listContentStyle}
-            ListEmptyComponent={<Text style={styles.emptyText}>{emptyText}</Text>}
+            ListEmptyComponent={<Text style={styles.emptyText}>검색 결과가 없어요</Text>}
             style={styles.listFlex}
           />
         ) : (
-          <FlatList
+          <FlatList<Customer>
             data={filteredCustomers}
             keyExtractor={(item) => item.id}
             renderItem={renderCustomerItem}
@@ -139,7 +139,7 @@ const filteredCustomers = useMemo(() => [...rawCustomers].sort((a, b) => b.creat
             numColumns={columns}
             columnWrapperStyle={columns > 1 ? styles.gridRow : undefined}
             contentContainerStyle={listContentStyle}
-            ListEmptyComponent={<Text style={styles.emptyText}>{emptyText}</Text>}
+            ListEmptyComponent={<Text style={styles.emptyText}>검색 결과가 없어요</Text>}
             style={styles.listFlex}
           />
         )}
@@ -149,43 +149,23 @@ const filteredCustomers = useMemo(() => [...rawCustomers].sort((a, b) => b.creat
 }
 
 const styles = StyleSheet.create({
-  page: { flex: 1, backgroundColor: bg, paddingTop: 16, gap: 12 },
-  contentMax: {
-    flex: 1,
-    width: '100%',
-    alignSelf: 'center',
-    position: 'relative',
-    overflow: 'hidden',
-  },
-  header: { gap: 12, alignSelf: 'center', width: '100%' },
-  listFlex: { flex: 1 },
-  searchRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    width: '100%',
-    maxWidth: 680,
-    alignSelf: 'center',
-    gap: 16,
-  },
-  logoLine: { fontWeight: '800' },
-  logoO: { color: text, fontSize: 20 },
-  logoAI: { color: primary, fontSize: 20 },
-  searchBarSlot: { flex: 1, minWidth: 0 },
-  summaryText: { fontSize: 12, color: '#64748B', fontWeight: '400' },
-  summaryCount: { fontSize: 12, color: '#0F172A', fontWeight: '700' },
-  tabRow: { flexDirection: 'row', gap: 18, borderBottomWidth: 1, borderBottomColor: border },
-  tabButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderBottomWidth: 2,
-    borderBottomColor: 'transparent',
-  },
-  tabButtonActive: { borderBottomColor: primary },
-  tabText: { color: '#94A3B8', fontSize: 14, fontWeight: '500' },
-  tabTextActive: { color: '#1D4ED8', fontWeight: '700' },
-  listContent: { alignSelf: 'center', width: '100%', paddingVertical: 16, paddingBottom: 24, gap: 8 },
-  gridRow: { gap: 8 },
-  emptyText: { paddingTop: 24, textAlign: 'center', color: text2, fontSize: 14, fontWeight: '700' },
+  page:           { flex: 1, backgroundColor: bg, paddingTop: 16, gap: 12 },
+  contentMax:     { flex: 1, width: '100%', alignSelf: 'center', position: 'relative', overflow: 'hidden' },
+  header:         { gap: 12, alignSelf: 'center', width: '100%' },
+  listFlex:       { flex: 1 },
+  searchRow:      { flexDirection: 'row', alignItems: 'center', width: '100%', maxWidth: 680, alignSelf: 'center', gap: 16 },
+  logoLine:       { fontWeight: '800' },
+  logoO:          { color: text, fontSize: 20 },
+  logoAI:         { color: primary, fontSize: 20 },
+  searchBarSlot:  { flex: 1, minWidth: 0 },
+  summaryText:    { fontSize: 12, color: '#64748B', fontWeight: '400' },
+  summaryCount:   { fontSize: 12, color: '#0F172A', fontWeight: '700' },
+  tabRow:         { flexDirection: 'row', gap: 18, borderBottomWidth: 1, borderBottomColor: border },
+  tabButton:      { paddingVertical: 10, paddingHorizontal: 2, alignItems: 'center', justifyContent: 'center', borderBottomWidth: 2, borderBottomColor: 'transparent' },
+  tabButtonActive:{ borderBottomColor: primary },
+  tabText:        { color: '#94A3B8', fontSize: 14, fontWeight: '500' },
+  tabTextActive:  { color: '#1D4ED8', fontWeight: '700' },
+  listContent:    { alignSelf: 'center', width: '100%', paddingVertical: 16, paddingBottom: 24, gap: 8 },
+  gridRow:        { gap: 8 },
+  emptyText:      { paddingTop: 24, textAlign: 'center', color: text2, fontSize: 14, fontWeight: '700' },
 });

@@ -1,9 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import { Platform, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 import { getHorizontalPadding } from '@/constants/theme';
-import { router } from 'expo-router';
 import NotificationPanel from './NotificationPanel';
 
 export type TopBarProps = {
@@ -38,9 +38,9 @@ export default function TopBar({ onRegisterPress, onProfilePress, onPrintPress, 
     return (isHovered ? { boxShadow: '0 4px 12px rgba(0,0,0,0.4)' } : { boxShadow: 'none' }) as unknown as object;
   };
 
-  // 목록 페이지 이동 (타입 우회)
+  // 전체 목록 페이지 이동
   const goToList = (type: string) => {
-    (router.push as Function)({ pathname: '/list', params: { type } });
+    router.push(`/list?type=${type}` as never);
   };
 
   return (

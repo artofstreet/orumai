@@ -26,7 +26,7 @@ export default function RootLayout() {
   const { width: windowWidth } = useWindowDimensions();
 
   const [selectModalVisible, setSelectModalVisible] = useState<boolean>(false);
-  const [printModalVisible, setPrintModalVisible] = useState<boolean>(false); // 인쇄 모달
+  const [printModalVisible, setPrintModalVisible] = useState<boolean>(false);
   const [registerKind, setRegisterKind] = useState<RegisterKind | null>(null);
   const [registerOpen, setRegisterOpen] = useState<boolean>(false);
   const [panelKey, setPanelKey] = useState<number>(0);
@@ -35,6 +35,10 @@ export default function RootLayout() {
   const [profileOpen, setProfileOpen] = useState<boolean>(false);
   const [profileKey, setProfileKey] = useState<number>(0);
   const profileSlideX = useRef(new Animated.Value(0)).current;
+
+  // 실제 매물/고객 수 (TODO-DB: Supabase 연결 후 실데이터로 교체)
+  const propertyCount = DUMMY_PROPERTIES.length;
+  const customerCount = DUMMY_CUSTOMERS.length;
 
   const panelW = useMemo(() => {
     if (windowWidth < 768) return windowWidth;
@@ -133,11 +137,14 @@ export default function RootLayout() {
             onProfilePress={openProfilePanel}
             onPrintPress={() => setPrintModalVisible(true)}
             notifPanelW={panelW}
+            propertyCount={propertyCount}
+            customerCount={customerCount}
           />
           <View style={styles.content}>
             <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: bg } }}>
               <Stack.Screen name="(tabs)" />
               <Stack.Screen name="results" />
+              <Stack.Screen name="list" />
               <Stack.Screen name="property/[id]" />
               <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
             </Stack>
@@ -206,12 +213,12 @@ export default function RootLayout() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: bg },
-  content: { flex: 1 },
-  backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(15, 23, 42, 0.45)', zIndex: 20 },
-  panel: { position: 'absolute', right: 0, top: 0, bottom: 0, backgroundColor: '#FFFFFF', zIndex: 21, borderLeftWidth: 1, borderLeftColor: '#E2E8F0', shadowColor: '#000', shadowOffset: { width: -4, height: 0 }, shadowOpacity: 0.12, shadowRadius: 12, elevation: 12 },
-  modalBackdrop: { flex: 1, justifyContent: 'flex-start', alignItems: 'flex-end', paddingTop: 56, paddingRight: 16 },
-  modalCard: { backgroundColor: '#FFFFFF', borderRadius: 12, paddingVertical: 4, borderWidth: 1, borderColor: '#E2E8F0', minWidth: 160, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.12, shadowRadius: 12, elevation: 8 },
+  container:      { flex: 1, backgroundColor: bg },
+  content:        { flex: 1 },
+  backdrop:       { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(15, 23, 42, 0.45)', zIndex: 20 },
+  panel:          { position: 'absolute', right: 0, top: 0, bottom: 0, backgroundColor: '#FFFFFF', zIndex: 21, borderLeftWidth: 1, borderLeftColor: '#E2E8F0', shadowColor: '#000', shadowOffset: { width: -4, height: 0 }, shadowOpacity: 0.12, shadowRadius: 12, elevation: 12 },
+  modalBackdrop:  { flex: 1, justifyContent: 'flex-start', alignItems: 'flex-end', paddingTop: 56, paddingRight: 16 },
+  modalCard:      { backgroundColor: '#FFFFFF', borderRadius: 12, paddingVertical: 4, borderWidth: 1, borderColor: '#E2E8F0', minWidth: 160, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.12, shadowRadius: 12, elevation: 8 },
   modalOptionRow: { paddingVertical: 14, paddingHorizontal: 20 },
   modalOptionTxt: { fontSize: 15, fontWeight: '600', color: '#1E293B' },
 });
