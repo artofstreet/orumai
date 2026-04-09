@@ -1,5 +1,5 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack, router } from 'expo-router';
+import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Easing, Modal, Platform, Pressable, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
@@ -127,14 +127,6 @@ export default function RootLayout() {
       style.innerHTML = `input:focus { outline: none !important; }`;
       document.head.appendChild(style);
     }
-  }, []);
-
-  // 인쇄 완료 후 홈 강제 리마운트 → 검색창 포커스 복구 (web 전용)
-  useEffect(() => {
-    if (Platform.OS !== 'web') return;
-    const handle = () => router.replace('/');
-    window.addEventListener('printDone', handle);
-    return () => window.removeEventListener('printDone', handle);
   }, []);
 
   return (

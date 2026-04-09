@@ -1,6 +1,6 @@
 import { router, useFocusEffect } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AppState, AppStateStatus, InteractionManager, Platform, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
+import { Platform, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
 
 import SearchBar from '@/components/SearchBar';
 import { bg, primary, text, text2 } from '@/constants/colors';
@@ -21,12 +21,9 @@ export default function HomeScreen() {
 
   const [검색어, set검색어] = useState<string>('');
   const inputRef = useRef<TextInput>(null);
-  const appState = useRef<AppStateStatus>(AppState.currentState);
 
   const focusInput = useCallback(() => {
-    InteractionManager.runAfterInteractions(() => {
-      setTimeout(() => inputRef.current?.focus(), 200);
-    });
+    setTimeout(() => inputRef.current?.focus(), 300);
   }, []);
 
   // 네비게이션 복귀 시 포커스
@@ -36,18 +33,7 @@ export default function HomeScreen() {
     }, [focusInput])
   );
 
-  // AppState 복귀 감지 → 인쇄 후 포커스 복구 핵심
-  useEffect(() => {
-    const subscription = AppState.addEventListener('change', (nextState: AppStateStatus) => {
-      if (appState.current.match(/inactive|background/) && nextState === 'active') {
-        focusInput();
-      }
-      appState.current = nextState;
-    });
-    return () => subscription.remove();
-  }, [focusInput]);
-
-  // 브라우저 window focus (web 전용)
+  // 브라우저 window focus (web 전용) → 인쇄 후 iframe 닫히면 자동 트리거
   useEffect(() => {
     if (Platform.OS !== 'web') return;
     const handleFocus = () => focusInput();
