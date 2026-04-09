@@ -6,8 +6,6 @@ import { DUMMY_CUSTOMERS } from '@/constants/dummyData';
 import { openRegisterPanel } from '@/utils/registerEvents';
 import { detailStyles } from '../property/detailStyles';
 
-// TODO-DB: DUMMY_CUSTOMERS를 supabase.from('customers')로 교체
-
 const 아바타배경색배열: string[] = [
   '#5B8DEF', '#52B788', '#9B72CF', '#F4845F',
   '#F06595', '#4DABF7', '#63C9A8', '#FFB347',
@@ -25,10 +23,9 @@ const getAvatarBg = (name: string): string => {
 
 export default function CustomerDetailScreen() {
   const params = useLocalSearchParams<{ id: string }>();
-  const id = Array.isArray(params.id) ? params.id[0] : params.id; // id 추출
+  const id = Array.isArray(params.id) ? params.id[0] : params.id;
   const router = useRouter();
 
-  // TODO-DB: supabase.from('customers').select().eq('id', id)로 교체
   const 고객 = DUMMY_CUSTOMERS.find((c) => c.id === id);
 
   if (!고객) {
@@ -42,19 +39,17 @@ export default function CustomerDetailScreen() {
     );
   }
 
-  const 아바타색 = getAvatarBg(고객.name); // 아바타 배경색
-  const 첫글자 = getInitialChar(고객.name); // 아바타 첫 글자
-  const 등록일 = 고객.createdAt?.slice(0, 10) ?? ''; // 등록일 포맷
+  const 아바타색 = getAvatarBg(고객.name);
+  const 첫글자 = getInitialChar(고객.name);
+  const 등록일 = 고객.createdAt?.slice(0, 10) ?? '';
 
   return (
     <ScrollView style={styles.page} contentContainerStyle={styles.content}>
 
-      {/* 뒤로가기 */}
       <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
         <Ionicons name="arrow-back" size={24} color="#111827" />
       </TouchableOpacity>
 
-      {/* 아바타 + 이름 + 전번 + 편집 버튼 */}
       <View style={styles.profileRow}>
         <View style={[styles.avatar, { backgroundColor: 아바타색 }]}>
           <Text style={styles.avatarTxt}>{첫글자}</Text>
@@ -72,7 +67,6 @@ export default function CustomerDetailScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* 메모 */}
       <View style={styles.memoBox}>
         <Text style={styles.memoLabel}>메모</Text>
         <Text style={styles.memoTxt}>{고객.memo || '메모 없음'}</Text>
@@ -83,7 +77,7 @@ export default function CustomerDetailScreen() {
 }
 
 const styles = StyleSheet.create({
-  page: { flex: 1, backgroundColor: '#FFFFFF' },
+  page: { flex: 1, backgroundColor: '#F0F4FF' },
   content: { padding: 32, gap: 20, maxWidth: 1200, width: '100%', alignSelf: 'center' },
   errorWrap: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 12 },
   errorTxt: { fontSize: 16, color: '#888' },
@@ -96,7 +90,7 @@ const styles = StyleSheet.create({
   name: { fontSize: 22, fontWeight: '800', color: '#111827' },
   phone: { fontSize: 16, fontWeight: '600', color: '#64748B' },
   date: { fontSize: 12, color: '#aaa' },
-  memoBox: { backgroundColor: '#FFFFFF', borderRadius: 12, padding: 16, gap: 8, minHeight: 200, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 },
+  memoBox: { backgroundColor: '#F8FAFF', borderRadius: 12, padding: 16, gap: 8, minHeight: 200, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 },
   memoLabel: { fontSize: 13, fontWeight: '700', color: '#888' },
   memoTxt: { fontSize: 15, color: '#222', lineHeight: 24 },
 });
