@@ -1,14 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
-import React, { useMemo, useState } from 'react';
-import {
-  Alert,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  useWindowDimensions,
-  View,
-} from 'react-native';
+import React, { useCallback, useMemo, useState } from 'react';
+import { Alert, Linking, ScrollView, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 
 import AdCopyModal from '@/components/AdCopyModal';
 import { detailStyles as styles } from '@/components/property/detailStyles';
@@ -20,14 +13,13 @@ import { printProperty } from '@/utils/printProperty';
 import { openRegisterPanel } from '@/utils/registerEvents';
 
 // TODO-DB: supabase.from('properties').select().eq('id', id).single() 로 교체 예정
+// TODO-AUTH: 매물 상세·시세조회 접근 권한은 로그인·역할 연동 후 제한
+// TODO-STORAGE: 최근 시세조회 매물 id 로컬 캐시 등 확장 가능
+
 const getBadge = (key: string) =>
   key in BADGE_COLORS ? BADGE_COLORS[key as keyof typeof BADGE_COLORS] : BADGE_COLORS.기본;
 
-const DEAL_PRICE_COLOR: Record<string, string> = {
-  매매: '#1D4ED8',
-  전세: '#16A34A',
-  월세: '#DB2777',
-};
+const DEAL_PRICE_COLOR: Record<string, string> = { 매매: '#1D4ED8', 전세: '#16A34A', 월세: '#DB2777' };
 
 export default function PropertyDetailScreen() {
   const { width: windowWidth } = useWindowDimensions();
@@ -69,18 +61,27 @@ export default function PropertyDetailScreen() {
   const priceColor = DEAL_PRICE_COLOR[property.deal] ?? '#0F172A';
 
   const specs = [
-    { label: '면적',       value: property.area },
+    { label: '면적', value: property.area },
     { label: '층수/총층수', value: `${property.floor}/${property.totalFloors ?? '—'}` },
-    { label: '방향',       value: property.dir ?? '—' },
-    { label: '입주일',     value: property.moveInDate ?? '—' },
+    { label: '방향', value: property.dir ?? '—' },
+    { label: '입주일', value: property.moveInDate ?? '—' },
   ];
 
+  // 국토부 실거래가(rt.molit.go.kr) — 주소를 쿼리로 전달(사이트가 무시하면 메인으로 열림)
+  const openMolitRealTrade = useCallback(async () => {
+    const base = 'https://rt.molit.go.kr';
+    const addr = property.addr.trim();
+    const url = `${base}/?${new URLSearchParams({ addr }).toString()}`;
+    try {
+      if (await Linking.canOpenURL(url)) await Linking.openURL(url);
+      else if (await Linking.canOpenURL(base)) await Linking.openURL(base);
+    } catch {
+      Alert.alert('오류', '링크를 열 수 없습니다.');
+    }
+  }, [property.addr]);
+
   return (
-    <ScrollView
-      style={styles.page}
-      contentContainerStyle={styles.pageScrollContent}
-      keyboardShouldPersistTaps="handled"
-      nestedScrollEnabled={true}>
+    <ScrollView style={styles.page} contentContainerStyle={styles.pageScrollContent} keyboardShouldPersistTaps="handled" nestedScrollEnabled={true}>
       <View style={[styles.container, { paddingHorizontal: layoutPadding, maxWidth: layoutWidth }]}>
         <View style={[styles.header, { paddingVertical: layoutPadding }]}>
           <View style={styles.headerTopRow}>
@@ -97,16 +98,15 @@ export default function PropertyDetailScreen() {
             </View>
           </View>
 
-          <Text style={[styles.headerTitle, { fontSize: headerTitleSize }]} numberOfLines={3}>
-            {title}
-          </Text>
+          <Text style={[styles.headerTitle, { fontSize: headerTitleSize }]} numberOfLines={3}>{title}</Text>
           <Text style={styles.headerAddr}>📍 {property.addr}</Text>
 
           <View style={[styles.headerBottom, narrow && styles.headerBottomNarrow]}>
-            <Text style={[styles.headerPrice, { color: priceColor }]}>
-              {property.deal} {property.price}
-            </Text>
+            <Text style={[styles.headerPrice, { color: priceColor }]}>{property.deal} {property.price}</Text>
             <View style={[styles.headerBtnGroup, narrow && styles.headerBtnGroupNarrow]}>
+              <TouchableOpacity style={styles.headerBtn} onPress={openMolitRealTrade}>
+                <Text style={styles.headerBtnText}>시세조회</Text>
+              </TouchableOpacity>
               <TouchableOpacity style={styles.headerBtn} onPress={() => setAdCopyVisible(true)}>
                 <Text style={styles.headerBtnText}>광고문구</Text>
               </TouchableOpacity>
@@ -138,13 +138,7 @@ export default function PropertyDetailScreen() {
         </View>
 
         <View style={[styles.infoRow]}>
-          <View
-            style={[
-              styles.specGrid,
-              narrow && styles.specGridFull,
-              isUltraWide && styles.specGridUltra,
-              !narrow && styles.specGridFlex,
-            ]}>
+          <View style={[styles.specGrid, narrow && styles.specGridFull, isUltraWide && styles.specGridUltra, !narrow && styles.specGridFlex]}>
             {isUltraWide ? (
               <>
                 {[0, 1].map((row) => (
@@ -182,14 +176,7 @@ export default function PropertyDetailScreen() {
             )}
           </View>
 
-          <View
-            style={[
-              styles.memoBox,
-              narrow && styles.memoBoxFull,
-              isUltraWide && styles.memoBoxUltra,
-              !narrow && styles.memoBoxFlex,
-              { padding: layoutPadding },
-            ]}>
+          <View style={[styles.memoBox, narrow && styles.memoBoxFull, isUltraWide && styles.memoBoxUltra, !narrow && styles.memoBoxFlex, { padding: layoutPadding }]}>
             <Text style={styles.memoLabel}>메모</Text>
             <View style={styles.memoBody}>
               <Text style={styles.memoText}>{property.memo || '—'}</Text>
@@ -198,11 +185,7 @@ export default function PropertyDetailScreen() {
         </View>
       </View>
 
-      <AdCopyModal
-        visible={adCopyVisible}
-        property={property}
-        onClose={() => setAdCopyVisible(false)}
-      />
+      <AdCopyModal visible={adCopyVisible} property={property} onClose={() => setAdCopyVisible(false)} />
     </ScrollView>
   );
 }
