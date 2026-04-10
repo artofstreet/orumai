@@ -6,6 +6,7 @@ import { Animated, Easing, Modal, Platform, Pressable, StyleSheet, Text, Touchab
 import 'react-native-reanimated';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
+import NotificationPanel from '@/components/NotificationPanel';
 import TopBar from '@/components/TopBar';
 import { bg } from '@/constants/colors';
 import { DUMMY_CUSTOMERS } from '@/constants/dummyCustomers';
@@ -41,6 +42,7 @@ export default function RootLayout() {
 
   const [profileOpen, setProfileOpen] = useState<boolean>(false);
   const [profileKey,  setProfileKey]  = useState<number>(0);
+  const [showNotification, setShowNotification] = useState<boolean>(false);
   const profileSlideX = useRef(new Animated.Value(0)).current;
 
   // 실제 매물/고객 수 (TODO-DB: Supabase 연결 후 실데이터로 교체)
@@ -146,7 +148,7 @@ export default function RootLayout() {
             onRegisterPress={openSelectModal}
             onProfilePress={openProfilePanel}
             onPrintPress={() => setPrintModalVisible(true)}
-            notifPanelW={panelW}
+            onNotificationPress={() => setShowNotification(true)}
             propertyCount={propertyCount}
             customerCount={customerCount}
           />
@@ -159,6 +161,12 @@ export default function RootLayout() {
               <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
             </Stack>
           </View>
+
+          <NotificationPanel
+            visible={showNotification}
+            onClose={() => setShowNotification(false)}
+            panelW={panelW}
+          />
 
           {/* 매물/고객 선택 모달 */}
           <Modal visible={selectModalVisible} transparent animationType="fade" onRequestClose={() => setSelectModalVisible(false)}>

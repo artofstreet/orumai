@@ -1,12 +1,6 @@
 import React, { useState } from 'react';
 import { Alert, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-// 플랫폼별 그림자 유틸
-const makeShadow = (h: number, r: number, o: number, elev: number) =>
-  Platform.OS === 'web'
-    ? ({ boxShadow: `0 ${h}px ${r * 2}px rgba(0,0,0,${o})` } as object)
-    : { shadowColor: '#000' as const, shadowOffset: { width: 0, height: h }, shadowOpacity: o, shadowRadius: r, elevation: elev };
-
 // TODO-DB: 나중에 Supabase로 교체
 export type Notice = {
   id: string;
@@ -31,8 +25,6 @@ type Props = {
 export default function NotificationPanel({ visible, onClose, panelW = 340 }: Props) {
   const [notices, setNotices] = useState<Notice[]>(DUMMY_NOTICES);
 
-  if (!visible) return null;
-
   // 삭제 확인 후 삭제 처리
   const handleDelete = (id: string) => {
     if (Platform.OS === 'web') {
@@ -50,14 +42,19 @@ export default function NotificationPanel({ visible, onClose, panelW = 340 }: Pr
     }
   };
 
+  if (!visible) return null;
+
   return (
-    <View style={styles.overlay}>
+    <View style={styles.root}>
       <Pressable style={styles.backdrop} onPress={onClose} />
       <View style={[styles.panel, { width: panelW }]}>
 
         {/* 헤더 */}
         <View style={styles.header}>
           <Text style={styles.title}>알림</Text>
+          <Pressable onPress={onClose} accessibilityRole="button" accessibilityLabel="닫기">
+            <Text style={styles.headerClose}>✕</Text>
+          </Pressable>
         </View>
 
         {/* 알림 목록 */}
@@ -90,11 +87,29 @@ export default function NotificationPanel({ visible, onClose, panelW = 340 }: Pr
 }
 
 const styles = StyleSheet.create({
-  overlay:       { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 999, flexDirection: 'row', justifyContent: 'flex-end' },
-  backdrop:      { flex: 1, backgroundColor: 'rgba(0,0,0,0.4)' },
-  panel:         { backgroundColor: '#F0F4FF', height: '100%', ...makeShadow(0, 12, 0.2, 8) },
-  header:        { flexDirection: 'row', alignItems: 'center', padding: 20, borderBottomWidth: 0.5, borderBottomColor: '#E2E8F0' },
+  root: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 9999,
+  },
+  backdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+  },
+  // 모바일: 상단 46px부터 · 웹: 0 · 하단은 화면 끝까지
+  panel: {
+    position: 'absolute',
+    top: Platform.select({ web: 0, default: 46 }),
+    right: 0,
+    bottom: 0,
+    backgroundColor: '#fff',
+  },
+  header:        { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 20, borderBottomWidth: 0.5, borderBottomColor: '#E2E8F0' },
   title:         { fontSize: 18, fontWeight: '800', color: '#0F172A' },
+  headerClose:   { fontSize: 24, color: '#666', padding: 8 },
   list:          { flex: 1, padding: 16 },
   empty:         { textAlign: 'center', color: '#94A3B8', marginTop: 40, fontSize: 14 },
   item:          { borderBottomWidth: 0.5, borderBottomColor: '#F1F5F9', paddingVertical: 14, gap: 6 },

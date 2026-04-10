@@ -2,6 +2,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const STORAGE_KEY = 'orumai_agent_profile';
 
@@ -80,9 +81,10 @@ export default function ProfileScreen({ embedded = false }: ScreenProps) {
   };
 
   return (
-    <ScrollView
-      style={[styles.page, embedded && { flex: 1, width: '100%' }]}
-      contentContainerStyle={styles.content}>
+    <SafeAreaView style={{ flex: 1 }}>
+      <ScrollView
+        style={[styles.page, embedded && { flex: 1, width: '100%' }]}
+        contentContainerStyle={styles.content}>
 
       <View style={styles.header}>
         {!embedded && (
@@ -181,7 +183,8 @@ export default function ProfileScreen({ embedded = false }: ScreenProps) {
           )}
         </View>
       )}
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 

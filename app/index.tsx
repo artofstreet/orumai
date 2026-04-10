@@ -1,23 +1,20 @@
 import { router } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Platform, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
+import { Dimensions, Platform, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
 
 import SearchBar from '@/components/SearchBar';
 import { bg, primary, text, text2 } from '@/constants/colors';
 import { getContentMaxWidth, getHorizontalPadding } from '@/constants/theme';
 
 export default function HomeScreen() {
-  const { width: windowWidth, height: windowHeight } = useWindowDimensions();
+  const { width: windowWidth } = useWindowDimensions();
   const layoutPadding = useMemo(() => getHorizontalPadding(windowWidth), [windowWidth]);
   const contentMax = useMemo(() => getContentMaxWidth(windowWidth), [windowWidth]);
   const logoFontSize = useMemo(
     () => windowWidth < 400 ? 36 : windowWidth < 768 ? 44 : 52,
     [windowWidth],
   );
-  const paddingTop = useMemo(
-    () => Math.min(220, Math.max(72, Math.floor(windowHeight * 0.2))),
-    [windowHeight],
-  );
+  const mainPaddingTop = Math.floor(Dimensions.get('window').height * 0.22);
 
   const [검색어, set검색어] = useState<string>('');
   const inputRef = useRef<TextInput>(null);
@@ -45,7 +42,8 @@ export default function HomeScreen() {
           styles.main,
           {
             paddingHorizontal: layoutPadding,
-            paddingTop,
+            paddingTop: mainPaddingTop,
+            marginBottom: 40,
             maxWidth: contentMax,
             alignSelf: 'center',
             width: '100%',
@@ -65,7 +63,8 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   page:     { flex: 1, backgroundColor: bg },
-  main:     { flex: 1, alignItems: 'center', gap: 14 },
+  // 로고·검색창 블록: 상단부터 배치 · 하단 여백은 바로가기 영역 예정
+  main:     { flex: 1, justifyContent: 'flex-start', alignItems: 'center', gap: 14 },
   logo:     { fontWeight: '800' },
   logoO:    { color: text },
   logoAI:   { color: primary },

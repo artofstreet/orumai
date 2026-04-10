@@ -4,7 +4,6 @@ import React, { useCallback, useMemo, useState } from 'react';
 import { Platform, Pressable, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 
 import { getHorizontalPadding } from '@/constants/theme';
-import NotificationPanel from './NotificationPanel';
 
 // TODO-AUTH: 로그인·역할에 따라 헤더 액션 노출 제어 시 이 컴포넌트에서 분기
 // TODO-STORAGE: 마지막 선택 탭 등 로컬 상태 연동 시 props 확장
@@ -14,7 +13,7 @@ export type TopBarProps = {
   onRegisterPress?: () => void;
   onProfilePress?:  () => void;
   onPrintPress?:    () => void;
-  notifPanelW?:     number;
+  onNotificationPress?: () => void;
   propertyCount?:   number;
   customerCount?:   number;
   // TODO-DB: Supabase 연동 후 실제 알림 수로 교체
@@ -26,7 +25,7 @@ export default function TopBar({
   onRegisterPress,
   onProfilePress,
   onPrintPress,
-  notifPanelW,
+  onNotificationPress,
   propertyCount = 10,
   customerCount = 10,
   notifCount    = 3,
@@ -42,8 +41,6 @@ export default function TopBar({
   const [isPrintHovered,   setIsPrintHovered]   = useState<boolean>(false);
   const [isBellHovered,    setIsBellHovered]    = useState<boolean>(false);
   const [isProfileHovered, setIsProfileHovered] = useState<boolean>(false);
-  const [showNotification, setShowNotification] = useState<boolean>(false);
-
   // 웹 전용: 트랜지션 공통 스타일
   const webShadowStyle = useMemo(() => {
     if (Platform.OS !== 'web') return null;
@@ -152,10 +149,10 @@ export default function TopBar({
 
           <Pressable
             style={[styles.iconButton, webShadowStyle, getWebHoverShadow(isBellHovered)]}
-            onPress={() => setShowNotification(true)}
+            onPress={() => onNotificationPress?.()}
             onHoverIn={() => { if (Platform.OS === 'web') setIsBellHovered(true); }}
             onHoverOut={() => { if (Platform.OS === 'web') setIsBellHovered(false); }}>
-            <View>
+            <View style={styles.bellIconWrap}>
               <Ionicons name="notifications" size={20} color="#FFC107" />
               {notifCount > 0 && (
                 <View style={styles.bellBadge}>
@@ -174,12 +171,6 @@ export default function TopBar({
           </Pressable>
         </View>
       </View>
-
-      <NotificationPanel
-        visible={showNotification}
-        onClose={() => setShowNotification(false)}
-        panelW={notifPanelW}
-      />
     </>
   );
 }
@@ -201,6 +192,8 @@ const styles = StyleSheet.create({
   addButton:     { backgroundColor: '#1E293B', borderWidth: 1, borderColor: '#334155', borderRadius: 7, paddingHorizontal: 10, paddingVertical: 6 },
   addButtonText: { color: '#FFFFFF', fontSize: 12, fontWeight: '700' },
   iconButton:    { backgroundColor: '#1E293B', borderRadius: 18, width: 32, height: 32, alignItems: 'center', justifyContent: 'center' },
-  bellBadge:     { position: 'absolute', top: -4, right: -4, backgroundColor: '#EF4444', borderRadius: 8, minWidth: 16, height: 16, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 3 },
+  // 배지 absolute 기준점 — 아이콘과 동일 부모
+  bellIconWrap:  { position: 'relative', alignItems: 'center', justifyContent: 'center' },
+  bellBadge:     { position: 'absolute', top: -4, right: -4, zIndex: 10, backgroundColor: '#EF4444', borderRadius: 8, minWidth: 16, height: 16, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 3 },
   bellBadgeTxt:  { color: '#fff', fontSize: 9, fontWeight: '700' },
 });
