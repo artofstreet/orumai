@@ -1,7 +1,5 @@
 import { useState } from 'react';
-import { ActivityIndicator, Dimensions, Image, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-
-const { width: SCREEN_W } = Dimensions.get('window');
+import { ActivityIndicator, Image, Modal, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 const COLOR_ORANGE    = '#FF6B35';
 const COLOR_ORANGE_BG = 'rgba(255,107,53,0.10)';
 const COLOR_GRAY      = '#888';
@@ -42,6 +40,7 @@ const AI_STYLES: AiStyle[] = [
 ];
 
 export default function PhotoDetailModal({ visible, photo, photoIndex, totalPhotos, onClose, onSave }: Props) {
+  const { width: SCREEN_W } = useWindowDimensions();
   const [phase, setPhase]               = useState<Phase>('view');
   const [selectedStyle, setSelectedStyle] = useState<AiStyle | null>(null);
   const [generatedUri, setGeneratedUri] = useState<string | null>(null);
