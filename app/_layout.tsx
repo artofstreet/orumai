@@ -18,8 +18,6 @@ import CustomerRegisterScreen from './customer/register';
 import ProfileScreen from './profile';
 import PropertyRegisterScreen from './property/register';
 
-export const unstable_settings = { anchor: '(tabs)' };
-
 type RegisterKind = 'property' | 'customer';
 
 // 플랫폼별 그림자 유틸
@@ -154,11 +152,9 @@ export default function RootLayout() {
           />
           <View style={styles.content}>
             <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: bg } }}>
-              <Stack.Screen name="(tabs)" />
               <Stack.Screen name="results" />
               <Stack.Screen name="list" />
               <Stack.Screen name="property/[id]" />
-              <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
             </Stack>
           </View>
 
