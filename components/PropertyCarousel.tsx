@@ -6,15 +6,6 @@ import PhotoDetailModal, { SavePayload } from './PhotoDetailModal';
 const COLOR_ORANGE    = '#FF6B35';
 const COLOR_BADGE_BG  = 'rgba(0,0,0,0.55)';
 const THUMB_COUNT     = 4;
-const SAMPLE = [
-  'https://picsum.photos/seed/a1/400/700',
-  'https://picsum.photos/seed/a2/400/700',
-  'https://picsum.photos/seed/a3/400/700',
-  'https://picsum.photos/seed/a4/400/700',
-  'https://picsum.photos/seed/a5/400/700',
-  'https://picsum.photos/seed/a6/400/700',
-  'https://picsum.photos/seed/a7/400/700',
-];
 
 // 저장된 AI 인테리어 사진 타입
 type SavedPhoto = {
@@ -25,7 +16,7 @@ type SavedPhoto = {
 };
 
 export default function PropertyCarousel({ photos = [] }: { photos: string[] }) {
-  const list = photos.length > 0 ? photos : SAMPLE;
+  const list = photos;
   const [startIdx, setStartIdx]       = useState<number>(0);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [selectedIdx, setSelectedIdx] = useState<number>(0);
@@ -37,38 +28,46 @@ export default function PropertyCarousel({ photos = [] }: { photos: string[] }) 
 
   return (
     <View style={styles.wrap}>
-      <View style={styles.row}>
-        {visible.map((photo, i) => (
-          <TouchableOpacity
-            key={startIdx + i}
-            style={styles.thumb}
-            onPress={() => { setSelectedIdx(startIdx + i); setModalVisible(true); }}
-            activeOpacity={0.85}>
-            <Image source={{ uri: photo }} style={styles.img} resizeMode="cover" />
-            <View style={styles.badge}>
-              <Text style={styles.badgeTxt}>{startIdx + i + 1}/{list.length}</Text>
-            </View>
-          </TouchableOpacity>
-        ))}
-      </View>
+      {list.length === 0 ? (
+        <View style={styles.emptyBox}>
+          <Text style={styles.emptyTxt}>📷 사진 없음</Text>
+        </View>
+      ) : (
+        <>
+          <View style={styles.row}>
+            {visible.map((photo, i) => (
+              <TouchableOpacity
+                key={startIdx + i}
+                style={styles.thumb}
+                onPress={() => { setSelectedIdx(startIdx + i); setModalVisible(true); }}
+                activeOpacity={0.85}>
+                <Image source={{ uri: photo }} style={styles.img} resizeMode="cover" />
+                <View style={styles.badge}>
+                  <Text style={styles.badgeTxt}>{startIdx + i + 1}/{list.length}</Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </View>
 
-      {canPrev && (
-        <TouchableOpacity style={[styles.arrow, { left: 0 }]} onPress={() => setStartIdx(i => i - 1)}>
-          <View style={styles.circle}><Text style={styles.arrowTxt}>‹</Text></View>
-        </TouchableOpacity>
-      )}
-      {canNext && (
-        <TouchableOpacity style={[styles.arrow, { right: 0 }]} onPress={() => setStartIdx(i => i + 1)}>
-          <View style={styles.circle}><Text style={styles.arrowTxt}>›</Text></View>
-        </TouchableOpacity>
-      )}
+          {canPrev && (
+            <TouchableOpacity style={[styles.arrow, { left: 0 }]} onPress={() => setStartIdx(i => i - 1)}>
+              <View style={styles.circle}><Text style={styles.arrowTxt}>‹</Text></View>
+            </TouchableOpacity>
+          )}
+          {canNext && (
+            <TouchableOpacity style={[styles.arrow, { right: 0 }]} onPress={() => setStartIdx(i => i + 1)}>
+              <View style={styles.circle}><Text style={styles.arrowTxt}>›</Text></View>
+            </TouchableOpacity>
+          )}
 
-      <View style={styles.dots}>
-        {list.map((_, i) => {
-          const on = i >= startIdx && i < startIdx + THUMB_COUNT;
-          return <View key={i} style={[styles.dot, on ? styles.dotOn : styles.dotOff]} />;
-        })}
-      </View>
+          <View style={styles.dots}>
+            {list.map((_, i) => {
+              const on = i >= startIdx && i < startIdx + THUMB_COUNT;
+              return <View key={i} style={[styles.dot, on ? styles.dotOn : styles.dotOff]} />;
+            })}
+          </View>
+        </>
+      )}
 
       {savedPhotos.length > 0 && (
         <View style={styles.savedSection}>
@@ -86,20 +85,24 @@ export default function PropertyCarousel({ photos = [] }: { photos: string[] }) 
         </View>
       )}
 
-      <PhotoDetailModal
-        visible={modalVisible}
-        photo={list[selectedIdx]}
-        photoIndex={selectedIdx}
-        totalPhotos={list.length}
-        onClose={() => setModalVisible(false)}
-        onSave={(p: SavePayload) => setSavedPhotos(prev => [{ ...p, id: Date.now() }, ...prev])}
-      />
+      {list.length > 0 && (
+        <PhotoDetailModal
+          visible={modalVisible}
+          photo={list[selectedIdx]}
+          photoIndex={selectedIdx}
+          totalPhotos={list.length}
+          onClose={() => setModalVisible(false)}
+          onSave={(p: SavePayload) => setSavedPhotos(prev => [{ ...p, id: Date.now() }, ...prev])}
+        />
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   wrap:          { width: '100%', position: 'relative' },
+  emptyBox:      { width: '100%', aspectRatio: 16 / 9, backgroundColor: '#E5E7EB', borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
+  emptyTxt:      { fontSize: 14, color: '#94A3B8', fontWeight: '500' },
   row:           { flexDirection: 'row', width: '100%' },
   thumb:         { width: '25%', aspectRatio: 9/16, position: 'relative' },
   img:           { width: '100%', height: '100%' },
