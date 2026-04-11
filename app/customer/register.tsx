@@ -124,7 +124,6 @@ export default function CustomerRegisterScreen({ embedded = false, initialData }
           />
         )}
       </View>
-      <Text style={styles.hint}>TODO-DB: 저장 시 서버 스키마에 맞게 필드 매핑</Text>
       </ScrollView>
     </SafeAreaView>
   );
