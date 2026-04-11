@@ -1,4 +1,5 @@
 import type { Property } from '@/types';
+import { Platform } from 'react-native';
 
 // 광고문구 3종 결과 타입
 export type AdCopyResult = {
@@ -25,13 +26,8 @@ const buildPropertySummary = (p: Property): string => {
   return lines.filter(Boolean).join('\n');
 };
 
-// Claude API 호출해 광고문구 3종 생성
 export async function generateAdCopy(property: Property): Promise<AdCopyResult> {
-  // TODO-AUTH: 추후 서버사이드 API 라우트로 이동 (키 노출 방지)
-  const apiKey = process.env.EXPO_PUBLIC_CLAUDE_API_KEY ?? '';
-  if (!apiKey) throw new Error('EXPO_PUBLIC_CLAUDE_API_KEY 환경변수가 없습니다.');
-
-  const summary = buildPropertySummary(property); // 매물 요약 텍스트
+  const summary = buildPropertySummary(property);
 
   const userPrompt = `아래 매물 정보를 바탕으로 광고문구 3종을 작성해주세요.
 
@@ -45,29 +41,40 @@ ${summary}
   "sns": "인스타그램/SNS용 감성 카피 (100자 내외, 해시태그 3개 포함)"
 }`;
 
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 1024,
-      system: '당신은 대한민국 부동산 전문 카피라이터입니다. 매물 정보를 받아 채널에 맞는 광고문구를 JSON으로만 반환합니다.',
-      messages: [{ role: 'user', content: userPrompt }],
-    }),
-  });
+  // 응답 타입 정의 (any 금지)
+  type ClaudeResponse = { content: Array<{ type: string; text: string }> };
+  let data: ClaudeResponse;
 
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`Claude API 오류: ${res.status} ${err}`);
+  if (Platform.OS === 'web') {
+    // 웹: 서버 라우트 경유 (CORS 방지 + API 키 보호)
+    const res = await fetch('/api/generate-ad-copy', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: userPrompt }),
+    });
+    if (!res.ok) throw new Error(`서버 라우트 오류: ${res.status}`);
+    data = await res.json() as ClaudeResponse;
+  } else {
+    // 네이티브(앱): 직접 호출 유지
+    const apiKey = process.env.EXPO_PUBLIC_CLAUDE_API_KEY ?? '';
+    if (!apiKey) throw new Error('EXPO_PUBLIC_CLAUDE_API_KEY 환경변수가 없습니다.');
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1024,
+        system: '당신은 대한민국 부동산 전문 카피라이터입니다. 매물 정보를 받아 채널에 맞는 광고문구를 JSON으로만 반환합니다.',
+        messages: [{ role: 'user', content: userPrompt }],
+      }),
+    });
+    if (!res.ok) throw new Error(`Claude API 오류: ${res.status}`);
+    data = await res.json() as ClaudeResponse;
   }
-
-  const data = await res.json() as {
-    content: Array<{ type: string; text: string }>;
-  };
 
   const raw = data.content.find((b) => b.type === 'text')?.text ?? '{}';
   const cleaned = raw.replace(/```json|```/g, '').trim(); // 마크다운 펜스 제거
