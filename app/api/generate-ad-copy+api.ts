@@ -23,11 +23,21 @@ export async function POST(request: ExpoRequest): Promise<ExpoResponse> {
     return ExpoResponse.json({ error: 'API 키 없음' }, { status: 500 });
   }
 
+  // json() 소비 실패 시에도 본문을 읽을 수 있도록 미리 복제
+  const bodyBackup = request.clone();
   let rawBody: unknown;
   try {
     rawBody = await request.json();
   } catch {
-    return ExpoResponse.json({ error: '잘못된 JSON' }, { status: 400 });
+    try {
+      const text = await bodyBackup.text();
+      if (!text.trim()) {
+        return ExpoResponse.json({ error: '요청 본문이 비어 있습니다' }, { status: 400 });
+      }
+      rawBody = JSON.parse(text) as unknown;
+    } catch {
+      return ExpoResponse.json({ error: '요청 본문을 JSON으로 파싱할 수 없습니다' }, { status: 400 });
+    }
   }
 
   const body = parseGenerateAdCopyBody(rawBody);
