@@ -79,8 +79,7 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
         </TouchableOpacity>
       )}
       <Text style={styles.title}>{isEdit ? '매물 편집' : '매물 등록'}</Text>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Text style={styles.sub}>Mock 음성·주소 자동완성은 개발용입니다.</Text>
+      <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' }}>
         <TouchableOpacity
           style={[detailStyles.headerBtn, { paddingHorizontal: 20, paddingVertical: 8 }]}
           activeOpacity={0.6}
@@ -149,7 +148,6 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
         ownerMemo={ownerMemo} setOwnerMemo={setOwnerMemo}
         memo={memo} setMemo={setMemo}
       />
-      <Text style={styles.hint}>TODO-DB: 저장 시 서버 스키마에 맞게 필드 매핑</Text>
       </ScrollView>
     </SafeAreaView>
   );
