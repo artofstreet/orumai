@@ -24,35 +24,42 @@ export default function PropertyCarousel({ photos = [] }: { photos: string[] }) 
 
   const canPrev = startIdx > 0;
   const canNext = startIdx < list.length - THUMB_COUNT;
-  const visible = list.slice(startIdx, startIdx + THUMB_COUNT);
+
+  const visibleSlice = list.slice(startIdx, startIdx + THUMB_COUNT);
+  const paddedRow: (string | null)[] = [...visibleSlice];
+  while (paddedRow.length < THUMB_COUNT) {
+    paddedRow.push(null);
+  }
 
   return (
     <View style={styles.wrap}>
-      {list.length === 0 ? (
-        <View style={styles.row}>
-          {Array.from({ length: THUMB_COUNT }, (_, i) => (
-            <View key={i} style={[styles.thumb, styles.emptySlot]}>
-              <Text style={styles.emptyTxt}>📷 사진 없음</Text>
-            </View>
-          ))}
-        </View>
-      ) : (
-        <>
-          <View style={styles.row}>
-            {visible.map((photo, i) => (
+      <View style={styles.row}>
+        {paddedRow.map((photo, slotIdx) => {
+          const listIdx = startIdx + slotIdx;
+          if (photo !== null) {
+            return (
               <TouchableOpacity
-                key={startIdx + i}
+                key={`slot-${startIdx}-${slotIdx}`}
                 style={styles.thumb}
-                onPress={() => { setSelectedIdx(startIdx + i); setModalVisible(true); }}
+                onPress={() => { setSelectedIdx(listIdx); setModalVisible(true); }}
                 activeOpacity={0.85}>
                 <Image source={{ uri: photo }} style={styles.img} resizeMode="cover" />
                 <View style={styles.badge}>
-                  <Text style={styles.badgeTxt}>{startIdx + i + 1}/{list.length}</Text>
+                  <Text style={styles.badgeTxt}>{listIdx + 1}/{list.length}</Text>
                 </View>
               </TouchableOpacity>
-            ))}
-          </View>
+            );
+          }
+          return (
+            <View key={`empty-${startIdx}-${slotIdx}`} style={[styles.thumb, styles.emptySlot]}>
+              <Text style={styles.emptyTxt}>📷 사진 없음</Text>
+            </View>
+          );
+        })}
+      </View>
 
+      {list.length > 0 && (
+        <>
           {canPrev && (
             <TouchableOpacity style={[styles.arrow, { left: 0 }]} onPress={() => setStartIdx(i => i - 1)}>
               <View style={styles.circle}><Text style={styles.arrowTxt}>‹</Text></View>
