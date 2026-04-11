@@ -17,7 +17,10 @@ function parseGenerateAdCopyBody(value: unknown): GenerateAdCopyBody | null {
 }
 
 // 서버 전용 라우트 — CLAUDE_API_KEY는 번들/클라이언트에 포함되지 않음
-export async function POST(request: ExpoRequest): Promise<ExpoResponse> {
+export async function POST(request: ExpoRequest | undefined): Promise<ExpoResponse> {
+  if (!request) {
+    return ExpoResponse.json({ error: 'request 없음' }, { status: 400 });
+  }
   const apiKey = process.env.CLAUDE_API_KEY ?? '';
   if (!apiKey) {
     return ExpoResponse.json({ error: 'API 키 없음' }, { status: 500 });
@@ -45,21 +48,30 @@ export async function POST(request: ExpoRequest): Promise<ExpoResponse> {
     return ExpoResponse.json({ error: 'prompt 필드가 필요합니다' }, { status: 400 });
   }
 
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 1024,
-      system:
-        '당신은 대한민국 부동산 전문 카피라이터입니다. 매물 정보를 받아 채널에 맞는 광고문구를 JSON으로만 반환합니다.',
-      messages: [{ role: 'user', content: body.prompt }],
-    }),
-  });
+  let res: Response | undefined;
+  try {
+    res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1024,
+        system:
+          '당신은 대한민국 부동산 전문 카피라이터입니다. 매물 정보를 받아 채널에 맞는 광고문구를 JSON으로만 반환합니다.',
+        messages: [{ role: 'user', content: body.prompt }],
+      }),
+    });
+  } catch {
+    return ExpoResponse.json({ error: 'Claude API 연결 실패' }, { status: 502 });
+  }
+
+  if (res == null) {
+    return ExpoResponse.json({ error: 'Claude API 연결 실패' }, { status: 502 });
+  }
 
   let rawData: unknown;
   try {
