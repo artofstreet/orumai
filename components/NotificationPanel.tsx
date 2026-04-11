@@ -20,9 +20,11 @@ type Props = {
   visible: boolean;
   onClose: () => void;
   panelW?: number;
+  /** 네이티브: 상단바 아래 시작 오프셋(px). 미지정 시 46 */
+  topOffset?: number;
 };
 
-export default function NotificationPanel({ visible, onClose, panelW = 340 }: Props) {
+export default function NotificationPanel({ visible, onClose, panelW = 340, topOffset }: Props) {
   const [notices, setNotices] = useState<Notice[]>(DUMMY_NOTICES);
 
   // 삭제 확인 후 삭제 처리
@@ -47,7 +49,14 @@ export default function NotificationPanel({ visible, onClose, panelW = 340 }: Pr
   return (
     <View style={styles.root}>
       <Pressable style={styles.backdrop} onPress={onClose} />
-      <View style={[styles.panel, { width: panelW }]}>
+      <View
+        style={[
+          styles.panel,
+          {
+            width: panelW,
+            top: Platform.select({ web: 0, default: topOffset ?? 46 }),
+          },
+        ]}>
 
         {/* 헤더 */}
         <View style={styles.header}>
@@ -99,10 +108,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.3)',
   },
-  // 모바일: 상단 46px부터 · 웹: 0 · 하단은 화면 끝까지
+  // 모바일: top은 topOffset(기본 46) · 웹: 0 — 인라인 스타일로 주입
   panel: {
     position: 'absolute',
-    top: Platform.select({ web: 0, default: 46 }),
     right: 0,
     bottom: 0,
     backgroundColor: '#fff',
