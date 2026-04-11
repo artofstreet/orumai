@@ -41,7 +41,7 @@ export default function AdCopyModal({ visible, property, onClose }: AdCopyModalP
 
   const isWeb = Platform.OS === 'web'; // 웹 여부
 
-  // 웹 전용 시트: 창 크기에 맞춰 너비·최대 높이·중앙 정렬(translate) 계산
+  // 웹 전용 시트: 창 크기에 맞춰 너비·최대 높이만 (중앙 정렬은 backdrop flex)
   const sheetWebLayout = useMemo(() => {
     const horizontalPad = 32;
     const sheetW = Math.min(600, Math.max(280, windowWidth - horizontalPad));
@@ -49,7 +49,6 @@ export default function AdCopyModal({ visible, property, onClose }: AdCopyModalP
     return {
       width: sheetW,
       maxHeight: sheetMaxH,
-      transform: [{ translateX: -sheetW / 2 }, { translateY: -sheetMaxH / 2 }],
     };
   }, [windowWidth, windowHeight]);
 
@@ -86,78 +85,92 @@ export default function AdCopyModal({ visible, property, onClose }: AdCopyModalP
 
   const activeText = result ? result[activeTab] : '';
 
+  const sheetBody = (
+    <>
+      {!isWeb && <View style={styles.handle} />}
+
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>✨ AI 광고문구</Text>
+        <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
+          <Text style={styles.closeBtnText}>✕</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.tabRow}>
+        {TABS.map((t) => (
+          <TouchableOpacity
+            key={t.key}
+            style={[styles.tab, activeTab === t.key && styles.tabActive]}
+            onPress={() => { setActiveTab(t.key); setCopied(false); }}>
+            <Text style={[styles.tabText, activeTab === t.key && styles.tabTextActive]}>
+              {t.emoji} {t.label}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      <ScrollView style={styles.body} contentContainerStyle={styles.bodyContent}>
+        {loading && (
+          <View style={styles.center}>
+            <ActivityIndicator size="large" color="#F97316" />
+            <Text style={styles.loadingText}>Claude가 광고문구를 생성 중이에요...</Text>
+          </View>
+        )}
+        {!loading && error !== '' && (
+          <View style={styles.center}>
+            <Text style={styles.errorText}>⚠️ {error}</Text>
+          </View>
+        )}
+        {!loading && result && (
+          <Text style={styles.copyText}>{activeText}</Text>
+        )}
+      </ScrollView>
+
+      <View style={styles.footer}>
+        <TouchableOpacity
+          style={[styles.footerBtn, styles.footerBtnSecondary]}
+          onPress={handleGenerate}
+          disabled={loading}>
+          <Text style={styles.footerBtnSecondaryText}>🔄 다시 생성</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.footerBtn, styles.footerBtnPrimary, (!result || loading) && styles.footerBtnDisabled]}
+          onPress={handleCopy}
+          disabled={!result || loading}>
+          <Text style={styles.footerBtnPrimaryText}>{copied ? '✅ 복사됨!' : '📋 복사'}</Text>
+        </TouchableOpacity>
+      </View>
+    </>
+  );
+
   return (
     <Modal
       visible={visible}
       transparent
       animationType={isWeb ? 'fade' : 'slide'}
       onRequestClose={onClose}>
-      <Pressable style={styles.backdrop} onPress={onClose} />
-
-      <View style={[styles.sheet, isWeb && styles.sheetWebBase, isWeb && sheetWebLayout]}>
-        {!isWeb && <View style={styles.handle} />}
-
-        <View style={styles.header}>
-          <Text style={styles.headerTitle}>✨ AI 광고문구</Text>
-          <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
-            <Text style={styles.closeBtnText}>✕</Text>
-          </TouchableOpacity>
+      {isWeb ? (
+        <View style={[styles.backdrop, styles.backdropWeb]}>
+          <Pressable style={StyleSheet.absoluteFillObject} onPress={onClose} />
+          <View style={[styles.sheet, styles.sheetWeb, sheetWebLayout]}>{sheetBody}</View>
         </View>
-
-        <View style={styles.tabRow}>
-          {TABS.map((t) => (
-            <TouchableOpacity
-              key={t.key}
-              style={[styles.tab, activeTab === t.key && styles.tabActive]}
-              onPress={() => { setActiveTab(t.key); setCopied(false); }}>
-              <Text style={[styles.tabText, activeTab === t.key && styles.tabTextActive]}>
-                {t.emoji} {t.label}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        <ScrollView style={styles.body} contentContainerStyle={styles.bodyContent}>
-          {loading && (
-            <View style={styles.center}>
-              <ActivityIndicator size="large" color="#F97316" />
-              <Text style={styles.loadingText}>Claude가 광고문구를 생성 중이에요...</Text>
-            </View>
-          )}
-          {!loading && error !== '' && (
-            <View style={styles.center}>
-              <Text style={styles.errorText}>⚠️ {error}</Text>
-            </View>
-          )}
-          {!loading && result && (
-            <Text style={styles.copyText}>{activeText}</Text>
-          )}
-        </ScrollView>
-
-        <View style={styles.footer}>
-          <TouchableOpacity
-            style={[styles.footerBtn, styles.footerBtnSecondary]}
-            onPress={handleGenerate}
-            disabled={loading}>
-            <Text style={styles.footerBtnSecondaryText}>🔄 다시 생성</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.footerBtn, styles.footerBtnPrimary, (!result || loading) && styles.footerBtnDisabled]}
-            onPress={handleCopy}
-            disabled={!result || loading}>
-            <Text style={styles.footerBtnPrimaryText}>{copied ? '✅ 복사됨!' : '📋 복사'}</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+      ) : (
+        <>
+          <Pressable style={styles.backdrop} onPress={onClose} />
+          <View style={styles.sheet}>{sheetBody}</View>
+        </>
+      )}
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
   backdrop:               { flex: 1, backgroundColor: 'rgba(0,0,0,0.45)' },
+  // 웹: 시트를 화면 중앙에 두기 위한 flex 컨테이너
+  backdropWeb:            { justifyContent: 'center', alignItems: 'center' },
   sheet:                  { backgroundColor: '#FFFFFF', borderTopLeftRadius: 20, borderTopRightRadius: 20, paddingBottom: 32, maxHeight: '55%' },
-  // 웹: 위치·모서리만 고정, 크기·transform은 sheetWebLayout에서 주입
-  sheetWebBase:           { position: 'absolute' as const, top: '50%' as unknown as number, left: '50%' as unknown as number, borderRadius: 16, paddingBottom: 24 },
+  // 웹 모달 카드: 고정 모서리·여백 (크기는 sheetWebLayout)
+  sheetWeb:               { borderRadius: 16, paddingBottom: 24 },
   handle:                 { width: 40, height: 4, backgroundColor: '#E2E8F0', borderRadius: 2, alignSelf: 'center', marginTop: 10, marginBottom: 4 },
   header:                 { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: '#F1F5F9' },
   headerTitle:            { fontSize: 17, fontWeight: '700', color: '#0F172A' },
