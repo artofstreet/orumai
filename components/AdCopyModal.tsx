@@ -1,5 +1,5 @@
 import * as Clipboard from 'expo-clipboard';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
     ActivityIndicator,
     Modal,
@@ -9,6 +9,7 @@ import {
     StyleSheet,
     Text,
     TouchableOpacity,
+    useWindowDimensions,
     View,
 } from 'react-native';
 
@@ -30,6 +31,8 @@ interface AdCopyModalProps {
 }
 
 export default function AdCopyModal({ visible, property, onClose }: AdCopyModalProps) {
+  const { width: windowWidth, height: windowHeight } = useWindowDimensions();
+
   const [loading, setLoading]     = useState<boolean>(false);
   const [result, setResult]       = useState<AdCopyResult | null>(null);
   const [error, setError]         = useState<string>('');
@@ -37,6 +40,18 @@ export default function AdCopyModal({ visible, property, onClose }: AdCopyModalP
   const [copied, setCopied]       = useState<boolean>(false);
 
   const isWeb = Platform.OS === 'web'; // 웹 여부
+
+  // 웹 전용 시트: 창 크기에 맞춰 너비·최대 높이·중앙 정렬(translate) 계산
+  const sheetWebLayout = useMemo(() => {
+    const horizontalPad = 32;
+    const sheetW = Math.min(600, Math.max(280, windowWidth - horizontalPad));
+    const sheetMaxH = Math.min(560, Math.floor(windowHeight * 0.85));
+    return {
+      width: sheetW,
+      maxHeight: sheetMaxH,
+      transform: [{ translateX: -sheetW / 2 }, { translateY: -sheetMaxH / 2 }],
+    };
+  }, [windowWidth, windowHeight]);
 
   useEffect(() => {
     if (!visible) return;
@@ -79,7 +94,7 @@ export default function AdCopyModal({ visible, property, onClose }: AdCopyModalP
       onRequestClose={onClose}>
       <Pressable style={styles.backdrop} onPress={onClose} />
 
-      <View style={[styles.sheet, isWeb && styles.sheetWeb]}>
+      <View style={[styles.sheet, isWeb && styles.sheetWebBase, isWeb && sheetWebLayout]}>
         {!isWeb && <View style={styles.handle} />}
 
         <View style={styles.header}>
@@ -141,7 +156,8 @@ export default function AdCopyModal({ visible, property, onClose }: AdCopyModalP
 const styles = StyleSheet.create({
   backdrop:               { flex: 1, backgroundColor: 'rgba(0,0,0,0.45)' },
   sheet:                  { backgroundColor: '#FFFFFF', borderTopLeftRadius: 20, borderTopRightRadius: 20, paddingBottom: 32, maxHeight: '55%' },
-  sheetWeb:               { position: 'absolute' as const, top: '50%' as unknown as number, left: '50%' as unknown as number, transform: [{ translateX: -300 }, { translateY: -260 }], width: 600, borderRadius: 16, maxHeight: 560, paddingBottom: 24 },
+  // 웹: 위치·모서리만 고정, 크기·transform은 sheetWebLayout에서 주입
+  sheetWebBase:           { position: 'absolute' as const, top: '50%' as unknown as number, left: '50%' as unknown as number, borderRadius: 16, paddingBottom: 24 },
   handle:                 { width: 40, height: 4, backgroundColor: '#E2E8F0', borderRadius: 2, alignSelf: 'center', marginTop: 10, marginBottom: 4 },
   header:                 { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 16, borderBottomWidth: 1, borderBottomColor: '#F1F5F9' },
   headerTitle:            { fontSize: 17, fontWeight: '700', color: '#0F172A' },
