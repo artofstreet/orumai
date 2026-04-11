@@ -49,7 +49,7 @@ export const detailStyles = StyleSheet.create({
   specCellUltra2col:     { width: '50%', minWidth: 0, paddingVertical: 12, paddingHorizontal: 8, justifyContent: 'flex-start' },
   specRow:               { flexDirection: 'row', flex: 1 },
   specRowBottom:         { borderBottomWidth: 1, borderBottomColor: '#F1F5F9' },
-  specCell:              { flex: 1, paddingTop: 12, paddingBottom: 20, paddingHorizontal: 6, justifyContent: 'flex-start', gap: 2, minWidth: 0 },
+  specCell:              { flex: 1, paddingTop: 12, paddingBottom: 12, paddingHorizontal: 6, justifyContent: 'flex-start', gap: 2, minWidth: 0 },
   specCellRight:         { borderRightWidth: 1, borderRightColor: '#F1F5F9' },
   specLabel:             { fontSize: 11, color: '#94A3B8', fontWeight: '500', marginBottom: 8 },
   specValue:             { fontSize: 12, fontWeight: '700', color: '#1E293B', flexWrap: 'wrap' },
