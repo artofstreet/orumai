@@ -70,46 +70,17 @@ export default function TopBar({
     <>
       <View style={[styles.container, { paddingHorizontal: pad }]}>
 
-        {/* 왼쪽 로고: 웹은 2b304f8 SVG, 네이티브는 글자 아이콘 — TouchableOpacity로 감쌈 */}
+        {/* 왼쪽 로고 — 웹/네이티브 동일 View·Text */}
         <TouchableOpacity
           style={styles.left}
           activeOpacity={0.85}
           onPress={handleLogoPress}
           accessibilityRole="link"
           accessibilityLabel="홈으로">
-          {Platform.OS === 'web' ? (
-            <>
-              <div
-                style={{
-                  width: 26,
-                  height: 26,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  background: '#1D4ED8',
-                  borderRadius: 6,
-                }}>
-                <svg width="26" height="26" viewBox="0 0 80 80">
-                  <polyline
-                    points="10,58 28,34 40,44 54,22 70,58"
-                    fill="none"
-                    stroke="#fff"
-                    strokeWidth="4"
-                    strokeLinejoin="round"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </div>
-              <Text style={styles.logoText}>오름AI</Text>
-            </>
-          ) : (
-            <>
-              <View style={styles.logoBox}>
-                <Text style={styles.logoO}>오</Text>
-              </View>
-              <Text style={styles.logoText}>오름AI</Text>
-            </>
-          )}
+          <View style={styles.logoBox}>
+            <Text style={styles.logoO}>오</Text>
+          </View>
+          <Text style={styles.logoText}>오름AI</Text>
         </TouchableOpacity>
 
         {/* 중앙 매물/고객 카운트 — 클릭 시 전체 목록 이동 */}
