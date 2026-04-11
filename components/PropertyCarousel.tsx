@@ -29,8 +29,12 @@ export default function PropertyCarousel({ photos = [] }: { photos: string[] }) 
   return (
     <View style={styles.wrap}>
       {list.length === 0 ? (
-        <View style={styles.emptyBox}>
-          <Text style={styles.emptyTxt}>📷 사진 없음</Text>
+        <View style={styles.row}>
+          {Array.from({ length: THUMB_COUNT }, (_, i) => (
+            <View key={i} style={[styles.thumb, styles.emptySlot]}>
+              <Text style={styles.emptyTxt}>📷 사진 없음</Text>
+            </View>
+          ))}
         </View>
       ) : (
         <>
@@ -101,8 +105,8 @@ export default function PropertyCarousel({ photos = [] }: { photos: string[] }) 
 
 const styles = StyleSheet.create({
   wrap:          { width: '100%', position: 'relative' },
-  emptyBox:      { width: '100%', aspectRatio: 16 / 9, backgroundColor: '#E5E7EB', borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
-  emptyTxt:      { fontSize: 14, color: '#94A3B8', fontWeight: '500' },
+  emptySlot:     { backgroundColor: '#E5E7EB', borderRadius: 8, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 2 },
+  emptyTxt:      { fontSize: 10, color: '#94A3B8', fontWeight: '500', textAlign: 'center' },
   row:           { flexDirection: 'row', width: '100%' },
   thumb:         { width: '25%', aspectRatio: 9/16, position: 'relative' },
   img:           { width: '100%', height: '100%' },
