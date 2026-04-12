@@ -215,7 +215,8 @@ export default function RootLayout() {
             <>
               <Pressable style={styles.backdrop} onPress={closeProfilePanel} accessibilityRole="button" />
               <Animated.View style={[styles.panel, { width: panelW, transform: [{ translateX: profileSlideX }] }]}>
-                <ProfileScreen key={profileKey} embedded />
+                {/* 헤더 X 버튼: 부모 closeProfilePanel과 동일 동작(슬라이드 패널 닫기) */}
+                <ProfileScreen key={profileKey} embedded={true} onClose={closeProfilePanel} />
               </Animated.View>
             </>
           )}

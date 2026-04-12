@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Platform, Pressable, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import Svg, { Polygon } from 'react-native-svg';
 
 import { getHorizontalPadding } from '@/constants/theme';
 
@@ -70,7 +71,7 @@ export default function TopBar({
     <>
       <View style={[styles.container, { paddingHorizontal: pad }]}>
 
-        {/* 왼쪽 로고 — 웹/네이티브 동일 View·Text */}
+        {/* 왼쪽 로고 — 웹/네이티브 동일 Touchable + SVG 마크 */}
         <TouchableOpacity
           style={styles.left}
           activeOpacity={0.85}
@@ -78,7 +79,13 @@ export default function TopBar({
           accessibilityRole="link"
           accessibilityLabel="홈으로">
           <View style={styles.logoBox}>
-            <Text style={styles.logoO}>오</Text>
+            {/* 산 실루엣 마크 (뒤쪽 윤곽 + 앞쪽 반투명 면) */}
+            <Svg width={22} height={16} viewBox="0 0 22 16">
+              {/* 뒤쪽 산 */}
+              <Polygon points="2,15 11,2 20,15" fill="none" stroke="white" strokeWidth={1.5} />
+              {/* 앞쪽 산 */}
+              <Polygon points="0,15 7,6 14,15" fill="white" opacity={0.5} />
+            </Svg>
           </View>
           <Text style={styles.logoText}>오름AI</Text>
         </TouchableOpacity>
@@ -150,7 +157,6 @@ const styles = StyleSheet.create({
   container:     { minHeight: 56, backgroundColor: '#0F172A', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   left:          { flexDirection: 'row', alignItems: 'center', flexShrink: 1, minWidth: 0 },
   logoBox:       { width: 26, height: 26, borderRadius: 6, backgroundColor: '#1D4ED8', alignItems: 'center', justifyContent: 'center' },
-  logoO:         { color: '#FFFFFF', fontSize: 13, fontWeight: '700' },
   logoText:      { color: '#FFFFFF', fontSize: 14, fontWeight: '700', marginLeft: 7, flexShrink: 0 },
   center:        { flexDirection: 'row', alignItems: 'center', gap: 16, position: 'absolute', left: 0, right: 0, justifyContent: 'center', pointerEvents: 'none' },
   countBox:      { flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 4, paddingHorizontal: 8, borderRadius: 6 },

@@ -1,5 +1,4 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -41,10 +40,11 @@ export const saveAgentProfile = (profile: AgentProfile): void => {
 
 type ScreenProps = {
   embedded?: boolean;
+  /** embedded 패널 닫기 등 — 상위(_layout)에서 전달 */
+  onClose?: () => void;
 };
 
-export default function ProfileScreen({ embedded = false }: ScreenProps) {
-  const router = useRouter();
+export default function ProfileScreen({ embedded = false, onClose }: ScreenProps) {
   const [profile, setProfile] = useState<AgentProfile>(defaultProfile);
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [saved, setSaved] = useState<boolean>(false);
@@ -87,21 +87,24 @@ export default function ProfileScreen({ embedded = false }: ScreenProps) {
         contentContainerStyle={styles.content}>
 
       <View style={styles.header}>
-        {!embedded && (
-          <Pressable onPress={() => router.back()} style={styles.backBtn}>
-            <Text style={styles.backTxt}>←</Text>
-          </Pressable>
-        )}
         <Text style={styles.title}>마이</Text>
-        {isEdit ? (
-          <Pressable style={styles.doneBtn} onPress={handleSave}>
-            <Text style={styles.doneBtnTxt}>{saved ? '저장됐어요 ✅' : '완료'}</Text>
-          </Pressable>
-        ) : (
-          <Pressable style={styles.editBtn} onPress={() => setIsEdit(true)}>
-            <Text style={styles.editBtnTxt}>편집</Text>
-          </Pressable>
-        )}
+        <View style={styles.headerRight}>
+          {isEdit ? (
+            <Pressable style={styles.doneBtn} onPress={handleSave}>
+              <Text style={styles.doneBtnTxt}>{saved ? '저장됐어요 ✅' : '완료'}</Text>
+            </Pressable>
+          ) : (
+            <Pressable style={styles.editBtn} onPress={() => setIsEdit(true)}>
+              <Text style={styles.editBtnTxt}>편집</Text>
+            </Pressable>
+          )}
+          {/* embedded 패널: 오른쪽 닫기 — 부모 onClose로 슬라이드 패널 등 처리 */}
+          {embedded === true && (
+            <Pressable onPress={() => onClose?.()} style={styles.closeBtn} accessibilityLabel="닫기">
+              <Text style={styles.closeBtnTxt}>✕</Text>
+            </Pressable>
+          )}
+        </View>
       </View>
 
       {!isEdit && (
@@ -194,10 +197,12 @@ const styles = StyleSheet.create({
   page: { flex: 1, backgroundColor: '#F0F4FF' },
   content: { padding: 24, gap: 16, maxWidth: 480, alignSelf: 'center', width: '100%' },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 },
-  backBtn: { padding: 4 },
-  backTxt: { fontSize: 20, color: '#0F172A' },
   title: { fontSize: 20, fontWeight: '800', color: '#0F172A', flex: 1, marginLeft: 4 },
+  headerRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   editBtn: { borderWidth: 1, borderColor: '#D8DCE6', borderRadius: 8, paddingHorizontal: 14, paddingVertical: 6 },
+  // 닫기(X): 터치 영역 확보
+  closeBtn: { padding: 12, minWidth: 36, alignItems: 'center', justifyContent: 'center' },
+  closeBtnTxt: { fontSize: 18, color: '#0F172A', fontWeight: '600' },
   editBtnTxt: { fontSize: 14, color: '#1E293B', fontWeight: '600' },
   doneBtn: { backgroundColor: SILVER, borderRadius: 8, paddingHorizontal: 16, paddingVertical: 7 },
   doneBtnTxt: { color: '#fff', fontWeight: '800', fontSize: 14 },
