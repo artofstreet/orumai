@@ -6,6 +6,15 @@ import { detailStyles } from '@/components/property/detailStyles';
 import { DUMMY_CUSTOMERS } from '@/constants/dummyData';
 import { openRegisterPanel } from '@/utils/registerEvents';
 
+// 날짜 포맷 유틸 (ISO 문자열 → YYYY-MM-DD)
+const formatDateShort = (v?: string): string => {
+  if (!v) return '';
+  const d = new Date(v);
+  if (isNaN(d.getTime())) return v.slice(0, 10);
+  return d.toISOString().slice(0, 10);
+};
+
+// TODO-STYLE: _layout.tsx와 중복 — 나중에 constants/theme.ts로 통합 예정
 // 플랫폼별 그림자 유틸
 const makeShadow = (h: number, r: number, o: number, elev: number) =>
   Platform.OS === 'web'
@@ -47,7 +56,7 @@ export default function CustomerDetailScreen() {
 
   const 아바타색 = getAvatarBg(고객.name);
   const 첫글자  = getInitialChar(고객.name);
-  const 등록일  = 고객.createdAt?.slice(0, 10) ?? '';
+  const 등록일  = formatDateShort(고객.createdAt);
 
   return (
     <ScrollView style={styles.page} contentContainerStyle={styles.content}>

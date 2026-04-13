@@ -5,7 +5,7 @@
  * TODO-STORAGE: 매물 사진 업로드·URL 저장
  */
 import { useRouter } from 'expo-router';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Keyboard, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -14,7 +14,8 @@ import { RegisterDealChips, RegisterPropChips } from '@/components/property/regi
 import { MOCK_ADDRESS_ROWS, formatPhoneHyphen } from '@/components/property/registerMocks';
 import { RegisterMoreFields, formatAreaSqmInput, formatFloorInput } from '@/components/property/registerMoreFields';
 import { registerStyles as styles } from '@/components/property/registerStyles';
-import type { DealKind, PropKind, RelationKind } from '@/components/property/registerTypes';
+import { PROP_OPTIONS, type DealKind, type PropKind, type RelationKind } from '@/components/property/registerTypes';
+import { DEAL_TYPES, PROPERTY_TYPES } from '@/types';
 import { clearEditData, closeRegisterPanel } from '@/utils/registerEvents';
 
 type ScreenProps = {
@@ -22,10 +23,13 @@ type ScreenProps = {
   initialData?: Record<string, unknown> | null;
 };
 
-const str = (v: unknown): string => (typeof v === 'string' ? v : '');
+// 숫자/문자 등 원시값을 문자열로 통일 (서버 number 등 방어)
+const str = (v: unknown): string => { if (v === null || v === undefined) return ''; return String(v); };
 
 export default function PropertyRegisterScreen({ embedded = false, initialData }: ScreenProps) {
   const router = useRouter();
+  // 블러 타이머 ref — 언마운트 시 정리용
+  const blurTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const d = initialData ?? null;
   const isEdit = d !== null;
@@ -34,8 +38,19 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
 
   const [address, setAddress] = useState<string>(() => str(d?.addr));
   const [buildingName, setBuildingName] = useState<string>(() => str(d?.buildingName));
-  const [deal, setDeal] = useState<DealKind>(() => (str(d?.deal) as DealKind) || '월세');
-  const [propType, setPropType] = useState<PropKind>(() => (str(d?.type) as PropKind) || '아파트');
+  const [deal, setDeal] = useState<DealKind>(() => {
+    const dealValue = str(d?.deal);
+    const initialDeal: DealKind = DEAL_TYPES.includes(dealValue as DealKind) ? (dealValue as DealKind) : '월세';
+    return initialDeal;
+  });
+  const [propType, setPropType] = useState<PropKind>(() => {
+    const typeValue = str(d?.type);
+    // PROPERTY_TYPES 허용 + 화면 칩 PropKind와 교집합 (사무실 등 타입 불일치 방어)
+    const initialProp: PropKind = PROPERTY_TYPES.includes(typeValue as (typeof PROPERTY_TYPES)[number]) && (PROP_OPTIONS as readonly string[]).includes(typeValue)
+      ? (typeValue as PropKind)
+      : '아파트';
+    return initialProp;
+  });
   const [salePrice, setSalePrice] = useState<string>(() => str(d?.salePrice));
   const [jeonsePrice, setJeonsePrice] = useState<string>(() => str(d?.jeonsePrice));
   const [deposit, setDeposit] = useState<string>(() => str(d?.deposit));
@@ -51,6 +66,8 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
   const [ownerMemo, setOwnerMemo] = useState<string>('');
   const [memo, setMemo] = useState<string>(() => str(d?.memo));
   const [showSuggest, setShowSuggest] = useState<boolean>(false);
+
+  useEffect(() => () => { clearTimeout(blurTimerRef.current ?? undefined); }, []);
 
   const suggestions = useMemo(() => {
     const q = address.trim();
@@ -96,7 +113,10 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
           value={address}
           onChangeText={(t) => { setAddress(t); setShowSuggest(true); }}
           onFocus={() => setShowSuggest(true)}
-          onBlur={() => setTimeout(() => setShowSuggest(false), 200)}
+          onBlur={() => {
+            if (blurTimerRef.current) clearTimeout(blurTimerRef.current);
+            blurTimerRef.current = setTimeout(() => setShowSuggest(false), 200);
+          }}
           placeholder="주소를 입력하세요"
           placeholderTextColor="#9AA5B4"
         />

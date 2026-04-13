@@ -18,7 +18,8 @@ type ScreenProps = {
   initialData?: Record<string, unknown> | null;
 };
 
-const str = (v: unknown): string => (typeof v === 'string' ? v : '');
+// 숫자/문자 모두 안전하게 string 변환 (서버 연동 시 number 타입 대비)
+const str = (v: unknown): string => { if (v === null || v === undefined) return ''; return String(v); };
 
 export default function CustomerRegisterScreen({ embedded = false, initialData }: ScreenProps) {
   const router = useRouter();
@@ -97,6 +98,7 @@ export default function CustomerRegisterScreen({ embedded = false, initialData }
             }}
             placeholder="고객 메모 (녹음 내용이 여기에 입력됩니다)"
             rows={3}
+            maxLength={300}
             style={{
               width: '100%',
               border: '1px solid #D8DCE6',

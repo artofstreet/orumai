@@ -2,7 +2,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Alert, Linking, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
-
 import AdCopyModal from '@/components/AdCopyModal';
 import { detailStyles as styles } from '@/components/property/detailStyles';
 import PropertyCarousel from '@/components/PropertyCarousel';
@@ -11,7 +10,6 @@ import { DUMMY_PROPERTIES } from '@/constants/dummyData';
 import { getContentMaxWidth, getHorizontalPadding } from '@/constants/theme';
 import { printProperty } from '@/utils/printProperty';
 import { openRegisterPanel } from '@/utils/registerEvents';
-
 // TODO-DB: supabase.from('properties').select().eq('id', id).single() 로 교체 예정
 // TODO-AUTH: 매물 상세·시세조회 접근 권한은 로그인·역할 연동 후 제한
 // TODO-STORAGE: 최근 시세조회 매물 id 로컬 캐시 등 확장 가능
@@ -20,13 +18,11 @@ const getBadge = (key: string) =>
   key in BADGE_COLORS ? BADGE_COLORS[key as keyof typeof BADGE_COLORS] : BADGE_COLORS.기본;
 
 const DEAL_PRICE_COLOR: Record<string, string> = { 매매: '#1D4ED8', 전세: '#16A34A', 월세: '#DB2777' };
-
 /** 매물 스펙 라벨·값 — detailStyles 위에 절대 크기·굵기 덮어씀 */
 const specFontStyles = StyleSheet.create({
   specLabel: { fontSize: 14, lineHeight: 16 }, // 면적·층수 등 라벨
   specValue: { fontSize: 15, fontWeight: '600' }, // 49㎡ 등 값만 굵기 600
 });
-
 /** 스펙 행·칸 정렬 (detailStyles.specRow/specCell 위에만 적용) */
 const specLayoutStyles = StyleSheet.create({
   specRow: {
@@ -41,7 +37,6 @@ const specLayoutStyles = StyleSheet.create({
   },
   specTextVertical: { textAlignVertical: 'top' },
 });
-
 export default function PropertyDetailScreen() {
   const { width: windowWidth } = useWindowDimensions();
   const layoutPadding = useMemo(() => getHorizontalPadding(windowWidth), [windowWidth]);
@@ -50,13 +45,12 @@ export default function PropertyDetailScreen() {
   const isUltraWide   = windowWidth >= 1920;
   const headerTitleSize = windowWidth < 400 ? 18 : windowWidth < 768 ? 20 : 22;
 
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const params = useLocalSearchParams<{ id?: string | string[] }>();
+  const id = Array.isArray(params.id) ? params.id[0] : params.id; // 배열 방어 — expo-router 쿼리 중복 시 string[]
   const property = useMemo(() => DUMMY_PROPERTIES.find((p) => p.id === id), [id]);
 
   const [adCopyVisible, setAdCopyVisible] = useState<boolean>(false);
-
   const 준비중 = () => Alert.alert('준비 중', '곧 지원될 예정입니다.');
-
   const carouselMidDesktopClip = useMemo(() => {
     if (windowWidth >= 1280 && windowWidth < 1920) {
       return { height: 380, overflow: 'hidden' as const, width: '100%' as const };
@@ -74,7 +68,6 @@ export default function PropertyDetailScreen() {
       </View>
     );
   }
-
   const title      = property.buildingName ?? property.name;
   const typeBadge  = getBadge(property.type);
   const dealBadge  = getBadge(property.deal);
