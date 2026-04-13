@@ -1,10 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { forwardRef, useMemo, useState } from 'react';
 import type { TextInput as TextInputType, TextStyle } from 'react-native';
-import { Platform, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Platform, StyleSheet, TextInput, View } from 'react-native';
 
 import { border, card, primary, text, text3 } from '@/constants/colors';
 
+// TODO: 공통 utils/shadow.ts 로 이동 예정 (여러 파일 중복)
 // 플랫폼별 그림자 유틸
 const makeShadow = (h: number, r: number, o: number, elev: number) =>
   Platform.OS === 'web'
@@ -28,6 +29,7 @@ const SearchBar = forwardRef<TextInputType, SearchBarProps>(
           <Ionicons name="search" size={18} color={text3} />
           <TextInput
             ref={ref}
+            accessibilityLabel="검색어 입력"
             value={value}
             onChangeText={onChangeText}
             placeholder="오름검색"
@@ -39,9 +41,6 @@ const SearchBar = forwardRef<TextInputType, SearchBarProps>(
             style={[styles.input, { outlineWidth: 0 } as TextStyle]}
           />
         </View>
-        <Text style={styles.srOnly} accessibilityElementsHidden>
-          검색어 입력
-        </Text>
       </View>
     );
   }
@@ -74,11 +73,5 @@ const styles = StyleSheet.create({
     color: text,
     padding: 0,
     fontSize: 16,
-  },
-  srOnly: {
-    height: 0,
-    width: 0,
-    overflow: 'hidden',
-    opacity: 0,
   },
 });

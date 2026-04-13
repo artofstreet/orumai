@@ -166,7 +166,7 @@ export default function TopBar({
 const styles = StyleSheet.create({
   container:     { minHeight: 56, backgroundColor: Colors.topbar, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   left:          { flexDirection: 'row', alignItems: 'center', flexShrink: 1, minWidth: 0 },
-  logoBox:       { width: 26, height: 26, borderRadius: 6, backgroundColor: '#1D4ED8', alignItems: 'center', justifyContent: 'center' },
+  logoBox:       { width: 26, height: 26, borderRadius: 6, backgroundColor: Colors.logoBg, alignItems: 'center', justifyContent: 'center' },
   logoText:      { color: '#FFFFFF', fontSize: 14, fontWeight: '700', marginLeft: 7, flexShrink: 0 },
   center:        { flexDirection: 'row', alignItems: 'center', gap: 16, position: 'absolute', left: 0, right: 0, justifyContent: 'center', pointerEvents: 'none' },
   countBox:      { flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 4, paddingHorizontal: 8, borderRadius: 6 },

@@ -1,18 +1,9 @@
 import * as Clipboard from 'expo-clipboard';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-    ActivityIndicator,
-    Modal,
-    Platform,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    useWindowDimensions,
-    View,
+  ActivityIndicator, Modal, Platform, Pressable, ScrollView, StyleSheet, Text,
+  TouchableOpacity, useWindowDimensions, View,
 } from 'react-native';
-
 import type { Property } from '@/types';
 import { generateAdCopy, type AdCopyResult } from '@/utils/generateAdCopy';
 
@@ -38,6 +29,8 @@ export default function AdCopyModal({ visible, property, onClose }: AdCopyModalP
   const [error, setError]         = useState<string>('');
   const [activeTab, setActiveTab] = useState<TabKey>('naver');
   const [copied, setCopied]       = useState<boolean>(false);
+  // 복사 완료 표시 타이머 — 언마운트 시 정리용
+  const copiedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const isWeb = Platform.OS === 'web'; // 웹 여부
 
@@ -51,15 +44,6 @@ export default function AdCopyModal({ visible, property, onClose }: AdCopyModalP
       maxHeight: sheetMaxH,
     };
   }, [windowWidth, windowHeight]);
-
-  useEffect(() => {
-    if (!visible) return;
-    setResult(null);
-    setError('');
-    setCopied(false);
-    setActiveTab('naver');
-    void handleGenerate();
-  }, [visible]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleGenerate = useCallback(async () => {
     setLoading(true);
@@ -76,14 +60,28 @@ export default function AdCopyModal({ visible, property, onClose }: AdCopyModalP
     }
   }, [property]);
 
+  useEffect(() => {
+    if (!visible) return;
+    setResult(null);
+    setError('');
+    setCopied(false);
+    setActiveTab('naver');
+    void handleGenerate();
+  }, [visible, property]);
+
+  useEffect(() => () => {
+    if (copiedTimerRef.current) clearTimeout(copiedTimerRef.current);
+  }, []);
+
   const handleCopy = useCallback(async () => {
     if (!result) return;
     await Clipboard.setStringAsync(result[activeTab]);
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    if (copiedTimerRef.current) clearTimeout(copiedTimerRef.current);
+    copiedTimerRef.current = setTimeout(() => setCopied(false), 2000);
   }, [result, activeTab]);
 
-  const activeText = result ? result[activeTab] : '';
+  const activeText = result?.[activeTab] ?? '';
 
   const sheetBody = (
     <>

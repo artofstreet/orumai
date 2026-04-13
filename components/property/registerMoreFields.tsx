@@ -1,42 +1,26 @@
-/**
- * 보증금·면적·집주인·메모 입력 블록
- */
+/** 보증금·면적·집주인·메모 입력 블록 */
 import { useState } from 'react';
 import { Modal, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 import { registerStyles as styles } from './registerStyles';
-import type { DealKind, RelationKind } from './registerTypes';
+import { REL_OPTIONS, type DealKind, type RelationKind } from './registerTypes';
 
 type Props = {
   deal: DealKind; // 거래 종류(매매/전세/월세에 따라 가격 입력란 분기)
-  salePrice: string; // 매매가
-  setSalePrice: (v: string) => void;
-  jeonsePrice: string; // 전세금
-  setJeonsePrice: (v: string) => void;
-  deposit: string; // 보증금(월세)
-  setDeposit: (v: string) => void;
-  monthly: string; // 월세
-  setMonthly: (v: string) => void;
-  areaSqm: string;
-  setAreaSqm: (v: string) => void;
-  floor: string;
-  setFloor: (v: string) => void;
-  totalFloors: string;
-  setTotalFloors: (v: string) => void;
-  direction: string;
-  setDirection: (v: string) => void;
-  moveInDate: string;
-  setMoveInDate: (v: string) => void;
-  ownerName: string;
-  setOwnerName: (v: string) => void;
-  relation: RelationKind | undefined; // 미선택 시 undefined
-  setRelation: (v: RelationKind) => void;
-  ownerPhone: string;
-  onPhoneChange: (v: string) => void;
-  ownerMemo: string; // 집주인 섹션 메모
-  setOwnerMemo: (v: string) => void;
-  memo: string;
-  setMemo: (v: string) => void;
+  salePrice: string; setSalePrice: (v: string) => void;
+  jeonsePrice: string; setJeonsePrice: (v: string) => void;
+  deposit: string; setDeposit: (v: string) => void;
+  monthly: string; setMonthly: (v: string) => void;
+  areaSqm: string; setAreaSqm: (v: string) => void;
+  floor: string; setFloor: (v: string) => void;
+  totalFloors: string; setTotalFloors: (v: string) => void;
+  direction: string; setDirection: (v: string) => void;
+  moveInDate: string; setMoveInDate: (v: string) => void;
+  ownerName: string; setOwnerName: (v: string) => void;
+  relation: RelationKind | undefined; setRelation: (v: RelationKind) => void; // 미선택 시 undefined
+  ownerPhone: string; onPhoneChange: (v: string) => void;
+  ownerMemo: string; setOwnerMemo: (v: string) => void; // 집주인 섹션 메모
+  memo: string; setMemo: (v: string) => void;
 };
 
 /** 숫자만 추출 후 최대 길이 자르기 */
@@ -64,8 +48,6 @@ export function formatMoveInDateInput(raw: string): string {
   return `${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6, 8)}`;
 }
 
-const RELATION_OPTIONS: RelationKind[] = ['집주인', '대리인']; // 모달 관계 선택지
-
 const MEMO_LINE_HEIGHT = 24;
 const MEMO_BASE_HEIGHT = 80;
 
@@ -89,15 +71,17 @@ type MemoFieldProps = {
   onChangeText: (v: string) => void;
   placeholder: string;
   scrollEnabled?: boolean;
+  maxLength?: number; // 최대 글자 수 (미지정 시 제한 없음)
 };
 
 /** 멀티라인 메모: 웹은 textarea + scrollHeight, 네이티브는 TextInput */
-function RegisterMemoField({ value, onChangeText, placeholder, scrollEnabled }: MemoFieldProps) {
+function RegisterMemoField({ value, onChangeText, placeholder, scrollEnabled, maxLength }: MemoFieldProps) {
   if (Platform.OS === 'web') {
     return (
       <textarea
         value={value}
         placeholder={placeholder}
+        maxLength={maxLength}
         onChange={(e) => {
           const el = e.target as HTMLTextAreaElement;
           el.style.height = 'auto';
@@ -108,21 +92,14 @@ function RegisterMemoField({ value, onChangeText, placeholder, scrollEnabled }: 
       />
     );
   }
-
   return (
     <TextInput
-      style={[
-        styles.input,
-        {
-          height: memoHeightFromNewlines(value),
-          minHeight: MEMO_BASE_HEIGHT,
-          textAlignVertical: 'top',
-        },
-      ]}
+      style={[styles.input, { height: memoHeightFromNewlines(value), minHeight: MEMO_BASE_HEIGHT, textAlignVertical: 'top' }]}
       value={value}
       onChangeText={onChangeText}
       multiline
       scrollEnabled={scrollEnabled}
+      maxLength={maxLength}
       placeholder={placeholder}
       placeholderTextColor="#9AA5B4"
     />
@@ -132,34 +109,19 @@ function RegisterMemoField({ value, onChangeText, placeholder, scrollEnabled }: 
 /** 가격·상세·집주인·메모 섹션 */
 export function RegisterMoreFields(p: Props) {
   const [relationModalOpen, setRelationModalOpen] = useState<boolean>(false); // 관계 선택 모달
-
   return (
     <>
       <View style={styles.section}>
         {p.deal === '매매' && (
           <>
             <Text style={styles.sectionLabel}>매매가</Text>
-            <TextInput
-              style={styles.input}
-              value={p.salePrice}
-              onChangeText={p.setSalePrice}
-              keyboardType="numeric"
-              placeholder="매매가"
-              placeholderTextColor="#9AA5B4"
-            />
+            <TextInput style={styles.input} value={p.salePrice} onChangeText={p.setSalePrice} keyboardType="numeric" placeholder="매매가" placeholderTextColor="#9AA5B4" />
           </>
         )}
         {p.deal === '전세' && (
           <>
             <Text style={styles.sectionLabel}>전세금</Text>
-            <TextInput
-              style={styles.input}
-              value={p.jeonsePrice}
-              onChangeText={p.setJeonsePrice}
-              keyboardType="numeric"
-              placeholder="전세금"
-              placeholderTextColor="#9AA5B4"
-            />
+            <TextInput style={styles.input} value={p.jeonsePrice} onChangeText={p.setJeonsePrice} keyboardType="numeric" placeholder="전세금" placeholderTextColor="#9AA5B4" />
           </>
         )}
         {p.deal === '월세' && (
@@ -170,70 +132,26 @@ export function RegisterMoreFields(p: Props) {
           </>
         )}
       </View>
-
       <View style={styles.section}>
         <Text style={styles.sectionLabel}>면적·층·방향·입주</Text>
-        <TextInput
-          style={styles.input}
-          value={p.areaSqm}
-          onChangeText={(t) => p.setAreaSqm(formatAreaSqmInput(t))}
-          keyboardType="number-pad"
-          placeholder="면적(㎡)"
-          placeholderTextColor="#9AA5B4"
-        />
-        <TextInput
-          style={styles.input}
-          value={p.floor}
-          onChangeText={(t) => p.setFloor(formatFloorInput(t))}
-          keyboardType="number-pad"
-          placeholder="해당 층"
-          placeholderTextColor="#9AA5B4"
-        />
-        <TextInput
-          style={styles.input}
-          value={p.totalFloors}
-          onChangeText={(t) => p.setTotalFloors(formatFloorInput(t))}
-          keyboardType="number-pad"
-          placeholder="총 층수"
-          placeholderTextColor="#9AA5B4"
-        />
+        <TextInput style={styles.input} value={p.areaSqm} onChangeText={(t) => p.setAreaSqm(formatAreaSqmInput(t))} keyboardType="number-pad" placeholder="면적(㎡)" placeholderTextColor="#9AA5B4" />
+        <TextInput style={styles.input} value={p.floor} onChangeText={(t) => p.setFloor(formatFloorInput(t))} keyboardType="number-pad" placeholder="해당 층" placeholderTextColor="#9AA5B4" />
+        <TextInput style={styles.input} value={p.totalFloors} onChangeText={(t) => p.setTotalFloors(formatFloorInput(t))} keyboardType="number-pad" placeholder="총 층수" placeholderTextColor="#9AA5B4" />
         <TextInput style={styles.input} value={p.direction} onChangeText={p.setDirection} placeholder="방향 (예: 남향)" placeholderTextColor="#9AA5B4" />
-        <TextInput
-          style={styles.input}
-          value={p.moveInDate}
-          onChangeText={(t) => p.setMoveInDate(formatMoveInDateInput(t))}
-          keyboardType="number-pad"
-          placeholder="입주일 예: 2026-05-01"
-          placeholderTextColor="#9AA5B4"
-        />
+        <TextInput style={styles.input} value={p.moveInDate} onChangeText={(t) => p.setMoveInDate(formatMoveInDateInput(t))} keyboardType="number-pad" placeholder="입주일 예: 2026-05-01" placeholderTextColor="#9AA5B4" />
       </View>
-
       <View style={styles.section}>
         <TouchableOpacity style={styles.relationPickerBtn} onPress={() => setRelationModalOpen(true)} activeOpacity={0.85}>
-          <Text style={styles.relationPickerBtnTxt}>
-            {p.relation === undefined ? '관계 선택' : p.relation}
-          </Text>
+          <Text style={styles.relationPickerBtnTxt}>{p.relation === undefined ? '관계 선택' : p.relation}</Text>
         </TouchableOpacity>
         <TextInput style={styles.input} value={p.ownerName} onChangeText={p.setOwnerName} placeholder="이름" placeholderTextColor="#9AA5B4" />
         <Modal visible={relationModalOpen} transparent animationType="fade" onRequestClose={() => setRelationModalOpen(false)}>
           <View style={styles.modalBackdrop}>
-            <TouchableOpacity
-              style={StyleSheet.absoluteFill}
-              activeOpacity={1}
-              onPress={() => setRelationModalOpen(false)}
-              accessibilityRole="button"
-            />
+            <TouchableOpacity style={StyleSheet.absoluteFill} activeOpacity={1} onPress={() => setRelationModalOpen(false)} accessibilityRole="button" />
             <View style={styles.modalCard}>
               <Text style={styles.modalTitle}>관계 선택</Text>
-              {RELATION_OPTIONS.map((r) => (
-                <TouchableOpacity
-                  key={r}
-                  style={styles.modalOptionRow}
-                  onPress={() => {
-                    p.setRelation(r);
-                    setRelationModalOpen(false);
-                  }}
-                  activeOpacity={0.85}>
+              {REL_OPTIONS.map((r) => (
+                <TouchableOpacity key={r} style={styles.modalOptionRow} onPress={() => { p.setRelation(r); setRelationModalOpen(false); }} activeOpacity={0.85}>
                   <Text style={styles.modalOptionTxt}>{r}</Text>
                 </TouchableOpacity>
               ))}
@@ -241,12 +159,11 @@ export function RegisterMoreFields(p: Props) {
           </View>
         </Modal>
         <TextInput style={styles.input} value={p.ownerPhone} onChangeText={p.onPhoneChange} keyboardType="phone-pad" placeholder="전화번호" placeholderTextColor="#9AA5B4" />
-        <RegisterMemoField value={p.ownerMemo} onChangeText={p.setOwnerMemo} placeholder="메모" />
+        <RegisterMemoField value={p.ownerMemo} onChangeText={p.setOwnerMemo} placeholder="메모" maxLength={300} />
       </View>
-
       <View style={styles.section}>
         <Text style={styles.sectionLabel}>메모</Text>
-        <RegisterMemoField value={p.memo} onChangeText={p.setMemo} placeholder="메모" scrollEnabled={false} />
+        <RegisterMemoField value={p.memo} onChangeText={p.setMemo} placeholder="메모" scrollEnabled={false} maxLength={500} />
       </View>
     </>
   );
