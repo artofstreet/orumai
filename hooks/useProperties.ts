@@ -29,12 +29,14 @@ export interface UsePropertiesReturn {
 }
 
 export function useProperties(): UsePropertiesReturn {
+  // TODO-DB: 화면마다 독립 상태를 가짐 (공유 안 됨) — Supabase 연결 시 Context 또는 Zustand로 교체 필요
   // 매물 상태(초기값은 더미 데이터)
   const [properties, setProperties] = useState<Property[]>(() => [...DUMMY_PROPERTIES]);
 
   // 매물 추가(로컬 상태 업데이트)
   const addProperty = useCallback((input: AddPropertyInput) => {
     // TODO-DB: addProperty의 id를 Supabase insert 반환값으로 교체 예정
+    // TODO-DB: 임시 로컬 id — 서버 연결 후 Supabase insert 반환 id로 즉시 대체
     const generatedId = `prop_${Date.now()}_${Math.random().toString(16).slice(2)}`;
     const createdAt = new Date().toISOString();
 

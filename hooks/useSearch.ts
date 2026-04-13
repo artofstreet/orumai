@@ -22,19 +22,19 @@ const 모든단어포함여부 = (targetLower: string, words: string[]): boolean
 
 // 매물 검색에 포함할 텍스트 조각(상수)
 const PROPERTY_SEARCH_PARTS: Array<(p: Property) => string> = [
-  (p) => p.name,
-  (p) => p.type,
-  (p) => p.addr,
-  (p) => p.deal,
-  (p) => p.price,
-  (p) => p.memo,
+  (p) => p.name || '',
+  (p) => p.type || '',
+  (p) => p.addr || '',
+  (p) => p.deal || '',
+  (p) => p.price || '',
+  (p) => p.memo || '',
 ];
 
 // 고객 검색에 포함할 텍스트 조각(상수)
 const CUSTOMER_SEARCH_PARTS: Array<(c: Customer) => string> = [
-  (c) => c.name,
-  (c) => c.phone,
-  (c) => c.memo,
+  (c) => c.name || '',
+  (c) => c.phone || '',
+  (c) => c.memo || '',
 ];
 
 export interface UseSearchReturn {
@@ -62,16 +62,22 @@ export function useSearch(options?: UseSearchOptions): UseSearchReturn {
   const words = useMemo<string[]>(() => 검색단어분리(searchQuery), [searchQuery]);
 
   const filteredProperties = useMemo<Property[]>(() => {
-    if (words.length === 0) return properties;
+    const sorted = [...properties].sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
 
-    return properties.filter((p) => {
+    if (words.length === 0) return sorted;
+
+    return sorted.filter((p) => {
       const searchable = PROPERTY_SEARCH_PARTS.map((pick) => pick(p)).join(' ').toLowerCase();
       return 모든단어포함여부(searchable, words);
     });
   }, [properties, words]);
 
   const filteredCustomers = useMemo<Customer[]>(() => {
-    const sorted = [...customers].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    const sorted = [...customers].sort(
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    );
 
     if (words.length === 0) return sorted;
 
