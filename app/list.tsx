@@ -1,21 +1,16 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
-
 import CustomerCard from '@/components/CustomerCard';
 import PropertyCard from '@/components/PropertyCard';
 import type { Customer, Property } from '@/types';
-
 import { bg, border, primary, text2 } from '@/constants/colors';
 import { getContentMaxWidth, getGridColumns, getHorizontalPadding } from '@/constants/theme';
 import { useProperties } from '@/hooks/useProperties';
 import { useSearch } from '@/hooks/useSearch';
-
 // TODO-DB: Supabase 연결 후 실데이터로 교체 예정
-
 type TabKey = 'properties' | 'customers';
-
 const GAP = 8;
 const PAGE_SIZE = 30;
 
@@ -26,36 +21,18 @@ export default function ListScreen() {
   const initialTab: TabKey = params.type === 'customers' ? 'customers' : 'properties';
   const [tab, setTab] = useState<TabKey>(initialTab);
   const [page, setPage] = useState<number>(1);
+  const flatListRef = useRef<{ scrollToOffset: (p: { offset: number; animated: boolean }) => void } | null>(null);
 
   const { properties } = useProperties();
   const { filteredProperties: rawProperties, filteredCustomers: rawCustomers } = useSearch({ properties });
 
-  const allProperties = useMemo(
-    () => [...rawProperties].sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
-    [rawProperties],
-  );
-  const allCustomers = useMemo(
-    () => [...rawCustomers].sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
-    [rawCustomers],
-  );
-
-  const handleTabChange = useCallback((newTab: TabKey) => {
-    setTab(newTab);
-    setPage(1);
-  }, []);
-
-  const totalPages = Math.max(1, Math.ceil(
-    (tab === 'properties' ? allProperties.length : allCustomers.length) / PAGE_SIZE
-  ));
-
-  const pagedProperties = useMemo(
-    () => allProperties.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
-    [allProperties, page],
-  );
-  const pagedCustomers = useMemo(
-    () => allCustomers.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
-    [allCustomers, page],
-  );
+  const allProperties = useMemo(() => [...rawProperties].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()), [rawProperties]);
+  const allCustomers = useMemo(() => [...rawCustomers].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()), [rawCustomers]);
+  useEffect(() => { setTab(params.type === 'customers' ? 'customers' : 'properties'); setPage(1); flatListRef.current?.scrollToOffset({ offset: 0, animated: true }); }, [params.type]);
+  const handleTabChange = useCallback((newTab: TabKey) => { setTab(newTab); setPage(1); flatListRef.current?.scrollToOffset({ offset: 0, animated: true }); }, []);
+  const totalPages = Math.max(1, Math.ceil(((tab === 'properties' ? allProperties.length : allCustomers.length) / PAGE_SIZE)));
+  const pagedProperties = useMemo(() => allProperties.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE), [allProperties, page]);
+  const pagedCustomers = useMemo(() => allCustomers.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE), [allCustomers, page]);
 
   const isUltraWide = windowWidth >= 1920;
   const columns = useMemo(() => {
@@ -68,24 +45,11 @@ export default function ListScreen() {
     const usable = layoutWidth - layoutPadding * 2 - GAP * (columns - 1);
     return Math.max(0, Math.floor(usable / columns));
   }, [layoutWidth, columns, layoutPadding]);
-
-  const listContentStyle = useMemo(
-    () => [styles.listContent, { paddingHorizontal: layoutPadding, maxWidth: layoutWidth }],
-    [layoutPadding, layoutWidth],
-  );
-
-  const renderPropertyItem = useCallback(
-    ({ item }: { item: Property }) => {
-      const onPress = () => router.push({ pathname: '/property/[id]', params: { id: item.id } });
-      return <PropertyCard property={item} width={cardWidth} onPress={onPress} />;
-    },
-    [cardWidth],
-  );
-
-  const renderCustomerItem = useCallback(
-    ({ item }: { item: Customer }) => <CustomerCard item={item} width={cardWidth} />,
-    [cardWidth],
-  );
+  const listContentStyle = useMemo(() => [styles.listContent, { paddingHorizontal: layoutPadding, maxWidth: layoutWidth }], [layoutPadding, layoutWidth]);
+  const renderPropertyItem = useCallback(({ item }: { item: Property }) => <PropertyCard property={item} width={cardWidth} onPress={() => router.push({ pathname: '/property/[id]', params: { id: item.id } })} />, [cardWidth]);
+  const renderCustomerItem = useCallback(({ item }: { item: Customer }) => <CustomerCard item={item} width={cardWidth} />, [cardWidth]);
+  const goPrevPage = useCallback(() => { setPage((p) => Math.max(1, p - 1)); flatListRef.current?.scrollToOffset({ offset: 0, animated: true }); }, []);
+  const goNextPage = useCallback(() => { setPage((p) => Math.min(totalPages, p + 1)); flatListRef.current?.scrollToOffset({ offset: 0, animated: true }); }, [totalPages]);
 
   return (
     <View style={styles.page}>
@@ -122,6 +86,7 @@ export default function ListScreen() {
         {/* 매물 목록 */}
         {tab === 'properties' ? (
           <FlatList<Property>
+            ref={(ref) => { flatListRef.current = ref; }}
             data={pagedProperties}
             keyExtractor={(item) => item.id}
             renderItem={renderPropertyItem}
@@ -134,6 +99,7 @@ export default function ListScreen() {
           />
         ) : (
           <FlatList<Customer>
+            ref={(ref) => { flatListRef.current = ref; }}
             data={pagedCustomers}
             keyExtractor={(item) => item.id}
             renderItem={renderCustomerItem}
@@ -151,14 +117,14 @@ export default function ListScreen() {
           <View style={[styles.pagination, { paddingHorizontal: layoutPadding }]}>
             <Pressable
               style={[styles.pageButton, page === 1 && styles.pageButtonDisabled]}
-              onPress={() => setPage((p) => Math.max(1, p - 1))}
+              onPress={goPrevPage}
               disabled={page === 1}>
               <Text style={[styles.pageButtonText, page === 1 && styles.pageButtonTextDisabled]}>이전</Text>
             </Pressable>
             <Text style={styles.pageInfo}>{page} / {totalPages}</Text>
             <Pressable
               style={[styles.pageButton, page === totalPages && styles.pageButtonDisabled]}
-              onPress={() => setPage((p) => Math.min(totalPages, p + 1))}
+              onPress={goNextPage}
               disabled={page === totalPages}>
               <Text style={[styles.pageButtonText, page === totalPages && styles.pageButtonTextDisabled]}>다음</Text>
             </Pressable>

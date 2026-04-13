@@ -31,11 +31,11 @@ export default function ResultsScreen() {
   const { filteredProperties: rawProperties, filteredCustomers: rawCustomers, searchQuery, setSearchQuery } = useSearch({ properties });
 
   const filteredProperties = useMemo(
-    () => [...rawProperties].sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
+    () => [...rawProperties].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
     [rawProperties],
   );
   const filteredCustomers = useMemo(
-    () => [...rawCustomers].sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
+    () => [...rawCustomers].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
     [rawCustomers],
   );
 

@@ -14,16 +14,11 @@ export type AgentProfile = {
   memo: string;
 };
 
-export const defaultProfile: AgentProfile = {
-  officeName: '',
-  agentName: '',
-  position: '',
-  phone: '',
-  plan: '',
-  memo: '',
-};
+export const defaultProfile: AgentProfile = { officeName: '', agentName: '', position: '', phone: '', plan: '', memo: '' };
 
 export const loadAgentProfile = (): AgentProfile => {
+  // TODO-STORAGE: 모바일 저장소는 AsyncStorage/SecureStore로 교체 예정
+  if (Platform.OS !== 'web') return defaultProfile;
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     return raw ? { ...defaultProfile, ...JSON.parse(raw) } : defaultProfile;
@@ -33,6 +28,8 @@ export const loadAgentProfile = (): AgentProfile => {
 };
 
 export const saveAgentProfile = (profile: AgentProfile): void => {
+  // TODO-STORAGE: 모바일 저장소는 AsyncStorage/SecureStore로 교체 예정
+  if (Platform.OS !== 'web') return;
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
   } catch {}
@@ -49,15 +46,18 @@ export default function ProfileScreen({ embedded = false, onClose }: ScreenProps
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [saved, setSaved] = useState<boolean>(false);
 
+  useEffect(() => { setProfile(loadAgentProfile()); }, []);
+
   useEffect(() => {
-    setProfile(loadAgentProfile());
-  }, []);
+    if (!saved) return;
+    const timer = setTimeout(() => setSaved(false), 2000);
+    return () => clearTimeout(timer);
+  }, [saved]);
 
   const handleSave = () => {
     saveAgentProfile(profile);
     setSaved(true);
     setIsEdit(false);
-    setTimeout(() => setSaved(false), 2000);
   };
 
   const handlePhoneChange = (v: string) => {
@@ -69,123 +69,91 @@ export default function ProfileScreen({ embedded = false, onClose }: ScreenProps
     setProfile((p) => ({ ...p, phone: formatted }));
   };
 
-  const firstChar = (profile.agentName || '?').trim()[0];
+  const firstChar = profile.agentName.trim().charAt(0) || '?';
 
-  const webMemoStyle = {
-    ...StyleSheet.flatten(styles.input),
-    minHeight: 80,
-    overflow: 'hidden' as const,
-    resize: 'none' as const,
-    width: '100%' as const,
-    boxSizing: 'border-box' as const,
-  };
+  const webMemoStyle = { ...StyleSheet.flatten(styles.input), minHeight: 80, overflow: 'hidden' as const, resize: 'none' as const, width: '100%' as const, boxSizing: 'border-box' as const };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView
-        style={[styles.page, embedded && { flex: 1, width: '100%' }]}
-        contentContainerStyle={styles.content}>
-
-      <View style={styles.header}>
-        <Text style={styles.title}>마이</Text>
-        <View style={styles.headerRight}>
-          {isEdit ? (
-            <Pressable style={styles.doneBtn} onPress={handleSave}>
-              <Text style={styles.doneBtnTxt}>{saved ? '저장됐어요 ✅' : '완료'}</Text>
-            </Pressable>
-          ) : (
-            <Pressable style={styles.editBtn} onPress={() => setIsEdit(true)}>
-              <Text style={styles.editBtnTxt}>편집</Text>
-            </Pressable>
-          )}
-          {/* embedded 패널: 오른쪽 닫기 — 부모 onClose로 슬라이드 패널 등 처리 */}
-          {embedded === true && (
-            <Pressable onPress={() => onClose?.()} style={styles.closeBtn} accessibilityLabel="닫기">
-              <Text style={styles.closeBtnTxt}>✕</Text>
-            </Pressable>
-          )}
-        </View>
-      </View>
-
-      {!isEdit && (
-        <>
-          <LinearGradient
-            colors={['#6B7280', '#D1D5DB', '#9CA3AF', '#E5E7EB', '#6B7280']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.idCard}>
-            <View style={styles.profileRow}>
-              <View style={styles.avatar}>
-                <Text style={styles.avatarTxt}>{firstChar}</Text>
-              </View>
-              <View style={styles.profileInfo}>
-                <Text style={styles.nameText}>
-                  {profile.agentName || '이름 없음'}
-                  {profile.position ? <Text style={{ fontSize: 14, fontWeight: '400', color: '#555555' }}>  {profile.position}</Text> : null}
-                </Text>
-                <Text style={styles.subText}>{profile.officeName}</Text>
-                <Text style={styles.subText}>{profile.phone}</Text>
-              </View>
-            </View>
-            <View style={styles.divider} />
-            <View style={styles.planRow}>
-              <Text style={styles.planLabel}>요금제</Text>
-              <View style={styles.planBadge}>
-                <Text style={styles.planBadgeTxt}>{profile.plan || 'FREE'}</Text>
-              </View>
-            </View>
-          </LinearGradient>
-
-          <View style={styles.memoBox}>
-            <Text style={styles.memoLabel}>메모</Text>
-            <Text style={styles.memoTxt}>{profile.memo || '메모 없음'}</Text>
+      <ScrollView style={[styles.page, embedded && { flex: 1, width: '100%' }]} contentContainerStyle={styles.content}>
+        <View style={styles.header}>
+          <Text style={styles.title}>마이</Text>
+          <View style={styles.headerRight}>
+            {isEdit ? (
+              <Pressable style={styles.doneBtn} onPress={handleSave}>
+                <Text style={styles.doneBtnTxt}>{saved ? '저장됐어요 ✅' : '완료'}</Text>
+              </Pressable>
+            ) : (
+              <Pressable style={styles.editBtn} onPress={() => setIsEdit(true)}>
+                <Text style={styles.editBtnTxt}>편집</Text>
+              </Pressable>
+            )}
+            {/* embedded 패널: 오른쪽 닫기 — 부모 onClose로 슬라이드 패널 등 처리 */}
+            {embedded === true && (
+              <Pressable onPress={() => onClose?.()} style={styles.closeBtn} accessibilityLabel="닫기">
+                <Text style={styles.closeBtnTxt}>✕</Text>
+              </Pressable>
+            )}
           </View>
-        </>
-      )}
-
-      {isEdit && (
-        <View style={styles.card}>
-          <Text style={styles.label}>상호</Text>
-          <TextInput style={styles.input} value={profile.officeName} onChangeText={(v) => setProfile((p) => ({ ...p, officeName: v }))} placeholder="예: 오름부동산" placeholderTextColor="#94A3B8" />
-
-          <Text style={styles.label}>중개사 이름</Text>
-          <TextInput style={styles.input} value={profile.agentName} onChangeText={(v) => setProfile((p) => ({ ...p, agentName: v }))} placeholder="예: 홍길동" placeholderTextColor="#94A3B8" />
-
-          <Text style={styles.label}>직급</Text>
-          <TextInput style={styles.input} value={profile.position} onChangeText={(v) => setProfile((p) => ({ ...p, position: v }))} placeholder="예: 공인중개사" placeholderTextColor="#94A3B8" />
-
-          <Text style={styles.label}>전화번호</Text>
-          <TextInput style={styles.input} value={profile.phone} onChangeText={handlePhoneChange} placeholder="예: 010-1234-5678" placeholderTextColor="#94A3B8" keyboardType="phone-pad" />
-
-          <Text style={styles.label}>나의 요금제</Text>
-          <TextInput style={styles.input} value={profile.plan} onChangeText={(v) => setProfile((p) => ({ ...p, plan: v }))} placeholder="예: PRO" placeholderTextColor="#94A3B8" />
-
-          <Text style={styles.label}>메모</Text>
-          {Platform.OS === 'web' ? (
-            <textarea
-              value={profile.memo}
-              placeholder="메모를 입력하세요"
-              onChange={(e) => {
-                const el = e.target as HTMLTextAreaElement;
-                el.style.height = 'auto';
-                el.style.height = `${el.scrollHeight}px`;
-                setProfile((p) => ({ ...p, memo: el.value }));
-              }}
-              style={webMemoStyle}
-            />
-          ) : (
-            <TextInput
-              style={[styles.input, { minHeight: 80, textAlignVertical: 'top' }]}
-              value={profile.memo}
-              onChangeText={(v) => setProfile((p) => ({ ...p, memo: v }))}
-              multiline
-              scrollEnabled={false}
-              placeholder="메모를 입력하세요"
-              placeholderTextColor="#94A3B8"
-            />
-          )}
         </View>
-      )}
+
+        {!isEdit && (
+          <>
+            <LinearGradient colors={['#6B7280', '#D1D5DB', '#9CA3AF', '#E5E7EB', '#6B7280']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.idCard}>
+              <View style={styles.profileRow}>
+                <View style={styles.avatar}><Text style={styles.avatarTxt}>{firstChar}</Text></View>
+                <View style={styles.profileInfo}>
+                  <Text style={styles.nameText}>
+                    {profile.agentName || '이름 없음'}
+                    {profile.position ? <Text style={{ fontSize: 14, fontWeight: '400', color: '#555555' }}>  {profile.position}</Text> : null}
+                  </Text>
+                  <Text style={styles.subText}>{profile.officeName}</Text>
+                  <Text style={styles.subText}>{profile.phone}</Text>
+                </View>
+              </View>
+              <View style={styles.divider} />
+              <View style={styles.planRow}>
+                <Text style={styles.planLabel}>요금제</Text>
+                <View style={styles.planBadge}><Text style={styles.planBadgeTxt}>{profile.plan || 'FREE'}</Text></View>
+              </View>
+            </LinearGradient>
+            <View style={styles.memoBox}>
+              <Text style={styles.memoLabel}>메모</Text>
+              <Text style={styles.memoTxt}>{profile.memo || '메모 없음'}</Text>
+            </View>
+          </>
+        )}
+
+        {isEdit && (
+          <View style={styles.card}>
+            <Text style={styles.label}>상호</Text>
+            <TextInput style={styles.input} value={profile.officeName} onChangeText={(v) => setProfile((p) => ({ ...p, officeName: v }))} placeholder="예: 오름부동산" placeholderTextColor="#94A3B8" />
+            <Text style={styles.label}>중개사 이름</Text>
+            <TextInput style={styles.input} value={profile.agentName} onChangeText={(v) => setProfile((p) => ({ ...p, agentName: v }))} placeholder="예: 홍길동" placeholderTextColor="#94A3B8" />
+            <Text style={styles.label}>직급</Text>
+            <TextInput style={styles.input} value={profile.position} onChangeText={(v) => setProfile((p) => ({ ...p, position: v }))} placeholder="예: 공인중개사" placeholderTextColor="#94A3B8" />
+            <Text style={styles.label}>전화번호</Text>
+            <TextInput style={styles.input} value={profile.phone} onChangeText={handlePhoneChange} placeholder="예: 010-1234-5678" placeholderTextColor="#94A3B8" keyboardType="phone-pad" />
+            <Text style={styles.label}>나의 요금제</Text>
+            <TextInput style={styles.input} value={profile.plan} onChangeText={(v) => setProfile((p) => ({ ...p, plan: v }))} placeholder="예: PRO" placeholderTextColor="#94A3B8" />
+            <Text style={styles.label}>메모</Text>
+            {Platform.OS === 'web' ? (
+              <textarea
+                value={profile.memo}
+                placeholder="메모를 입력하세요"
+                onChange={(e) => {
+                  const el = e.target as HTMLTextAreaElement;
+                  el.style.height = 'auto';
+                  el.style.height = `${el.scrollHeight}px`;
+                  setProfile((p) => ({ ...p, memo: el.value }));
+                }}
+                style={webMemoStyle}
+              />
+            ) : (
+              <TextInput style={[styles.input, { minHeight: 80, textAlignVertical: 'top' }]} value={profile.memo} onChangeText={(v) => setProfile((p) => ({ ...p, memo: v }))} multiline scrollEnabled={false} placeholder="메모를 입력하세요" placeholderTextColor="#94A3B8" />
+            )}
+          </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
