@@ -73,7 +73,7 @@ export default function PhotoDetailModal({ visible, photo, photoIndex, totalPhot
   };
 
   if (!photo) return null;
-  const displayUri = (phase === 'result' || phase === 'saved') ? generatedUri! : photo;
+  const displayUri = (phase === 'result' || phase === 'saved') ? (generatedUri ?? photo) : photo;
 
   return (
     <Modal visible={visible} animationType="fade" transparent onRequestClose={handleClose}>

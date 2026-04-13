@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import {
   Image,
-  LayoutChangeEvent,
   Platform,
   Pressable,
   StyleSheet,
@@ -12,6 +11,7 @@ import {
 import { PRICE_COLOR } from '@/constants/colors';
 import type { Property } from '@/types';
 
+// TODO-STYLE: 여러 파일 중복 — 나중에 constants/theme.ts로 통합 예정
 // 플랫폼별 그림자 유틸
 const makeShadow = (h: number, r: number, o: number, elev: number) =>
   Platform.OS === 'web'
@@ -48,8 +48,6 @@ export interface PropertyCardProps {
 }
 
 export default function PropertyCard({ property, width, onPress }: PropertyCardProps) {
-  const [photoSize, setPhotoSize] = useState<number>(0); // 사진 영역 크기(정사각형)
-
   const priceColor  = useMemo(() => DEAL_PRICE_COLOR[property.deal] ?? PRICE_COLOR, [property.deal]); // 거래유형별 가격 색상
   const typeChip    = useMemo(() => getTypeChip(property.type), [property.type]);
   const title       = property.buildingName ?? property.name; // 건물명 우선
@@ -64,23 +62,16 @@ export default function PropertyCard({ property, width, onPress }: PropertyCardP
       : ({ boxShadow: '0 2px 8px rgba(0,0,0,0.08)', transition: 'all 0.2s ease' } as unknown as object);
   }, [isHovered]);
 
-  // 사진 영역 너비를 카드 너비 1/3로 계산
-  const onLayout = (e: LayoutChangeEvent) => {
-    const cardW = e.nativeEvent.layout.width;
-    setPhotoSize(Math.floor(cardW / 3));
-  };
-
   const hasPhoto = photoCount > 0 && Boolean(property.photos?.[0]);
 
   return (
     <Pressable
       style={[styles.card, { width }, hoverStyle]}
       onPress={onPress}
-      onLayout={onLayout}
       onHoverIn={() => { if (Platform.OS === 'web') setIsHovered(true); }}
       onHoverOut={() => { if (Platform.OS === 'web') setIsHovered(false); }}>
       {/* 왼쪽: 사진 영역 (정사각형) */}
-      <View style={[styles.photo, { width: photoSize, height: photoSize }]}>
+      <View style={styles.photo}>
         {hasPhoto ? (
           <Image source={{ uri: property.photos![0] }} style={styles.photoImg} resizeMode="cover" />
         ) : (
@@ -135,7 +126,7 @@ const styles = StyleSheet.create({
     padding: 12,
     ...makeShadow(2, 8, 0.06, 2),
   },
-  photo:          { borderRadius: 8, overflow: 'hidden', backgroundColor: '#F1F5F9', position: 'relative' },
+  photo:          { width: '33.3%', aspectRatio: 1, borderRadius: 8, overflow: 'hidden', backgroundColor: '#F1F5F9', position: 'relative' },
   photoImg:       { width: '100%', height: '100%' },
   photoEmpty:     { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#E2E8F0' },
   photoEmoji:     { fontSize: 22 },

@@ -5,6 +5,7 @@ import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import { card as cardColor, text2 } from '@/constants/colors';
 import type { Customer } from '@/types';
 
+// TODO-STYLE: 여러 파일 중복 — 나중에 constants/theme.ts로 통합 예정
 // 플랫폼별 그림자 유틸
 const makeShadow = (h: number, r: number, o: number, elev: number) =>
   Platform.OS === 'web'
@@ -56,6 +57,8 @@ export default function CustomerCard({ item, width }: CustomerCardProps) {
   return (
     <Pressable
       style={[styles.card, width !== undefined ? { width } : null, hoverStyle]}
+      accessibilityRole="button"
+      accessibilityLabel={`${item.name} 고객 상세보기`}
       onPress={() => {
         router.push({ pathname: '/customer/[id]', params: { id: item.id } });
       }}

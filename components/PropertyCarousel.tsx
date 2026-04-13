@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import PhotoDetailModal, { SavePayload } from './PhotoDetailModal';
@@ -21,6 +21,10 @@ export default function PropertyCarousel({ photos = [] }: { photos: string[] }) 
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [selectedIdx, setSelectedIdx] = useState<number>(0);
   const [savedPhotos, setSavedPhotos] = useState<SavedPhoto[]>([]);
+
+  useEffect(() => {
+    setStartIdx(0); // photos 변경 시 슬라이드 위치 초기화
+  }, [photos]);
 
   const canPrev = startIdx > 0;
   const canNext = startIdx < list.length - THUMB_COUNT;

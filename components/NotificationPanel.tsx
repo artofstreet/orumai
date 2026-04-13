@@ -29,7 +29,7 @@ export default function NotificationPanel({ visible, onClose, panelW = 340, topO
 
   // 삭제 확인 후 삭제 처리
   const handleDelete = (id: string) => {
-    if (Platform.OS === 'web') {
+    if (Platform.OS === 'web' && typeof window !== 'undefined') {
       const ok = window.confirm('정말 삭제하시겠습니까?');
       if (ok) setNotices((prev) => prev.filter((n) => n.id !== id));
     } else {
