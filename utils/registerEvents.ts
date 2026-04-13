@@ -11,7 +11,7 @@ export function registerOpenPanel(fn: OpenPanelFn): () => void {
   전역패널열기 = fn;
   // 등록 해제 함수 반환 (언마운트/의존성 변경 시 정리)
   return () => {
-    전역패널열기 = null;
+    if (전역패널열기 === fn) 전역패널열기 = null;
   };
 }
 
@@ -30,7 +30,7 @@ export function registerClosePanel(fn: () => void): () => void {
   전역패널닫기 = fn;
   // 등록 해제 함수 반환 (언마운트/의존성 변경 시 정리)
   return () => {
-    전역패널닫기 = null;
+    if (전역패널닫기 === fn) 전역패널닫기 = null;
   };
 }
 

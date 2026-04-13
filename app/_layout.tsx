@@ -20,7 +20,7 @@ import PropertyRegisterScreen from './property/register';
 type RegisterKind = 'property' | 'customer';
 
 // 플랫폼별 그림자 유틸
-const makeShadow = (h: number, r: number, o: number, elev: number): Record<string, unknown> => (Platform.OS === 'web'
+const makeShadow = (h: number, r: number, o: number, elev: number): object => (Platform.OS === 'web'
   ? { boxShadow: `0 ${h}px ${r * 2}px rgba(0,0,0,${o})` }
   : { shadowColor: '#000', shadowOffset: { width: 0, height: h }, shadowOpacity: o, shadowRadius: r, elevation: elev });
 
@@ -37,7 +37,6 @@ export default function RootLayout() {
   const [profileOpen, setProfileOpen] = useState<boolean>(false);
   const [profileKey, setProfileKey] = useState<number>(0);
   const [showNotification, setShowNotification] = useState<boolean>(false);
-  const profileSlideX = useRef(new Animated.Value(0)).current;
 
   // 실제 매물/고객 수 (TODO-DB: Supabase 연결 후 실데이터로 교체)
   const propertyCount = DUMMY_PROPERTIES.length;
@@ -45,12 +44,14 @@ export default function RootLayout() {
 
   const panelW = useMemo(() => (windowWidth < 768 ? windowWidth : Math.min(480, Math.floor(windowWidth * 0.92))), [windowWidth]);
   const slideX = useRef(new Animated.Value(panelW)).current;
+  const profileSlideX = useRef(new Animated.Value(panelW)).current;
   useEffect(() => { if (!registerOpen) slideX.setValue(panelW); }, [panelW, slideX, registerOpen]);
   useEffect(() => { if (!profileOpen) profileSlideX.setValue(panelW); }, [panelW, profileSlideX, profileOpen]);
 
   const openPanel = useCallback((kind: RegisterKind, editData?: Record<string, unknown>) => {
+    if (registerOpen) return;
     setPanelEditData(editData ?? null); setRegisterKind(kind); slideX.setValue(panelW); setPanelKey((k) => k + 1); setRegisterOpen(true);
-  }, [panelW, slideX]);
+  }, [panelW, slideX, registerOpen]);
   // registerEvents 쪽 기존 호출 시그니처(3인자) 호환용: (kind, editId, editData) -> (kind, editData)
   const openPanelFromEvent = useCallback((kind: RegisterKind, _editId?: string, editData?: Record<string, unknown>) => { openPanel(kind, editData); }, [openPanel]);
   const openSelectModal = useCallback(() => { setSelectModalVisible(true); }, []);
@@ -114,10 +115,10 @@ export default function RootLayout() {
           </Modal>
 
           {/* 등록 슬라이드 패널 */}
-          {registerOpen && (<><Pressable style={styles.backdrop} onPress={closePanel} accessibilityRole="button" /><Animated.View style={[styles.panel, { width: panelW, transform: [{ translateX: slideX }] }]}>{registerKind === 'property' && (<PropertyRegisterScreen key={panelKey} embedded initialData={panelEditData} />)}{registerKind === 'customer' && (<CustomerRegisterScreen key={panelKey} embedded initialData={panelEditData} />)}</Animated.View></>)}
+          {registerOpen && (<><Pressable style={styles.backdrop} onPress={closePanel} accessibilityRole="button" accessibilityLabel="등록 패널 닫기" /><Animated.View style={[styles.panel, { width: panelW, transform: [{ translateX: slideX }] }]}>{registerKind === 'property' && (<PropertyRegisterScreen key={panelKey} embedded initialData={panelEditData} />)}{registerKind === 'customer' && (<CustomerRegisterScreen key={panelKey} embedded initialData={panelEditData} />)}</Animated.View></>)}
 
           {/* 프로필 슬라이드 패널 */}
-          {profileOpen && (<><Pressable style={styles.backdrop} onPress={closeProfilePanel} accessibilityRole="button" /><Animated.View style={[styles.panel, { width: panelW, transform: [{ translateX: profileSlideX }] }]}><ProfileScreen key={profileKey} embedded={true} onClose={closeProfilePanel} /></Animated.View></>)}
+          {profileOpen && (<><Pressable style={styles.backdrop} onPress={closeProfilePanel} accessibilityRole="button" accessibilityLabel="프로필 패널 닫기" /><Animated.View style={[styles.panel, { width: panelW, transform: [{ translateX: profileSlideX }] }]}><ProfileScreen key={profileKey} embedded={true} onClose={closeProfilePanel} /></Animated.View></>)}
         </SafeAreaView>
         <StatusBar style="auto" />
       </SafeAreaProvider>
