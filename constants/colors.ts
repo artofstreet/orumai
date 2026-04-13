@@ -16,7 +16,8 @@ export const text3 = '#9AA5B4'; // 힌트, 플레이스홀더
 export const border = '#D8DCE6'; // 구분선, 테두리
 export const bg = '#F0F4FF'; // 화면 배경
 export const card = '#F8FAFF'; // 카드 배경
-export const topbar = '#111827'; // 상단 바 // TopBar.tsx container backgroundColor에서 참조할 것 (현재 하드코딩 상태)
+export const topbar = '#111827'; // 상단 바 — TopBar.tsx Colors.topbar로 참조 중
+export const logoBg = '#1D4ED8'; // 로고 박스 배경색
 
 // 뱃지 색상 - 네이비 단일 계열로 통일
 export const BADGE_COLORS: BadgeColorMap = {
