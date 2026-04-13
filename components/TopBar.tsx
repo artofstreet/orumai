@@ -2,8 +2,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
 import { Platform, Pressable, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import type { ViewStyle } from 'react-native';
 import Svg, { Polygon } from 'react-native-svg';
 
+import * as Colors from '@/constants/colors';
 import { getHorizontalPadding } from '@/constants/theme';
 
 // TODO-AUTH: 로그인·역할에 따라 헤더 액션 노출 제어 시 이 컴포넌트에서 분기
@@ -29,37 +31,35 @@ export default function TopBar({
   onNotificationPress,
   propertyCount = 10,
   customerCount = 10,
-  notifCount    = 3,
+  notifCount = 0,
 }: TopBarProps) {
   const router = useRouter(); // expo-router 인스턴스 (목록 이동)
   const { width } = useWindowDimensions();
-  const pad        = useMemo(() => getHorizontalPadding(width), [width]);
-  const showPrint  = width >= 768;
-  const compact    = width < 400;
+  const pad = useMemo(() => getHorizontalPadding(width), [width]);
+  const showPrint = width >= 768;
+  const compact = width < 400;
   const showCenter = width >= 600;
 
-  const [isAddHovered,     setIsAddHovered]     = useState<boolean>(false);
-  const [isPrintHovered,   setIsPrintHovered]   = useState<boolean>(false);
-  const [isBellHovered,    setIsBellHovered]    = useState<boolean>(false);
+  const [isAddHovered, setIsAddHovered] = useState<boolean>(false);
+  const [isPrintHovered, setIsPrintHovered] = useState<boolean>(false);
+  const [isBellHovered, setIsBellHovered] = useState<boolean>(false);
   const [isProfileHovered, setIsProfileHovered] = useState<boolean>(false);
   // 웹 전용: 트랜지션 공통 스타일
-  const webShadowStyle = useMemo(() => {
-    if (Platform.OS !== 'web') return null;
-    return { transition: 'all 0.2s ease' } as unknown as object;
-  }, []);
+  const webShadowStyle = useMemo<ViewStyle>(() => (
+    Platform.select({ web: { transition: 'all 0.2s ease' }, default: {} }) as ViewStyle
+  ), []);
 
   // 웹 전용: hover 시 그림자 토글
-  const getWebHoverShadow = useCallback((isHovered: boolean) => {
-    if (Platform.OS !== 'web') return null;
-    return (isHovered
-      ? { boxShadow: '0 4px 12px rgba(0,0,0,0.4)' }
-      : { boxShadow: 'none' }
-    ) as unknown as object;
-  }, []);
+  const getWebHoverShadow = useCallback((isHovered: boolean): ViewStyle => (
+    Platform.select({
+      web: isHovered ? { boxShadow: '0 4px 12px rgba(0,0,0,0.4)' } : { boxShadow: 'none' },
+      default: {},
+    }) as ViewStyle
+  ), []);
 
   // 전체 목록 페이지 이동
   const goToList = useCallback((type: 'properties' | 'customers') => {
-    router.push(`/list?type=${type}`);
+    router.push({ pathname: '/list', params: { type } });
   }, [router]);
 
   // 로고 영역 탭 → 부모 onLogoPress
@@ -93,12 +93,18 @@ export default function TopBar({
         {/* 중앙 매물/고객 카운트 — 클릭 시 전체 목록 이동 */}
         {showCenter && (
           <View style={styles.center}>
-            <Pressable style={[styles.countBox, styles.countPressable]} onPress={() => goToList('properties')}>
+            <Pressable
+              style={[styles.countBox, styles.countPressable]}
+              onPress={() => goToList('properties')}
+              accessibilityLabel="매물 전체 목록 보기">
               <Text style={styles.countLabel}>🏠 매물</Text>
               <Text style={styles.countNum}>{propertyCount}</Text>
             </Pressable>
             <View style={styles.centerDivider} />
-            <Pressable style={[styles.countBox, styles.countPressable]} onPress={() => goToList('customers')}>
+            <Pressable
+              style={[styles.countBox, styles.countPressable]}
+              onPress={() => goToList('customers')}
+              accessibilityLabel="고객 전체 목록 보기">
               <Text style={styles.countLabel}>👤 고객</Text>
               <Text style={styles.countNum}>{customerCount}</Text>
             </Pressable>
@@ -110,6 +116,7 @@ export default function TopBar({
           <Pressable
             style={[styles.addButton, webShadowStyle, getWebHoverShadow(isAddHovered)]}
             onPress={() => onRegisterPress?.()}
+            accessibilityLabel="매물 또는 고객 등록"
             onHoverIn={() => { if (Platform.OS === 'web') setIsAddHovered(true); }}
             onHoverOut={() => { if (Platform.OS === 'web') setIsAddHovered(false); }}>
             <Text style={styles.addButtonText}>+등록</Text>
@@ -119,6 +126,7 @@ export default function TopBar({
             <Pressable
               style={[styles.iconButton, webShadowStyle, getWebHoverShadow(isPrintHovered)]}
               onPress={() => onPrintPress?.()}
+              accessibilityLabel="전체 인쇄"
               onHoverIn={() => { if (Platform.OS === 'web') setIsPrintHovered(true); }}
               onHoverOut={() => { if (Platform.OS === 'web') setIsPrintHovered(false); }}>
               <Ionicons name="print-outline" size={20} color="#FFFFFF" />
@@ -128,6 +136,7 @@ export default function TopBar({
           <Pressable
             style={[styles.iconButton, webShadowStyle, getWebHoverShadow(isBellHovered)]}
             onPress={() => onNotificationPress?.()}
+            accessibilityLabel="알림 패널 열기"
             onHoverIn={() => { if (Platform.OS === 'web') setIsBellHovered(true); }}
             onHoverOut={() => { if (Platform.OS === 'web') setIsBellHovered(false); }}>
             <View style={styles.bellIconWrap}>
@@ -143,6 +152,7 @@ export default function TopBar({
           <Pressable
             style={[styles.iconButton, webShadowStyle, getWebHoverShadow(isProfileHovered)]}
             onPress={() => onProfilePress?.()}
+            accessibilityLabel="프로필 보기"
             onHoverIn={() => { if (Platform.OS === 'web') setIsProfileHovered(true); }}
             onHoverOut={() => { if (Platform.OS === 'web') setIsProfileHovered(false); }}>
             <Ionicons name="person-circle-outline" size={20} color="#FFFFFF" />
@@ -154,7 +164,7 @@ export default function TopBar({
 }
 
 const styles = StyleSheet.create({
-  container:     { minHeight: 56, backgroundColor: '#0F172A', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  container:     { minHeight: 56, backgroundColor: Colors.topbar, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   left:          { flexDirection: 'row', alignItems: 'center', flexShrink: 1, minWidth: 0 },
   logoBox:       { width: 26, height: 26, borderRadius: 6, backgroundColor: '#1D4ED8', alignItems: 'center', justifyContent: 'center' },
   logoText:      { color: '#FFFFFF', fontSize: 14, fontWeight: '700', marginLeft: 7, flexShrink: 0 },

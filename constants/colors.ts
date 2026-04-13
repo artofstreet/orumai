@@ -1,4 +1,8 @@
-// 앱 전역에서 재사용할 색상 팔레트입니다.
+// 오름AI 색상 팔레트 — BADGE_COLORS 키는 types/index.ts PropertyType과 반드시 일치해야 함
+
+import type { DealType, PropertyType } from '@/types';
+
+type BadgeColorMap = Record<PropertyType | DealType | '기본', { bg: string; text: string }>;
 
 export const primary = '#1A56DB'; // 주요 버튼, 링크
 export const primaryLight = '#EEF3FD'; // 선택 배경
@@ -12,10 +16,10 @@ export const text3 = '#9AA5B4'; // 힌트, 플레이스홀더
 export const border = '#D8DCE6'; // 구분선, 테두리
 export const bg = '#F0F4FF'; // 화면 배경
 export const card = '#F8FAFF'; // 카드 배경
-export const topbar = '#111827'; // 상단 바
+export const topbar = '#111827'; // 상단 바 // TopBar.tsx container backgroundColor에서 참조할 것 (현재 하드코딩 상태)
 
 // 뱃지 색상 - 네이비 단일 계열로 통일
-export const BADGE_COLORS = {
+export const BADGE_COLORS: BadgeColorMap = {
   // 매물 종류
   아파트: { bg: '#EEF2FF', text: '#3B4FC8' },
   빌라: { bg: '#EEF2FF', text: '#3B4FC8' },
@@ -30,7 +34,7 @@ export const BADGE_COLORS = {
   전세: { bg: '#E8F4FD', text: '#1A6FA8' },
   월세: { bg: '#E8F4FD', text: '#1A6FA8' },
   기본: { bg: '#F1F5F9', text: '#475569' },
-} as const;
+};
 
 // 가격 색상 - 단일 네이비 계열
 export const PRICE_COLOR = '#1D4ED8'; // 모든 거래유형 동일 색상
