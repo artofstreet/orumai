@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Platform, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
+import { Keyboard, Platform, StyleSheet, Text, TextInput, TouchableWithoutFeedback, useWindowDimensions, View } from 'react-native';
 
 import SearchBar from '@/components/SearchBar';
 import { bg, primary, text, text2 } from '@/constants/colors';
@@ -36,7 +36,7 @@ export default function HomeScreen() {
     router.push({ pathname: '/results' as const, params: { query: 검색어 } });
   };
 
-  return (
+  const page = (
     <View style={styles.page}>
       <View
         style={[
@@ -59,6 +59,15 @@ export default function HomeScreen() {
         <SearchBar ref={inputRef} value={검색어} onChangeText={set검색어} onSubmit={검색실행} />
       </View>
     </View>
+  );
+
+  if (Platform.OS === 'web') {
+    return page;
+  }
+  return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      {page}
+    </TouchableWithoutFeedback>
   );
 }
 
