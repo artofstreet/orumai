@@ -7,8 +7,12 @@ let 전역패널열기: OpenPanelFn | null = null; // _layout에서 등록한 �
 let 전역패널닫기: (() => void) | null = null;
 
 /** _layout.tsx 에서 패널 열기 함수 등록 */
-export function registerOpenPanel(fn: OpenPanelFn): void {
+export function registerOpenPanel(fn: OpenPanelFn): () => void {
   전역패널열기 = fn;
+  // 등록 해제 함수 반환 (언마운트/의존성 변경 시 정리)
+  return () => {
+    전역패널열기 = null;
+  };
 }
 
 /** 다른 화면에서 패널 열기 요청 */
@@ -22,8 +26,12 @@ export function openRegisterPanel(
   }
 }
 
-export function registerClosePanel(fn: () => void): void {
+export function registerClosePanel(fn: () => void): () => void {
   전역패널닫기 = fn;
+  // 등록 해제 함수 반환 (언마운트/의존성 변경 시 정리)
+  return () => {
+    전역패널닫기 = null;
+  };
 }
 
 export function closeRegisterPanel(): void {

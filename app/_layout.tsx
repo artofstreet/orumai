@@ -21,10 +21,10 @@ import PropertyRegisterScreen from './property/register';
 type RegisterKind = 'property' | 'customer';
 
 // 플랫폼별 그림자 유틸
-const makeShadow = (h: number, r: number, o: number, elev: number) =>
+const makeShadow = (h: number, r: number, o: number, elev: number): Record<string, unknown> =>
   Platform.OS === 'web'
-    ? ({ boxShadow: `0 ${h}px ${r * 2}px rgba(0,0,0,${o})` } as object)
-    : { shadowColor: '#000' as const, shadowOffset: { width: 0, height: h }, shadowOpacity: o, shadowRadius: r, elevation: elev };
+    ? { boxShadow: `0 ${h}px ${r * 2}px rgba(0,0,0,${o})` }
+    : { shadowColor: '#000', shadowOffset: { width: 0, height: h }, shadowOpacity: o, shadowRadius: r, elevation: elev };
 
 export default function RootLayout() {
   const router = useRouter();
@@ -101,8 +101,12 @@ export default function RootLayout() {
   }, [panelW, slideX]);
 
   useEffect(() => {
-    registerOpenPanel(openPanel);
-    registerClosePanel(closePanel);
+    const unregisterOpen = registerOpenPanel(openPanel);
+    const unregisterClose = registerClosePanel(closePanel);
+    return () => {
+      unregisterOpen();
+      unregisterClose();
+    };
   }, [openPanel, closePanel]);
 
   const openProfilePanel = useCallback(() => {
@@ -134,6 +138,10 @@ export default function RootLayout() {
       const style = document.createElement('style');
       style.innerHTML = `input:focus { outline: none !important; }`;
       document.head.appendChild(style);
+      return () => {
+        // 웹에서만 style 태그 정리
+        document.head.removeChild(style);
+      };
     }
   }, []);
 
@@ -167,21 +175,21 @@ export default function RootLayout() {
           {/* 매물/고객 선택 모달 */}
           <Modal visible={selectModalVisible} transparent animationType="fade" onRequestClose={() => setSelectModalVisible(false)}>
             <Pressable style={styles.modalBackdrop} onPress={() => setSelectModalVisible(false)}>
-              <View style={styles.modalCard}>
+              <Pressable style={styles.modalCard} onPress={(e) => e.stopPropagation?.()}>
                 <TouchableOpacity style={styles.modalOptionRow} onPress={() => onSelectKind('property')}>
                   <Text style={styles.modalOptionTxt}>🏠 매물 등록</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={[styles.modalOptionRow, { borderTopWidth: 1, borderTopColor: '#F1F5F9' }]} onPress={() => onSelectKind('customer')}>
                   <Text style={styles.modalOptionTxt}>👤 고객 등록</Text>
                 </TouchableOpacity>
-              </View>
+              </Pressable>
             </Pressable>
           </Modal>
 
           {/* 인쇄 선택 모달 */}
           <Modal visible={printModalVisible} transparent animationType="fade" onRequestClose={() => setPrintModalVisible(false)}>
             <Pressable style={styles.modalBackdrop} onPress={() => setPrintModalVisible(false)}>
-              <View style={styles.modalCard}>
+              <Pressable style={styles.modalCard} onPress={(e) => e.stopPropagation?.()}>
                 <TouchableOpacity style={styles.modalOptionRow} onPress={() => {
                   setPrintModalVisible(false);
                   printPropertyList(DUMMY_PROPERTIES);
@@ -194,7 +202,7 @@ export default function RootLayout() {
                 }}>
                   <Text style={styles.modalOptionTxt}>👤 전체 고객 인쇄</Text>
                 </TouchableOpacity>
-              </View>
+              </Pressable>
             </Pressable>
           </Modal>
 
