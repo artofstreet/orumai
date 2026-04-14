@@ -1,16 +1,41 @@
 import { loadAgentProfile } from '@/app/profile';
 import type { Customer, Property } from '@/types';
 
+// 사용자 입력(또는 외부 데이터)이 HTML에 주입될 수 있으므로 escape 처리
+const escapeHtml = (value: string): string =>
+  value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+
 // 공통 iframe 인쇄 함수
 const printViaIframe = (html: string): void => {
   const iframe = document.createElement('iframe');
   iframe.style.display = 'none';
   document.body.appendChild(iframe);
-  iframe.contentDocument!.write(html);
-  iframe.contentDocument!.close();
-  iframe.contentWindow!.focus();
-  iframe.contentWindow!.print();
-  setTimeout(() => document.body.removeChild(iframe), 1000);
+
+  const cleanup = (): void => {
+    if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
+  };
+
+  const win = iframe.contentWindow;
+  const doc = iframe.contentDocument;
+  if (!win || !doc) {
+    cleanup();
+    throw new Error('인쇄 프레임 생성 실패');
+  }
+
+  // 인쇄 완료 후 iframe 제거 (타임아웃 기반 제거 대신 사용)
+  win.addEventListener('afterprint', cleanup, { once: true });
+
+  doc.open();
+  doc.write(html);
+  doc.close();
+
+  win.focus();
+  win.print();
 };
 
 // 매물 목록 전체 인쇄
@@ -19,15 +44,15 @@ export const printPropertyList = (properties: Property[]): void => {
 
   const rows = properties.map((p) => `
     <tr>
-      <td>${p.buildingName ?? p.name}</td>
-      <td>${p.addr}</td>
-      <td>${p.type}</td>
-      <td>${p.deal}</td>
-      <td style="font-weight:700;color:#DB2777;">${p.price}</td>
-      <td>${p.area}</td>
-      <td>${p.floor}/${p.totalFloors ?? '—'}</td>
-      <td>${p.moveInDate ?? '—'}</td>
-      <td>${p.phone}</td>
+      <td>${escapeHtml(p.buildingName ?? p.name)}</td>
+      <td>${escapeHtml(p.addr)}</td>
+      <td>${escapeHtml(p.type)}</td>
+      <td>${escapeHtml(p.deal)}</td>
+      <td style="font-weight:700;color:#DB2777;">${escapeHtml(p.price)}</td>
+      <td>${escapeHtml(p.area)}</td>
+      <td>${escapeHtml(p.floor)}/${escapeHtml(String(p.totalFloors ?? '—'))}</td>
+      <td>${escapeHtml(p.moveInDate ?? '—')}</td>
+      <td>${escapeHtml(p.phone)}</td>
     </tr>
   `).join('');
 
@@ -59,9 +84,9 @@ export const printPropertyList = (properties: Property[]): void => {
           <h2>매물 목록 (총 ${properties.length}건)</h2>
         </div>
         <div class="agent">
-          <div><strong>${agent.officeName}</strong></div>
-          <div>${agent.agentName} ${agent.position}</div>
-          <div>${agent.phone}</div>
+          <div><strong>${escapeHtml(agent.officeName)}</strong></div>
+          <div>${escapeHtml(agent.agentName)} ${escapeHtml(agent.position)}</div>
+          <div>${escapeHtml(agent.phone)}</div>
         </div>
       </div>
       <table>
@@ -94,10 +119,10 @@ export const printCustomerList = (customers: Customer[]): void => {
 
   const rows = customers.map((c) => `
     <tr>
-      <td>${c.name}</td>
-      <td>${c.phone}</td>
-      <td>${c.memo.length > 40 ? c.memo.slice(0, 40) + '...' : c.memo}</td>
-      <td>${c.createdAt?.slice(0, 10) ?? '—'}</td>
+      <td>${escapeHtml(c.name)}</td>
+      <td>${escapeHtml(c.phone)}</td>
+      <td>${escapeHtml(c.memo.length > 40 ? c.memo.slice(0, 40) + '...' : c.memo)}</td>
+      <td>${escapeHtml(c.createdAt?.slice(0, 10) ?? '—')}</td>
     </tr>
   `).join('');
 
@@ -129,9 +154,9 @@ export const printCustomerList = (customers: Customer[]): void => {
           <h2>고객 목록 (총 ${customers.length}건)</h2>
         </div>
         <div class="agent">
-          <div><strong>${agent.officeName}</strong></div>
-          <div>${agent.agentName} ${agent.position}</div>
-          <div>${agent.phone}</div>
+          <div><strong>${escapeHtml(agent.officeName)}</strong></div>
+          <div>${escapeHtml(agent.agentName)} ${escapeHtml(agent.position)}</div>
+          <div>${escapeHtml(agent.phone)}</div>
         </div>
       </div>
       <table>
