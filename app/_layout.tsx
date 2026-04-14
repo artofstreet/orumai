@@ -7,7 +7,6 @@ import 'react-native-reanimated';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import NotificationPanel from '@/components/NotificationPanel';
 import TopBar from '@/components/TopBar';
-import { bg } from '@/constants/colors';
 import { DUMMY_CUSTOMERS } from '@/constants/dummyCustomers';
 import { DUMMY_PROPERTIES } from '@/constants/dummyProperties';
 import { useColorScheme } from '@/hooks/use-color-scheme';
@@ -91,7 +90,7 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <SafeAreaView style={styles.container}>
           <TopBar onLogoPress={() => router.replace('/')} onRegisterPress={openSelectModal} onProfilePress={openProfilePanel} onPrintPress={() => setPrintModalVisible(true)} onNotificationPress={() => setShowNotification(true)} propertyCount={propertyCount} customerCount={customerCount} />
-          <View style={styles.content}><Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: bg } }}><Stack.Screen name="results" /><Stack.Screen name="list" /><Stack.Screen name="property/[id]" /></Stack></View>
+          <View style={styles.content}><Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#F0F4FF' } }}><Stack.Screen name="results" /><Stack.Screen name="list" /><Stack.Screen name="property/[id]" /></Stack></View>
           <NotificationPanel visible={showNotification} onClose={() => setShowNotification(false)} panelW={panelW} />
 
           {/* 매물/고객 선택 모달 */}
@@ -120,14 +119,16 @@ export default function RootLayout() {
           {/* 프로필 슬라이드 패널 */}
           {profileOpen && (<><Pressable style={styles.backdrop} onPress={closeProfilePanel} accessibilityRole="button" accessibilityLabel="프로필 패널 닫기" /><Animated.View style={[styles.panel, { width: panelW, transform: [{ translateX: profileSlideX }] }]}><ProfileScreen key={profileKey} embedded={true} onClose={closeProfilePanel} /></Animated.View></>)}
         </SafeAreaView>
-        <StatusBar style="auto" />
+        {/* 상태바: 상단 배경(네이비)과 톤을 맞춤 */}
+        <StatusBar style="light" backgroundColor="#0B132B" />
       </SafeAreaProvider>
     </ThemeProvider>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: bg }, content: { flex: 1 },
+  // 루트 배경색: 상단 톤(네이비)
+  container: { flex: 1, backgroundColor: '#0B132B' }, content: { flex: 1 },
   backdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(15, 23, 42, 0.45)', zIndex: 20 },
   panel: { position: 'absolute', right: 0, top: 0, bottom: 0, backgroundColor: '#FFFFFF', zIndex: 21, borderLeftWidth: 1, borderLeftColor: '#E2E8F0', ...makeShadow(0, 12, 0.12, 12) },
   modalBackdrop: { flex: 1, justifyContent: 'flex-start', alignItems: 'flex-end', paddingTop: 56, paddingRight: 16 },
