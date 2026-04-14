@@ -13,7 +13,9 @@ function parseGenerateAdCopyBody(value: unknown): GenerateAdCopyBody | null {
   if (!isRecord(value) || typeof value.prompt !== 'string') {
     return null;
   }
-  return { prompt: value.prompt };
+  const prompt = value.prompt.trim();
+  if (!prompt) return null;
+  return { prompt };
 }
 
 // 서버 전용 라우트 — CLAUDE_API_KEY는 번들/클라이언트에 포함되지 않음
@@ -24,7 +26,7 @@ export async function POST(request: ExpoRequest | undefined): Promise<Response> 
       headers: { 'Content-Type': 'application/json' },
     });
   }
-  const apiKey = process.env.CLAUDE_API_KEY ?? '';
+  const apiKey = (process.env.CLAUDE_API_KEY ?? '').trim();
   if (!apiKey) {
     return new Response(JSON.stringify({ error: 'API 키 없음' }), {
       status: 500,
@@ -64,6 +66,9 @@ export async function POST(request: ExpoRequest | undefined): Promise<Response> 
   }
 
   let res: Response | undefined;
+  // Claude API 호출 타임아웃(15초) — 무한 대기 방지
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 15_000);
   try {
     res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -72,6 +77,7 @@ export async function POST(request: ExpoRequest | undefined): Promise<Response> 
         'x-api-key': apiKey,
         'anthropic-version': '2023-06-01',
       },
+      signal: controller.signal,
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
         max_tokens: 1024,
@@ -85,6 +91,8 @@ export async function POST(request: ExpoRequest | undefined): Promise<Response> 
       status: 502,
       headers: { 'Content-Type': 'application/json' },
     });
+  } finally {
+    clearTimeout(timeoutId);
   }
 
   if (res == null) {
