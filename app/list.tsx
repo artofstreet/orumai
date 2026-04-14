@@ -9,6 +9,7 @@ import { bg, border, primary, text2 } from '@/constants/colors';
 import { getContentMaxWidth, getGridColumns, getHorizontalPadding } from '@/constants/theme';
 import { useProperties } from '@/hooks/useProperties';
 import { useSearch } from '@/hooks/useSearch';
+import { printPropertyList } from '@/utils/printList';
 // TODO-DB: Supabase 연결 후 실데이터로 교체 예정
 type TabKey = 'properties' | 'customers';
 const GAP = 8;
@@ -51,6 +52,11 @@ export default function ListScreen() {
   const goPrevPage = useCallback(() => { setPage((p) => Math.max(1, p - 1)); flatListRef.current?.scrollToOffset({ offset: 0, animated: true }); }, []);
   const goNextPage = useCallback(() => { setPage((p) => Math.min(totalPages, p + 1)); flatListRef.current?.scrollToOffset({ offset: 0, animated: true }); }, [totalPages]);
 
+  // 매물 탭: 상위 10건 인쇄(웹 iframe 인쇄 유틸)
+  const handlePrintPropertyList = useCallback(() => {
+    printPropertyList(allProperties.slice(0, 10));
+  }, [allProperties]);
+
   return (
     <View style={styles.page}>
       <View style={[styles.contentMax, { maxWidth: layoutWidth }]}>
@@ -64,6 +70,11 @@ export default function ListScreen() {
             <Text style={styles.titleText}>
               {tab === 'properties' ? `전체 매물 ${allProperties.length}건` : `전체 고객 ${allCustomers.length}건`}
             </Text>
+            {tab === 'properties' && (
+              <Pressable style={styles.printButton} onPress={handlePrintPropertyList} accessibilityLabel="매물 목록 인쇄">
+                <Ionicons name="print-outline" size={20} color={primary} />
+              </Pressable>
+            )}
           </View>
           <View style={styles.tabRow}>
             <Pressable
@@ -141,6 +152,7 @@ const styles = StyleSheet.create({
   contentMax:             { flex: 1, width: '100%', alignSelf: 'center', overflow: 'hidden' },
   header:                 { gap: 12, alignSelf: 'center', width: '100%', marginBottom: 4 },
   titleRow:               { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  printButton:            { marginLeft: 'auto', padding: 6 },
   backButton:             { paddingVertical: 4, paddingHorizontal: 2 },
   titleText:              { fontSize: 16, fontWeight: '800', color: '#0F172A' },
   tabRow:                 { flexDirection: 'row', gap: 18, borderBottomWidth: 1, borderBottomColor: border },
