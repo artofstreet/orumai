@@ -20,7 +20,7 @@ import PropertyCarousel from '@/components/PropertyCarousel';
 import { BADGE_COLORS, text } from '@/constants/colors';
 import { DUMMY_PROPERTIES } from '@/constants/dummyData';
 import { getContentMaxWidth, getHorizontalPadding } from '@/constants/theme';
-import { printProperty } from '@/utils/printProperty';
+import { printPropertyPost, printPropertyConsult } from '@/utils/printProperty';
 import { openRegisterPanel } from '@/utils/registerEvents';
 // TODO-DB: supabase.from('properties').select().eq('id', id).single() 로 교체 예정
 // TODO-AUTH: 매물 상세·시세조회 접근 권한은 로그인·역할 연동 후 제한
@@ -281,9 +281,15 @@ export default function PropertyDetailScreen() {
                 <Text style={styles.headerBtnText}>광고문구</Text>
               </TouchableOpacity>
               {Platform.OS === 'web' && (
-                <TouchableOpacity style={styles.headerBtn} onPress={() => printProperty(property)}>
-                  <Text style={styles.headerBtnText}>A4인쇄</Text>
-                </TouchableOpacity>
+                <>
+                  {/* 웹: 게시용인쇄 / 상담용인쇄 A4 템플릿 */}
+                  <TouchableOpacity style={styles.headerBtn} onPress={() => printPropertyPost(property)}>
+                    <Text style={styles.headerBtnText}>게시용인쇄</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.headerBtn} onPress={() => printPropertyConsult(property)}>
+                    <Text style={styles.headerBtnText}>상담용인쇄</Text>
+                  </TouchableOpacity>
+                </>
               )}
               <TouchableOpacity style={styles.headerBtn} onPress={() => openRegisterPanel('property', property.id, property as Record<string, unknown>)}>
                 <Text style={styles.headerBtnText}>편집</Text>
