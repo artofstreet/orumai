@@ -52,10 +52,10 @@ export default function ListScreen() {
   const goPrevPage = useCallback(() => { setPage((p) => Math.max(1, p - 1)); flatListRef.current?.scrollToOffset({ offset: 0, animated: true }); }, []);
   const goNextPage = useCallback(() => { setPage((p) => Math.min(totalPages, p + 1)); flatListRef.current?.scrollToOffset({ offset: 0, animated: true }); }, [totalPages]);
 
-  // 매물 탭: 상위 10건 인쇄(웹 iframe 인쇄 유틸)
+  // 매물 탭: 현재 페이지 기준 10건 단위 인쇄(웹 iframe 인쇄 유틸)
   const handlePrintPropertyList = useCallback(() => {
-    printPropertyList(allProperties.slice(0, 10));
-  }, [allProperties]);
+    printPropertyList(allProperties.slice((page - 1) * 10, page * 10));
+  }, [allProperties, page]);
 
   return (
     <View style={styles.page}>
