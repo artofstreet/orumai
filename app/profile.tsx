@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { useEffect, useState } from 'react';
-import { Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Alert, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const STORAGE_KEY = 'orumai_agent_profile';
@@ -45,6 +45,7 @@ export default function ProfileScreen({ embedded = false, onClose }: ScreenProps
   const [profile, setProfile] = useState<AgentProfile>(defaultProfile);
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [saved, setSaved] = useState<boolean>(false);
+  const editStartRef = useRef<AgentProfile>(defaultProfile);
 
   useEffect(() => { setProfile(loadAgentProfile()); }, []);
 
@@ -58,6 +59,43 @@ export default function ProfileScreen({ embedded = false, onClose }: ScreenProps
     saveAgentProfile(profile);
     setSaved(true);
     setIsEdit(false);
+  };
+
+  const isSameProfile = (a: AgentProfile, b: AgentProfile): boolean =>
+    a.officeName === b.officeName
+    && a.agentName === b.agentName
+    && a.position === b.position
+    && a.phone === b.phone
+    && a.plan === b.plan
+    && a.memo === b.memo;
+
+  const startEdit = () => {
+    // 편집 시작 시점의 스냅샷 저장(변경 여부 판단용)
+    editStartRef.current = profile;
+    setIsEdit(true);
+  };
+
+  const handleClose = () => {
+    if (!isEdit) {
+      onClose?.();
+      return;
+    }
+
+    // 편집 중 닫기: 변경사항이 있으면 확인 후 종료
+    const changed = !isSameProfile(editStartRef.current, profile);
+    if (!changed) {
+      onClose?.();
+      return;
+    }
+
+    Alert.alert(
+      '확인',
+      '저장하지 않고 나가시겠습니까?',
+      [
+        { text: '취소', style: 'cancel' },
+        { text: '확인', style: 'destructive', onPress: () => onClose?.() },
+      ],
+    );
   };
 
   const handlePhoneChange = (v: string) => {
@@ -81,16 +119,16 @@ export default function ProfileScreen({ embedded = false, onClose }: ScreenProps
           <View style={styles.headerRight}>
             {isEdit ? (
               <Pressable style={styles.doneBtn} onPress={handleSave}>
-                <Text style={styles.doneBtnTxt}>{saved ? '저장됐어요 ✅' : '완료'}</Text>
+                <Text style={styles.doneBtnTxt}>{saved ? '저장됐어요 ✅' : '저장'}</Text>
               </Pressable>
             ) : (
-              <Pressable style={styles.editBtn} onPress={() => setIsEdit(true)}>
+              <Pressable style={styles.editBtn} onPress={startEdit}>
                 <Text style={styles.editBtnTxt}>편집</Text>
               </Pressable>
             )}
             {/* embedded 패널: 오른쪽 닫기 — 부모 onClose로 슬라이드 패널 등 처리 */}
             {embedded === true && (
-              <Pressable onPress={() => onClose?.()} style={styles.closeBtn} accessibilityLabel="닫기">
+              <Pressable onPress={handleClose} style={styles.closeBtn} accessibilityLabel="닫기">
                 <Text style={styles.closeBtnTxt}>✕</Text>
               </Pressable>
             )}
@@ -135,7 +173,10 @@ export default function ProfileScreen({ embedded = false, onClose }: ScreenProps
             <Text style={styles.label}>전화번호</Text>
             <TextInput style={styles.input} value={profile.phone} onChangeText={handlePhoneChange} placeholder="예: 010-1234-5678" placeholderTextColor="#94A3B8" keyboardType="phone-pad" />
             <Text style={styles.label}>나의 요금제</Text>
-            <TextInput style={styles.input} value={profile.plan} onChangeText={(v) => setProfile((p) => ({ ...p, plan: v }))} placeholder="예: PRO" placeholderTextColor="#94A3B8" />
+            {/* TODO-DB: 요금제는 사용자가 직접 입력하는 것이 아님 */}
+            {/* TODO-DB: Supabase 구독 테이블에서 자동으로 읽어와야 함 */}
+            {/* TODO-DB: 편집 불가(readOnly) 처리 필요 */}
+            <TextInput style={styles.input} value={profile.plan} editable={false} placeholder="예: PRO" placeholderTextColor="#94A3B8" />
             <Text style={styles.label}>메모</Text>
             {Platform.OS === 'web' ? (
               <textarea
