@@ -1,9 +1,21 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
-import { Alert, Linking, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
+import {
+  ActionSheetIOS,
+  Alert,
+  Linking,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  useWindowDimensions,
+  View,
+} from 'react-native';
+import * as Clipboard from 'expo-clipboard';
 import AdCopyModal from '@/components/AdCopyModal';
-import { detailStyles as styles } from '@/components/property/detailStyles';
+import { detailStyles } from '@/components/property/detailStyles';
 import PropertyCarousel from '@/components/PropertyCarousel';
 import { BADGE_COLORS, text } from '@/constants/colors';
 import { DUMMY_PROPERTIES } from '@/constants/dummyData';
@@ -37,6 +49,49 @@ const specLayoutStyles = StyleSheet.create({
   },
   specTextVertical: { textAlignVertical: 'top' },
 });
+
+// 지도/주소 복사 버튼 스타일 (detailStyles.ts가 아닌 이 파일 내부에서만 추가)
+const localStyles = StyleSheet.create({
+  addrBtnRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 0,
+  },
+  addrBtnMap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 9,
+    paddingVertical: 5,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#FDBA74',
+    backgroundColor: '#FFF7ED',
+  },
+  addrBtnMapText: {
+    fontSize: 12,
+    color: '#C2410C',
+    fontWeight: '600',
+  },
+  addrBtnCopy: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 9,
+    paddingVertical: 5,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#CBD5E1',
+    backgroundColor: 'transparent',
+  },
+  addrBtnCopyText: {
+    fontSize: 12,
+    color: '#334155',
+    fontWeight: '500',
+  },
+});
+
+const styles = { ...detailStyles, ...localStyles };
 export default function PropertyDetailScreen() {
   const { width: windowWidth } = useWindowDimensions();
   const layoutPadding = useMemo(() => getHorizontalPadding(windowWidth), [windowWidth]);
@@ -94,6 +149,96 @@ export default function PropertyDetailScreen() {
     }
   }, [property.addr]);
 
+  // 지도 앱/웹 선택 후 길찾기 열기
+  const openMapOptions = useCallback(async (): Promise<void> => {
+    const addr = property.addr.trim();
+    const encodedAddr = encodeURIComponent(addr);
+    if (!addr) {
+      Alert.alert('오류', '주소가 없습니다.');
+      return;
+    }
+
+    // 웹: 네이버 지도 검색 탭 열기
+    if (Platform.OS === 'web') {
+      window.open(`https://map.naver.com/v5/search/${encodedAddr}`, '_blank');
+      return;
+    }
+
+    const openKakao = async (): Promise<void> => {
+      const canKakao = await Linking.canOpenURL('kakaomap://');
+      const url = canKakao ? `kakaomap://search?q=${addr}` : `https://map.kakao.com/?q=${encodedAddr}`;
+      await Linking.openURL(url);
+    };
+
+    const openNaver = async (): Promise<void> => {
+      const canNaver = await Linking.canOpenURL('nmap://');
+      const url = canNaver
+        ? `nmap://search?query=${encodedAddr}&appname=com.orumai`
+        : `https://map.naver.com/v5/search/${encodedAddr}`;
+      await Linking.openURL(url);
+    };
+
+    const openGoogle = async (): Promise<void> => {
+      await Linking.openURL(`https://www.google.com/maps/search/${encodedAddr}`);
+    };
+
+    if (Platform.OS === 'ios') {
+      ActionSheetIOS.showActionSheetWithOptions(
+        {
+          options: ['취소', '카카오맵', '네이버지도', '구글맵'],
+          cancelButtonIndex: 0,
+        },
+        (buttonIndex) => {
+          void (async () => {
+            try {
+              if (buttonIndex === 1) await openKakao();
+              if (buttonIndex === 2) await openNaver();
+              if (buttonIndex === 3) await openGoogle();
+            } catch {
+              Alert.alert('오류', '링크를 열 수 없습니다.');
+            }
+          })();
+        }
+      );
+      return;
+    }
+
+    // Android: Alert로 선택지 노출
+    Alert.alert('지도/길찾기', '어떤 지도로 여시겠어요?', [
+      { text: '취소', style: 'cancel' },
+      {
+        text: '카카오맵',
+        onPress: () => {
+          void (async () => {
+            try { await openKakao(); } catch { Alert.alert('오류', '링크를 열 수 없습니다.'); }
+          })();
+        },
+      },
+      {
+        text: '네이버지도',
+        onPress: () => {
+          void (async () => {
+            try { await openNaver(); } catch { Alert.alert('오류', '링크를 열 수 없습니다.'); }
+          })();
+        },
+      },
+      {
+        text: '구글맵',
+        onPress: () => {
+          void (async () => {
+            try { await openGoogle(); } catch { Alert.alert('오류', '링크를 열 수 없습니다.'); }
+          })();
+        },
+      },
+    ]);
+  }, [property.addr]);
+
+  // 주소 복사
+  const copyAddress = useCallback(async (): Promise<void> => {
+    await Clipboard.setStringAsync(property.addr);
+    Alert.alert('복사 완료', '주소가 복사되었습니다.');
+  }, [property.addr]);
+
   return (
     <ScrollView style={styles.page} contentContainerStyle={styles.pageScrollContent} keyboardShouldPersistTaps="handled" nestedScrollEnabled={true}>
       <View style={[styles.container, { paddingHorizontal: layoutPadding, maxWidth: layoutWidth }]}>
@@ -113,7 +258,18 @@ export default function PropertyDetailScreen() {
           </View>
 
           <Text style={[styles.headerTitle, { fontSize: headerTitleSize }]} numberOfLines={3}>{title}</Text>
-          <Text style={styles.headerAddr}>📍 {property.addr}</Text>
+          <Text style={[styles.headerAddr, { color: '#374151', fontSize: 16, fontWeight: '500', marginTop: 2 }]}>{property.addr}</Text>
+          {/* 지도/주소 복사 버튼 */}
+          <View style={[styles.addrBtnRow, { marginTop: 2 }]}>
+            <TouchableOpacity style={styles.addrBtnMap} onPress={openMapOptions}>
+              <Ionicons name="navigate-outline" size={13} color="#C2410C" />
+              <Text style={styles.addrBtnMapText}>지도/길찾기</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.addrBtnCopy} onPress={copyAddress}>
+              <Ionicons name="copy-outline" size={13} color="#64748B" />
+              <Text style={styles.addrBtnCopyText}>주소 복사</Text>
+            </TouchableOpacity>
+          </View>
 
           <View style={[styles.headerBottom, narrow && styles.headerBottomNarrow]}>
             <Text style={[styles.headerPrice, { color: priceColor }]}>{property.deal} {property.price}</Text>
