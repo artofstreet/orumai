@@ -9,7 +9,7 @@ import { bg, border, primary, text2 } from '@/constants/colors';
 import { getContentMaxWidth, getGridColumns, getHorizontalPadding } from '@/constants/theme';
 import { useProperties } from '@/hooks/useProperties';
 import { useSearch } from '@/hooks/useSearch';
-import { printPropertyList } from '@/utils/printList';
+import { printCustomerList, printPropertyList } from '@/utils/printList';
 // TODO-DB: Supabase 연결 후 실데이터로 교체 예정
 type TabKey = 'properties' | 'customers';
 const GAP = 8;
@@ -57,6 +57,11 @@ export default function ListScreen() {
     printPropertyList(allProperties.slice((page - 1) * 10, page * 10));
   }, [allProperties, page]);
 
+  // 고객 탭: 현재 페이지 기준 12건 단위 인쇄(웹 iframe 인쇄 유틸)
+  const handlePrintCustomerList = useCallback(() => {
+    printCustomerList(allCustomers.slice((page - 1) * 12, page * 12));
+  }, [allCustomers, page]);
+
   return (
     <View style={styles.page}>
       <View style={[styles.contentMax, { maxWidth: layoutWidth }]}>
@@ -72,6 +77,11 @@ export default function ListScreen() {
             </Text>
             {tab === 'properties' && (
               <Pressable style={styles.printButton} onPress={handlePrintPropertyList} accessibilityLabel="매물 목록 인쇄">
+                <Ionicons name="print-outline" size={20} color={primary} />
+              </Pressable>
+            )}
+            {tab === 'customers' && (
+              <Pressable style={styles.printButton} onPress={handlePrintCustomerList} accessibilityLabel="고객 목록 인쇄">
                 <Ionicons name="print-outline" size={20} color={primary} />
               </Pressable>
             )}

@@ -179,12 +179,22 @@ export const printPropertyList = (properties: Property[]): void => {
 export const printCustomerList = (customers: Customer[]): void => {
   const agent = loadAgentProfile();
 
-  const rows = customers.map((c) => `
+  // 등록일 최신순 정렬
+  const sorted = [...customers].sort((a, b) => (b.createdAt ?? '').localeCompare(a.createdAt ?? ''));
+
+  const rows = sorted.map((c) => `
     <tr>
       <td>${escapeHtml(c.name)}</td>
       <td>${escapeHtml(c.phone)}</td>
       <td>${escapeHtml(c.memo.length > 40 ? c.memo.slice(0, 40) + '...' : c.memo)}</td>
       <td>${escapeHtml(c.createdAt?.slice(0, 10) ?? '—')}</td>
+    </tr>
+  `).join('');
+
+  // 하단 메모란: 빈 줄 4개 (매물 목록 인쇄와 동일)
+  const memoRows = Array(4).fill(`
+    <tr class="memo-row">
+      <td colspan="4">&nbsp;</td>
     </tr>
   `).join('');
 
@@ -206,6 +216,9 @@ export const printCustomerList = (customers: Customer[]): void => {
         td { padding: 8px 8px; border-bottom: 1px solid #E2E8F0; font-size: 12px; color: #1E293B; line-height: 1.5; }
         tbody tr:nth-child(odd) td { background: #FAFBFC; }
         tbody tr:nth-child(even) td { background: #FFFFFF; }
+        .memo-section { margin-top: 20px; }
+        .memo-label { font-size: 11px; font-weight: 700; color: #94A3B8; margin-bottom: 6px; letter-spacing: 0.5px; }
+        .memo-row td { height: 28px; border-bottom: 1px solid #E2E8F0; background: #FFFFFF !important; }
         .footer { margin-top: 16px; font-size: 10px; color: #94A3B8; text-align: right; }
         @media print {
           body { padding: 12px; }
@@ -233,6 +246,14 @@ export const printCustomerList = (customers: Customer[]): void => {
         </thead>
         <tbody>${rows}</tbody>
       </table>
+
+      <div class="memo-section">
+        <div class="memo-label">▪ 상담 메모</div>
+        <table>
+          <tbody>${memoRows}</tbody>
+        </table>
+      </div>
+
       <div class="footer">오름AI &nbsp;|&nbsp; ${new Date().toLocaleDateString('ko-KR')} &nbsp;|&nbsp; 1/1</div>
     </body>
     </html>
