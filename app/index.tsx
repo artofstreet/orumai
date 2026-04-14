@@ -54,7 +54,7 @@ export default function HomeScreen() {
           <Text style={styles.logoO}>오름</Text>
           <Text style={styles.logoAI}>AI</Text>
         </Text>
-        <Text style={styles.subtitle}>AI 부동산 CRM</Text>
+        <Text style={styles.subtitle}>중개사님의 AI 비서</Text>
 
         <SearchBar ref={inputRef} value={검색어} onChangeText={set검색어} onSubmit={검색실행} />
       </View>
