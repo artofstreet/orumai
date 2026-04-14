@@ -55,6 +55,7 @@ ${summary}
     if (!res.ok) throw new Error(`서버 라우트 오류: ${res.status}`);
     data = await res.json() as ClaudeResponse;
   } else {
+    // TODO-SECURITY: 네이티브에서 직접 호출 시 API 키가 노출될 수 있으니, 서버 라우트 경유로 통일 검토
     // 네이티브(앱): 직접 호출 유지
     const apiKey = process.env.EXPO_PUBLIC_CLAUDE_API_KEY ?? '';
     if (!apiKey) throw new Error('EXPO_PUBLIC_CLAUDE_API_KEY 환경변수가 없습니다.');
@@ -78,6 +79,10 @@ ${summary}
 
   const raw = data.content.find((b) => b.type === 'text')?.text ?? '{}';
   const cleaned = raw.replace(/```json|```/g, '').trim(); // 마크다운 펜스 제거
-  const parsed = JSON.parse(cleaned) as AdCopyResult;
-  return parsed;
+  try {
+    const parsed = JSON.parse(cleaned) as AdCopyResult;
+    return parsed;
+  } catch {
+    throw new Error('광고문구 생성 실패');
+  }
 }
