@@ -45,12 +45,10 @@ export default function TopBar({
   const [isBellHovered,    setIsBellHovered]    = useState<boolean>(false);
   const [isProfileHovered, setIsProfileHovered] = useState<boolean>(false);
 
-  // 웹 전용: 트랜지션 공통 스타일
   const webShadowStyle = useMemo<ViewStyle>(() => (
     Platform.select({ web: { transition: 'all 0.2s ease' }, default: {} }) as ViewStyle
   ), []);
 
-  // 웹 전용: hover 시 그림자 토글
   const getWebHoverShadow = useCallback((isHovered: boolean): ViewStyle => (
     Platform.select({
       web: isHovered ? { boxShadow: '0 4px 12px rgba(0,0,0,0.4)' } : { boxShadow: 'none' },
@@ -58,7 +56,6 @@ export default function TopBar({
     }) as ViewStyle
   ), []);
 
-  // 전체 목록 페이지 이동
   const goToList = useCallback((type: 'properties' | 'customers') => {
     router.push({ pathname: '/list', params: { type } });
   }, [router]);
@@ -118,7 +115,7 @@ export default function TopBar({
           accessibilityLabel="매물 또는 고객 등록"
           onHoverIn={() => { if (Platform.OS === 'web') setIsAddHovered(true); }}
           onHoverOut={() => { if (Platform.OS === 'web') setIsAddHovered(false); }}>
-          <Text style={styles.addButtonText}>+등록</Text>
+          <Text style={styles.addButtonText}>등록</Text>
         </Pressable>
 
         {showPrint && (
@@ -157,7 +154,7 @@ export default function TopBar({
           accessibilityLabel="프로필 보기"
           onHoverIn={() => { if (Platform.OS === 'web') setIsProfileHovered(true); }}
           onHoverOut={() => { if (Platform.OS === 'web') setIsProfileHovered(false); }}>
-          <Ionicons name="person-circle-outline" size={22} color="#FFFFFF" />
+          <Ionicons name="person-circle-outline" size={30} color="#FFFFFF" />
         </Pressable>
       </View>
     </View>
@@ -165,12 +162,9 @@ export default function TopBar({
 }
 
 const styles = StyleSheet.create({
-  // ↓ 56 → 64
   container:      { minHeight: 64, backgroundColor: Colors.topbar, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   left:           { flexDirection: 'row', alignItems: 'center', flexShrink: 1, minWidth: 0 },
-  // ↓ 26 → 30, borderRadius 6 → 8
   logoBox:        { width: 30, height: 30, borderRadius: 8, backgroundColor: Colors.logoBg, alignItems: 'center', justifyContent: 'center' },
-  // ↓ fontSize 14 → 17, fontWeight 700 → 800
   logoText:       { color: '#FFFFFF', fontSize: 17, fontWeight: '800', marginLeft: 8, flexShrink: 0 },
   center:         { flexDirection: 'row', alignItems: 'center', gap: 18, position: 'absolute', left: 0, right: 0, justifyContent: 'center', pointerEvents: 'none' },
   countBox:       { flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 4, paddingHorizontal: 8, borderRadius: 6 },
@@ -180,10 +174,8 @@ const styles = StyleSheet.create({
   centerDivider:  { width: 1, height: 28, backgroundColor: 'rgba(255,255,255,0.15)' },
   right:          { flexDirection: 'row', alignItems: 'center', flexShrink: 0, gap: 8 },
   rightCompact:   { gap: 6 },
-  // ↓ paddingHorizontal 10 → 14, minHeight 38 추가, fontSize 12 → 14, fontWeight 800
   addButton:      { minHeight: 38, paddingHorizontal: 14, borderRadius: 10, backgroundColor: '#1E293B', borderWidth: 1, borderColor: '#334155', alignItems: 'center', justifyContent: 'center' },
-  addButtonText:  { color: '#FFFFFF', fontSize: 14, fontWeight: '800' },
-  // ↓ width/height 32 → 38, borderRadius 18 → 21
+  addButtonText:  { color: '#FFFFFF', fontSize: 17, fontWeight: '800' },
   iconButton:     { backgroundColor: '#1E293B', borderRadius: 21, width: 38, height: 38, alignItems: 'center', justifyContent: 'center' },
   bellIconWrap:   { position: 'relative', alignItems: 'center', justifyContent: 'center' },
   bellBadge:      { position: 'absolute', top: -5, right: -6, zIndex: 10, backgroundColor: '#EF4444', borderRadius: 9, minWidth: 18, height: 18, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4 },
