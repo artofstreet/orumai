@@ -28,6 +28,27 @@ const formatDateTwoLine = (dateStr: string | undefined): string => {
   return escapeHtml(s);
 };
 
+// 가격 표기 통일
+// 매매: 2.8억 / 전세: 8000만 / 월세: 보200 / 월30
+const formatPrice = (deal: string, price: string): string => {
+  const p = price.replace(/원$/, '').trim();
+
+  if (deal === '월세') {
+    const slashIdx = p.indexOf('/');
+    if (slashIdx !== -1) {
+      const deposit = p.slice(0, slashIdx).trim().replace(/만$/, '');
+      const monthly = p.slice(slashIdx + 1).trim()
+        .replace(/^월\s*/, '')
+        .replace(/만$/, '');
+      return `보${deposit} / 월${monthly}`;
+    }
+    return p;
+  }
+
+  // 매매/전세: 원만 제거
+  return p;
+};
+
 const printViaIframe = (html: string): void => {
   const iframe = document.createElement('iframe');
   iframe.style.display = 'none';
@@ -69,7 +90,7 @@ export const printPropertyList = (properties: Property[]): void => {
       <td>${escapeHtml(p.type)}</td>
       <td>
         <span style="display:block;font-weight:400;color:#64748B;font-size:10px;">${escapeHtml(p.deal)}</span>
-        <span style="display:block;font-weight:700;color:#DB2777;">${escapeHtml(p.price)}</span>
+        <span style="display:block;font-weight:700;color:#DB2777;">${escapeHtml(formatPrice(p.deal, p.price))}</span>
       </td>
       <td>${escapeHtml(p.area)}</td>
       <td>${formatFloor(p.floor, p.totalFloors)}</td>
