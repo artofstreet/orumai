@@ -39,6 +39,7 @@ export default function TopBar({
   const showPrint  = width >= 768;
   const compact    = width < 400;
   const showCenter = width >= 600;
+  const profileIconSize = width >= 768 ? 24 : 28;
 
   const [isAddHovered,     setIsAddHovered]     = useState<boolean>(false);
   const [isPrintHovered,   setIsPrintHovered]   = useState<boolean>(false);
@@ -154,7 +155,7 @@ export default function TopBar({
           accessibilityLabel="프로필 보기"
           onHoverIn={() => { if (Platform.OS === 'web') setIsProfileHovered(true); }}
           onHoverOut={() => { if (Platform.OS === 'web') setIsProfileHovered(false); }}>
-          <Ionicons name="person-circle-outline" size={30} color="#FFFFFF" />
+          <Ionicons name="person-circle-outline" size={profileIconSize} color="#FFFFFF" />
         </Pressable>
       </View>
     </View>
