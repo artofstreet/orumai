@@ -3,7 +3,7 @@ import { useRouter } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
 import type { ViewStyle } from 'react-native';
 import { Platform, Pressable, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
-import Svg, { Polygon } from 'react-native-svg';
+import Svg, { Polyline } from 'react-native-svg';
 
 import * as Colors from '@/constants/colors';
 import { getHorizontalPadding } from '@/constants/theme';
@@ -76,9 +76,15 @@ export default function TopBar({
         accessibilityRole="link"
         accessibilityLabel="홈으로">
         <View style={styles.logoBox}>
-          <Svg width={24} height={18} viewBox="0 0 22 16">
-            <Polygon points="2,15 11,2 20,15" fill="none" stroke="white" strokeWidth={1.5} />
-            <Polygon points="0,15 7,6 14,15" fill="white" opacity={0.5} />
+          <Svg width={24} height={18} viewBox="0 0 24 18">
+            <Polyline
+              points="2,14 6,8 9,11 15,3 19,14"
+              fill="none"
+              stroke="white"
+              strokeWidth={1.8}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           </Svg>
         </View>
         <Text style={styles.logoText}>오름AI</Text>
@@ -166,7 +172,7 @@ const styles = StyleSheet.create({
   container:      { minHeight: 64, backgroundColor: Colors.topbar, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   left:           { flexDirection: 'row', alignItems: 'center', flexShrink: 1, minWidth: 0 },
   logoBox:        { width: 30, height: 30, borderRadius: 8, backgroundColor: Colors.logoBg, alignItems: 'center', justifyContent: 'center' },
-  logoText:       { color: '#FFFFFF', fontSize: 17, fontWeight: '800', marginLeft: 8, flexShrink: 0 },
+  logoText:       { color: '#FFFFFF', fontSize: 20, fontWeight: '800', marginLeft: 8, flexShrink: 0 },
   center:         { flexDirection: 'row', alignItems: 'center', gap: 18, position: 'absolute', left: 0, right: 0, justifyContent: 'center', pointerEvents: 'none' },
   countBox:       { flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 4, paddingHorizontal: 8, borderRadius: 6 },
   countPressable: { pointerEvents: 'auto' },
