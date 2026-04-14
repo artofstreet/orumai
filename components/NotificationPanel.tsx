@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Alert, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { Alert, Animated, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 // TODO-DB: 나중에 Supabase로 교체
 export type Notice = {
@@ -26,6 +26,8 @@ type Props = {
 
 export default function NotificationPanel({ visible, onClose, panelW = 340, topOffset }: Props) {
   const [notices, setNotices] = useState<Notice[]>(DUMMY_NOTICES);
+  const [mounted, setMounted] = useState<boolean>(visible);
+  const slideAnim = useRef<Animated.Value>(new Animated.Value(panelW)).current;
 
   // 삭제 확인 후 삭제 처리
   const handleDelete = (id: string) => {
@@ -44,17 +46,44 @@ export default function NotificationPanel({ visible, onClose, panelW = 340, topO
     }
   };
 
-  if (!visible) return null;
+  // visible 변화에 맞춰 오른쪽에서 슬라이드 인/아웃 (애니메이션 완료 후 언마운트)
+  useEffect(() => {
+    // 패널 너비가 바뀌면 "오른쪽 밖" 위치도 함께 갱신
+    const offscreenX = panelW;
+
+    if (visible) {
+      setMounted(true);
+      slideAnim.setValue(offscreenX);
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+      return;
+    }
+
+    // 닫기: 0 → 오른쪽 밖으로 이동 후 언마운트
+    Animated.timing(slideAnim, {
+      toValue: offscreenX,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(({ finished }) => {
+      if (finished) setMounted(false);
+    });
+  }, [panelW, slideAnim, visible]);
+
+  if (!mounted) return null;
 
   return (
     <View style={styles.root}>
       <Pressable style={styles.backdrop} onPress={onClose} />
-      <View
+      <Animated.View
         style={[
           styles.panel,
           {
             width: panelW,
             top: Platform.select({ web: 0, default: topOffset ?? 46 }),
+            transform: [{ translateX: slideAnim }],
           },
         ]}>
 
@@ -90,7 +119,7 @@ export default function NotificationPanel({ visible, onClose, panelW = 340, topO
             </View>
           ))}
         </ScrollView>
-      </View>
+      </Animated.View>
     </View>
   );
 }
@@ -113,7 +142,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 0,
     bottom: 0,
-    backgroundColor: '#fff',
+    // 패널 배경: 앱 기본 배경 톤에 맞춤
+    backgroundColor: '#F0F4FF',
   },
   header:        { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 20, borderBottomWidth: 0.5, borderBottomColor: '#E2E8F0' },
   title:         { fontSize: 18, fontWeight: '800', color: '#0F172A' },
