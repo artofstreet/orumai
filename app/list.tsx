@@ -5,7 +5,6 @@ import { getContentMaxWidth, getGridColumns, getHorizontalPadding } from '@/cons
 import { useProperties } from '@/hooks/useProperties';
 import { useSearch } from '@/hooks/useSearch';
 import type { Customer, Property } from '@/types';
-import { printCustomerList, printPropertyList } from '@/utils/printList';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -52,16 +51,6 @@ export default function ListScreen() {
   const goPrevPage = useCallback(() => { setPage((p) => Math.max(1, p - 1)); flatListRef.current?.scrollToOffset({ offset: 0, animated: true }); }, []);
   const goNextPage = useCallback(() => { setPage((p) => Math.min(totalPages, p + 1)); flatListRef.current?.scrollToOffset({ offset: 0, animated: true }); }, [totalPages]);
 
-  // 매물 탭: 현재 페이지 기준 10건 단위 인쇄(웹 iframe 인쇄 유틸)
-  const handlePrintPropertyList = useCallback(() => {
-    printPropertyList(allProperties.slice((page - 1) * 10, page * 10));
-  }, [allProperties, page]);
-
-  // 고객 탭: 현재 페이지 기준 12건 단위 인쇄(웹 iframe 인쇄 유틸)
-  const handlePrintCustomerList = useCallback(() => {
-    printCustomerList(allCustomers.slice((page - 1) * 12, page * 12));
-  }, [allCustomers, page]);
-
   return (
     <View style={styles.page}>
       <View style={[styles.contentMax, { maxWidth: layoutWidth }]}>
@@ -75,16 +64,6 @@ export default function ListScreen() {
             <Text style={styles.titleText}>
               {tab === 'properties' ? `전체 매물 ${allProperties.length}건` : `전체 고객 ${allCustomers.length}건`}
             </Text>
-            {tab === 'properties' && (
-              <Pressable style={styles.printButton} onPress={handlePrintPropertyList} accessibilityLabel="매물 목록 인쇄">
-                <Ionicons name="print-outline" size={20} color={primary} />
-              </Pressable>
-            )}
-            {tab === 'customers' && (
-              <Pressable style={styles.printButton} onPress={handlePrintCustomerList} accessibilityLabel="고객 목록 인쇄">
-                <Ionicons name="print-outline" size={20} color={primary} />
-              </Pressable>
-            )}
           </View>
           <View style={styles.tabRow}>
             <Pressable
@@ -163,8 +142,6 @@ const styles = StyleSheet.create({
   header:                 { gap: 12, alignSelf: 'center', width: '100%', marginBottom: 4 },
   // 헤더(뒤로가기/제목/인쇄)를 좌우로 벌려 정렬
   titleRow:               { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
-  // 인쇄 버튼: 고정 크기 + 중앙 정렬
-  printButton:            { width: 32, height: 32, alignItems: 'center', justifyContent: 'center' },
   backButton:             { paddingVertical: 4, paddingHorizontal: 2 },
   titleText:              { fontSize: 16, fontWeight: '800', color: '#0F172A' },
   tabRow:                 { flexDirection: 'row', gap: 18, borderBottomWidth: 1, borderBottomColor: border },
