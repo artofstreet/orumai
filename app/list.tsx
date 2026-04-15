@@ -1,15 +1,15 @@
-import { Ionicons } from '@expo/vector-icons';
-import { router, useLocalSearchParams } from 'expo-router';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import CustomerCard from '@/components/CustomerCard';
 import PropertyCard from '@/components/PropertyCard';
-import type { Customer, Property } from '@/types';
 import { bg, border, primary, text2 } from '@/constants/colors';
 import { getContentMaxWidth, getGridColumns, getHorizontalPadding } from '@/constants/theme';
 import { useProperties } from '@/hooks/useProperties';
 import { useSearch } from '@/hooks/useSearch';
+import type { Customer, Property } from '@/types';
 import { printCustomerList, printPropertyList } from '@/utils/printList';
+import { Ionicons } from '@expo/vector-icons';
+import { router, useLocalSearchParams } from 'expo-router';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { FlatList, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 // TODO-DB: Supabase 연결 후 실데이터로 교체 예정
 type TabKey = 'properties' | 'customers';
 const GAP = 8;
@@ -161,8 +161,10 @@ const styles = StyleSheet.create({
   page:                   { flex: 1, backgroundColor: bg, paddingTop: 16 },
   contentMax:             { flex: 1, width: '100%', alignSelf: 'center', overflow: 'hidden' },
   header:                 { gap: 12, alignSelf: 'center', width: '100%', marginBottom: 4 },
-  titleRow:               { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  printButton:            { marginLeft: 'auto', padding: 6 },
+  // 헤더(뒤로가기/제목/인쇄)를 좌우로 벌려 정렬
+  titleRow:               { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
+  // 인쇄 버튼: 고정 크기 + 중앙 정렬
+  printButton:            { width: 32, height: 32, alignItems: 'center', justifyContent: 'center' },
   backButton:             { paddingVertical: 4, paddingHorizontal: 2 },
   titleText:              { fontSize: 16, fontWeight: '800', color: '#0F172A' },
   tabRow:                 { flexDirection: 'row', gap: 18, borderBottomWidth: 1, borderBottomColor: border },
