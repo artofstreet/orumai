@@ -169,7 +169,7 @@ export const printPropertyConsult = (property: Property): void => {
     <!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"/>
     <title>${title} - 오름AI</title>
     <style>
-      body { font-family: 'Noto Sans KR', sans-serif; padding: 32px; max-width: 680px; margin: 0 auto; color: #0F172A; }
+      body { font-family: 'Noto Sans KR', sans-serif; padding: 32px; max-width: 680px; margin: 0 auto; color: #0F172A; max-height: 277mm; overflow: hidden; }
       .logo { font-size: 18px; font-weight: 800; color: #1D4ED8; margin-bottom: 12px; }
       .badge { display: inline-block; background: #EEF2FF; color: #4338CA; border-radius: 6px; padding: 3px 10px; font-size: 12px; font-weight: 700; margin-right: 6px; }
       .title { font-size: 22px; font-weight: 800; margin: 8px 0 4px; }
@@ -180,11 +180,12 @@ export const printPropertyConsult = (property: Property): void => {
       .spec-item:nth-child(odd) { border-right: 1px solid #E2E8F0; }
       .spec-label { font-size: 13px; color: #555; font-weight: 600; margin-bottom: 0; white-space: nowrap; }
       .spec-value { font-size: 15px; font-weight: bold; color: #111; white-space: nowrap; }
-      .memo-box { background: #F8FAFC; border-radius: 8px; padding: 14px 16px; margin-bottom: 16px; }
+      .memo-box { background: #F8FAFC; border-radius: 8px; padding: 14px 16px; margin-bottom: 16px; overflow: hidden; }
       .memo-label { font-size: 11px; color: #94A3B8; font-weight: 600; margin-bottom: 6px; }
       .memo-text { font-size: 15px; color: #334155; line-height: 1.8; }
+      .memo-overflow-warning { font-size: 10px; color: #94A3B8; margin-top: 6px; }
       /* 상담 메모란 */
-      .consult-memo { margin-top: 20px; }
+      .consult-memo { margin-top: 20px; page-break-inside: avoid; }
       .consult-memo-label { font-size: 11px; font-weight: 700; color: #94A3B8; margin-bottom: 6px; }
       .consult-memo-line { height: 28px; border-bottom: 1px solid #E2E8F0; margin-bottom: 4px; }
       .footer { margin-top: 16px; font-size: 10px; color: #94A3B8; text-align: right; }
@@ -220,12 +221,10 @@ export const printPropertyConsult = (property: Property): void => {
         <div class="spec-item"><div class="spec-label">연락처</div><div class="spec-value">${escapeHtml(property.phone)}</div></div>
       </div>
 
-      ${safeMemo ? `<div class="memo-box"><div class="memo-label">메모</div><div class="memo-text">${safeMemo}</div></div>` : ''}
+      ${safeMemo ? `<div class="memo-box"><div class="memo-label">메모</div><div class="memo-text">${safeMemo}</div><div class="memo-overflow-warning">※ 내용이 많으면 글자가 잘려 나갈 수 있습니다.</div></div>` : ''}
 
       <div class="consult-memo">
         <div class="consult-memo-label">▪ 상담 메모</div>
-        <div class="consult-memo-line"></div>
-        <div class="consult-memo-line"></div>
         <div class="consult-memo-line"></div>
         <div class="consult-memo-line"></div>
       </div>
