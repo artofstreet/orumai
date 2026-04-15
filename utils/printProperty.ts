@@ -51,60 +51,106 @@ export const printPropertyPost = (property: Property): void => {
   const priceColor = DEAL_COLOR[property.deal] ?? '#0F172A';
 
   const html = `
-    <!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"/>
-    <title>${title} - 게시용</title>
-    <style>
-      * { box-sizing: border-box; margin: 0; padding: 0; }
-      body { font-family: 'Noto Sans KR', sans-serif; padding: 32px; width: 794px; min-height: 1123px; color: #0F172A; display: flex; flex-direction: column; }
-      .top-bar { display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid #1D4ED8; padding-bottom: 12px; margin-bottom: 24px; }
-      .logo { font-size: 16px; font-weight: 800; color: #1D4ED8; }
-      .agent-info { text-align: right; font-size: 13px; color: #334155; }
-      .agent-info strong { font-size: 15px; }
-      .type-deal { font-size: 36px; font-weight: 900; color: #0F172A; letter-spacing: 8px; text-align: center; margin-bottom: 12px; }
-      .building { font-size: 48px; font-weight: 900; text-align: center; margin-bottom: 8px; color: #0F172A; }
-      .addr { font-size: 18px; color: #64748B; text-align: center; margin-bottom: 32px; }
-      .specs { display: grid; grid-template-columns: 1fr 1fr; border: 2px solid #E2E8F0; border-radius: 12px; overflow: hidden; margin-bottom: 32px; flex: 1; }
-      .spec-item { padding: 20px 24px; border-bottom: 2px solid #E2E8F0; }
-      .spec-item:nth-child(odd) { border-right: 2px solid #E2E8F0; }
-      .spec-label { font-size: 14px; color: #94A3B8; font-weight: 600; margin-bottom: 6px; }
-      .spec-value { font-size: 28px; font-weight: 900; color: #0F172A; }
-      .price-box { background: #FFF0F6; border: 3px solid ${priceColor}; border-radius: 12px; padding: 24px 32px; text-align: center; margin-bottom: 24px; }
-      .price-label { font-size: 18px; color: ${priceColor}; font-weight: 700; margin-bottom: 8px; }
-      .price-value { font-size: 56px; font-weight: 900; color: ${priceColor}; }
-      .footer { font-size: 11px; color: #CBD5E1; text-align: right; margin-top: auto; }
-      @media print { body { padding: 16px; } }
-    </style>
-    </head><body>
-      <div class="top-bar">
-        <div class="logo">오름AI</div>
-        <div class="agent-info">
-          <div><strong>${escapeHtml(agent.officeName)}</strong></div>
-          <div>${escapeHtml(agent.agentName)} ${escapeHtml(agent.position)}</div>
-          <div><strong>${escapeHtml(agent.phone)}</strong></div>
-        </div>
-      </div>
+<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"/>
+<title>${title} - 오름AI</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Noto Sans KR', sans-serif;
+         width: 794px; min-height: 1123px; color: #0F172A;
+         display: flex; flex-direction: column; background: #fff; }
 
-      <div class="type-deal">${escapeHtml(property.type)} &nbsp; ${escapeHtml(property.deal)}</div>
-      <div class="building">${title}</div>
+  /* 상단 파란 띠 */
+  .header-bar { background: #1e3a8a; padding: 24px 32px;
+                display: flex; justify-content: space-between; align-items: center; }
+  .deal-type { font-size: 36px; font-weight: 900; color: #1e293b; letter-spacing: 6px; }
+  .building-name { font-size: 42px; font-weight: 900; color: #0f172a; }
+  .addr { font-size: 16px; color: #475569; margin-top: 4px; }
+
+  /* 가격 영역 - 제일 크게 */
+  .price-section { padding: 32px; text-align: center;
+                   border-bottom: 3px solid #E2E8F0; }
+  .price-value { font-size: 80px; font-weight: 900; color: ${priceColor};
+                 line-height: 1; }
+  .price-label { font-size: 22px; font-weight: 700; color: ${priceColor};
+                 margin-bottom: 8px; }
+
+  /* 핵심 스펙 3~4개만 */
+  .specs { padding: 24px 32px; flex: 1; }
+  .spec-row { display: flex; align-items: center;
+              border-bottom: 2px solid #F1F5F9; padding: 16px 0; }
+  .spec-row:last-child { border-bottom: none; }
+  .spec-label { width: 140px; font-size: 20px; font-weight: 700;
+                color: #64748B; }
+  .spec-value { font-size: 40px; font-weight: 900; color: #0F172A; }
+
+  /* 하단 연락처 - 크게 */
+  .footer-bar { background: #0F172A; padding: 24px 32px;
+                display: flex; justify-content: space-between; align-items: center; }
+  .office-name { font-size: 24px; font-weight: 900; color: #fff; }
+  .agent-name { font-size: 16px; color: #94A3B8; margin-top: 4px; }
+  .phone { font-size: 40px; font-weight: 900; color: #60A5FA; }
+
+  @media print { body { padding: 0; } }
+</style>
+</head><body>
+
+  <!-- 상단 파란 띠: 거래유형 + 건물명 -->
+  <div class="header-bar">
+    <div>
+      <div class="deal-type">${escapeHtml(property.type)} &nbsp; ${escapeHtml(property.deal)}</div>
+      <div class="building-name">${title}</div>
       <div class="addr">${escapeHtml(property.addr)}</div>
+    </div>
+    <div style="color:#BFDBFE;font-size:14px;text-align:right;">
+      <div>오름AI</div>
+    </div>
+  </div>
 
-      <div class="specs">
-        <div class="spec-item"><div class="spec-label">면적</div><div class="spec-value">${escapeHtml(property.area)}</div></div>
-        <div class="spec-item"><div class="spec-label">층수/총층</div><div class="spec-value">${escapeHtml(property.floor)}/${escapeHtml(String(property.totalFloors ?? '—'))}</div></div>
-        <div class="spec-item"><div class="spec-label">방향</div><div class="spec-value">${escapeHtml(property.dir ?? '—')}</div></div>
-        <div class="spec-item"><div class="spec-label">입주일</div><div class="spec-value">${escapeHtml(property.moveInDate ?? '—')}</div></div>
-        <div class="spec-item"><div class="spec-label">난방</div><div class="spec-value">${escapeHtml(property.heating ?? '—')}</div></div>
-        <div class="spec-item"><div class="spec-label">주차</div><div class="spec-value">${escapeHtml(property.parking ?? '—')}</div></div>
-      </div>
+  <!-- 가격: 제일 크게 -->
+  <div class="price-section">
+    <div class="price-label">${escapeHtml(property.deal)}</div>
+    <div class="price-value">${escapeHtml(property.price)}</div>
+  </div>
 
-      <div class="price-box">
-        <div class="price-label">${escapeHtml(property.deal)}</div>
-        <div class="price-value">${escapeHtml(property.price)}</div>
-      </div>
+  <!-- 핵심 스펙 4개만 -->
+  <div class="specs">
+    <div class="spec-row">
+      <div class="spec-label">면적</div>
+      <div class="spec-value">${escapeHtml(property.area)}</div>
+    </div>
+    <div class="spec-row">
+      <div class="spec-label">층수</div>
+      <div class="spec-value">${escapeHtml(String(property.floor).replace(/층$/, ''))}층 / ${escapeHtml(String(property.totalFloors ?? '—')).replace(/층$/, '')}층</div>
+    </div>
+    <div class="spec-row">
+      <div class="spec-label">방향</div>
+      <div class="spec-value">${escapeHtml(property.dir ?? '—')}</div>
+    </div>
+    <div class="spec-row">
+      <div class="spec-label">입주</div>
+      <div class="spec-value">${escapeHtml(property.moveInDate ?? '즉시입주')}</div>
+    </div>
+    <div class="spec-row">
+      <div class="spec-label">난방</div>
+      <div class="spec-value">${escapeHtml(property.heating ?? '—')}</div>
+    </div>
+    <div class="spec-row">
+      <div class="spec-label">주차</div>
+      <div class="spec-value">${escapeHtml(property.parking ?? '—')}</div>
+    </div>
+  </div>
 
-      <div class="footer">오름AI &nbsp;|&nbsp; ${new Date().toLocaleDateString('ko-KR')}</div>
-    </body></html>
-  `;
+  <!-- 하단 연락처 크게 -->
+  <div class="footer-bar">
+    <div>
+      <div class="office-name">${escapeHtml(agent.officeName)}</div>
+      <div class="agent-name">${escapeHtml(agent.agentName)} ${escapeHtml(agent.position)}</div>
+    </div>
+    <div class="phone">${escapeHtml(agent.phone)}</div>
+  </div>
+
+</body></html>
+`;
 
   printViaIframe(html);
 };
