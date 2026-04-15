@@ -32,22 +32,42 @@ const getBadge = (key: string) =>
 const DEAL_PRICE_COLOR: Record<string, string> = { 매매: '#1D4ED8', 전세: '#16A34A', 월세: '#DB2777' };
 /** 매물 스펙 라벨·값 — detailStyles 위에 절대 크기·굵기 덮어씀 */
 const specFontStyles = StyleSheet.create({
-  specLabel: { fontSize: 14, lineHeight: 16 }, // 면적·층수 등 라벨
-  specValue: { fontSize: 15, fontWeight: '600' }, // 49㎡ 등 값만 굵기 600
+  // 스펙 한 칸 안에서 "라벨 값"이 한 줄로 보이도록 조정
+  specLabel: {
+    fontSize: 13,
+    lineHeight: 18,
+    fontWeight: '500',
+    color: '#64748B',
+    marginRight: 6,
+    flexShrink: 0,
+    includeFontPadding: false,
+  }, // 면적·층수 등 라벨(값보다 작고 연한 톤)
+  specValue: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#0F172A',
+    lineHeight: 18,
+    flex: 1,
+    flexShrink: 1,
+    includeFontPadding: false,
+  }, // 값은 굵게, 남은 공간을 쓰되 줄어듦
 });
 /** 스펙 행·칸 정렬 (detailStyles.specRow/specCell 위에만 적용) */
 const specLayoutStyles = StyleSheet.create({
   specRow: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     justifyContent: 'flex-start',
   },
   specItem: {
     flex: 1,
-    alignItems: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'baseline',
     justifyContent: 'flex-start',
+    gap: 6,
+    overflow: 'hidden',
   },
-  specTextVertical: { textAlignVertical: 'top' },
+  specTextVertical: { textAlignVertical: 'center' },
 });
 
 // 지도/주소 복사 버튼 스타일 (detailStyles.ts가 아닌 이 파일 내부에서만 추가)
@@ -319,27 +339,21 @@ export default function PropertyDetailScreen() {
           <View style={[styles.specGrid, narrow && styles.specGridFull, isUltraWide && styles.specGridUltra, !narrow && styles.specGridFlex]}>
             {isUltraWide ? (
               <>
-                {[0, 1].map((row) => (
-                  <View key={row} style={[styles.specRow, row < 3 && styles.specRowBottom, specLayoutStyles.specRow]}>
-                    {[0, 1].map((col) => {
-                      const idx = row * 2 + col;
-                      const { label, value } = specs[idx];
-                      return (
-                        <View key={label} style={[styles.specCellUltra2col, specLayoutStyles.specItem, col === 0 && styles.specCellRight]}>
-                          <Text style={[styles.specLabel, specFontStyles.specLabel, specLayoutStyles.specTextVertical]}>{label}</Text>
-                          <Text style={[styles.specValue, specFontStyles.specValue, specLayoutStyles.specTextVertical]} numberOfLines={2}>{value}</Text>
-                        </View>
-                      );
-                    })}
-                  </View>
-                ))}
+                <View style={[styles.specRow, styles.specRowBottom, specLayoutStyles.specRow]}>
+                  {specs.map((spec, idx) => (
+                    <View key={spec.label} style={[styles.specCellUltra2col, specLayoutStyles.specItem, idx < specs.length - 1 && styles.specCellRight]}>
+                      <Text style={[styles.specLabel, specFontStyles.specLabel, specLayoutStyles.specTextVertical]} numberOfLines={1} ellipsizeMode="tail">{spec.label}</Text>
+                      <Text style={[styles.specValue, specFontStyles.specValue, specLayoutStyles.specTextVertical]} numberOfLines={1} ellipsizeMode="tail">{spec.value}</Text>
+                    </View>
+                  ))}
+                </View>
               </>
             ) : (
               <View style={[styles.specRow, specLayoutStyles.specRow]}>
                 {specs.map((spec, idx) => (
                   <View key={spec.label} style={[styles.specCell, specLayoutStyles.specItem, idx < specs.length - 1 && styles.specCellRight]}>
-                    <Text style={[styles.specLabel, specFontStyles.specLabel]}>{spec.label}</Text>
-                    <Text style={[styles.specValue, specFontStyles.specValue]}>{spec.value}</Text>
+                    <Text style={[styles.specLabel, specFontStyles.specLabel]} numberOfLines={1} ellipsizeMode="tail">{spec.label}</Text>
+                    <Text style={[styles.specValue, specFontStyles.specValue]} numberOfLines={1} ellipsizeMode="tail">{spec.value}</Text>
                   </View>
                 ))}
               </View>
