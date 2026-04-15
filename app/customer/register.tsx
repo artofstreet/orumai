@@ -5,7 +5,7 @@
  */
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Keyboard, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Keyboard, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { detailStyles } from '@/components/property/detailStyles';
@@ -41,7 +41,7 @@ export default function CustomerRegisterScreen({ embedded = false, initialData }
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={safeAreaStyles.root}>
       <ScrollView
         style={[styles.page, embedded ? { flex: 1, width: '100%' } : { maxWidth: 480, alignSelf: 'center', width: '100%' }]}
         contentContainerStyle={styles.scrollContent}
@@ -57,7 +57,7 @@ export default function CustomerRegisterScreen({ embedded = false, initialData }
           style={[detailStyles.headerBtn, { paddingHorizontal: 20, paddingVertical: 8 }]}
           activeOpacity={0.6}
           onPress={onSave}>
-          <Text style={[detailStyles.headerBtnText, { fontSize: 15 }]}>완료</Text>
+          <Text style={[detailStyles.headerBtnText, { fontSize: 15 }]}>저장</Text>
         </TouchableOpacity>
       </View>
 
@@ -130,3 +130,8 @@ export default function CustomerRegisterScreen({ embedded = false, initialData }
     </SafeAreaView>
   );
 }
+
+// 루트 SafeArea: 인셋 영역까지 스크롤 배경(#F0F4FF)과 톤 맞춤
+const safeAreaStyles = StyleSheet.create({
+  root: { flex: 1, backgroundColor: '#F0F4FF' },
+});
