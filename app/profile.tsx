@@ -112,7 +112,7 @@ export default function ProfileScreen({ embedded = false, onClose }: ScreenProps
   const webMemoStyle = { ...StyleSheet.flatten(styles.input), minHeight: 80, overflow: 'hidden' as const, resize: 'none' as const, width: '100%' as const, boxSizing: 'border-box' as const };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={styles.safeAreaRoot}>
       <ScrollView style={[styles.page, embedded && { flex: 1, width: '100%' }]} contentContainerStyle={styles.content}>
         <View style={styles.header}>
           <Text style={styles.title}>마이</Text>
@@ -203,6 +203,8 @@ export default function ProfileScreen({ embedded = false, onClose }: ScreenProps
 const SILVER = '#9CA3AF';
 
 const styles = StyleSheet.create({
+  // 루트 SafeArea: 인셋 영역까지 본문과 동일 배경 (#F0F4FF)
+  safeAreaRoot: { flex: 1, backgroundColor: '#F0F4FF' },
   page: { flex: 1, backgroundColor: '#F0F4FF' },
   content: { padding: 24, gap: 16, maxWidth: 480, alignSelf: 'center', width: '100%' },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 },

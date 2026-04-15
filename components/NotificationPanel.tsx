@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Alert, Animated, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 // TODO-DB: 나중에 Supabase로 교체
 export type Notice = {
@@ -24,7 +25,7 @@ type Props = {
   topOffset?: number;
 };
 
-export default function NotificationPanel({ visible, onClose, panelW = 340, topOffset }: Props) {
+export default function NotificationPanel({ visible, onClose, panelW = 340 }: Props) {
   const [notices, setNotices] = useState<Notice[]>(DUMMY_NOTICES);
   const [mounted, setMounted] = useState<boolean>(visible);
   const slideAnim = useRef<Animated.Value>(new Animated.Value(panelW)).current;
@@ -82,43 +83,45 @@ export default function NotificationPanel({ visible, onClose, panelW = 340, topO
           styles.panel,
           {
             width: panelW,
-            top: Platform.select({ web: 0, default: topOffset ?? 46 }),
+            top: 0,
             transform: [{ translateX: slideAnim }],
           },
         ]}>
+        {/* 상단 노치/상태바 영역은 SafeAreaView로 패딩 */}
+        <SafeAreaView style={styles.safeArea}>
+          {/* 헤더 */}
+          <View style={styles.header}>
+            <Text style={styles.title}>알림</Text>
+            <Pressable onPress={onClose} accessibilityRole="button" accessibilityLabel="닫기">
+              <Text style={styles.headerClose}>✕</Text>
+            </Pressable>
+          </View>
 
-        {/* 헤더 */}
-        <View style={styles.header}>
-          <Text style={styles.title}>알림</Text>
-          <Pressable onPress={onClose} accessibilityRole="button" accessibilityLabel="닫기">
-            <Text style={styles.headerClose}>✕</Text>
-          </Pressable>
-        </View>
-
-        {/* 알림 목록 */}
-        <ScrollView style={styles.list} showsVerticalScrollIndicator={false}>
-          {notices.length === 0 && (
-            <Text style={styles.empty}>알림이 없습니다</Text>
-          )}
-          {notices.map((n) => (
-            <View key={n.id} style={styles.item}>
-              <View style={styles.itemTop}>
-                <View style={[styles.badge, n.type === 'event' && styles.badgeEvent]}>
-                  <Text style={[styles.badgeTxt, n.type === 'event' && styles.badgeTxtEvent]}>
-                    {n.type === 'notice' ? '공지' : '이벤트'}
-                  </Text>
+          {/* 알림 목록 */}
+          <ScrollView style={styles.list} showsVerticalScrollIndicator={false}>
+            {notices.length === 0 && (
+              <Text style={styles.empty}>알림이 없습니다</Text>
+            )}
+            {notices.map((n) => (
+              <View key={n.id} style={styles.item}>
+                <View style={styles.itemTop}>
+                  <View style={[styles.badge, n.type === 'event' && styles.badgeEvent]}>
+                    <Text style={[styles.badgeTxt, n.type === 'event' && styles.badgeTxtEvent]}>
+                      {n.type === 'notice' ? '공지' : '이벤트'}
+                    </Text>
+                  </View>
+                  <Text style={styles.itemDate}>{n.date}</Text>
+                  {/* 중개사는 삭제만 가능 */}
+                  <Pressable onPress={() => handleDelete(n.id)} style={styles.delBtn}>
+                    <Text style={styles.delTxt}>삭제</Text>
+                  </Pressable>
                 </View>
-                <Text style={styles.itemDate}>{n.date}</Text>
-                {/* 중개사는 삭제만 가능 */}
-                <Pressable onPress={() => handleDelete(n.id)} style={styles.delBtn}>
-                  <Text style={styles.delTxt}>삭제</Text>
-                </Pressable>
+                <Text style={styles.itemTitle}>{n.title}</Text>
+                <Text style={styles.itemBody}>{n.body}</Text>
               </View>
-              <Text style={styles.itemTitle}>{n.title}</Text>
-              <Text style={styles.itemBody}>{n.body}</Text>
-            </View>
-          ))}
-        </ScrollView>
+            ))}
+          </ScrollView>
+        </SafeAreaView>
       </Animated.View>
     </View>
   );
@@ -137,7 +140,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.3)',
   },
-  // 모바일: top은 topOffset(기본 46) · 웹: 0 — 인라인 스타일로 주입
+  // 패널: 상단은 top 0 + 내부 SafeAreaView로 안전 영역 처리
   panel: {
     position: 'absolute',
     right: 0,
@@ -145,6 +148,7 @@ const styles = StyleSheet.create({
     // 패널 배경: 앱 기본 배경 톤에 맞춤
     backgroundColor: '#F0F4FF',
   },
+  safeArea: { flex: 1 },
   header:        { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 20, borderBottomWidth: 0.5, borderBottomColor: '#E2E8F0' },
   title:         { fontSize: 18, fontWeight: '800', color: '#0F172A' },
   headerClose:   { fontSize: 24, color: '#666', padding: 8 },
