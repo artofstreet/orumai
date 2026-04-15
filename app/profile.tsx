@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
   editBtn: { borderWidth: 1, borderColor: '#D8DCE6', borderRadius: 8, paddingHorizontal: 14, paddingVertical: 6 },
   // 닫기(X): 터치 영역 확보
   closeBtn: { padding: 12, minWidth: 36, alignItems: 'center', justifyContent: 'center' },
-  closeBtnTxt: { fontSize: 18, color: '#0F172A', fontWeight: '600' },
+  closeBtnTxt: { fontSize: 24, color: '#0F172A', fontWeight: '600' },
   editBtnTxt: { fontSize: 14, color: '#1E293B', fontWeight: '600' },
   doneBtn: { backgroundColor: SILVER, borderRadius: 8, paddingHorizontal: 16, paddingVertical: 7 },
   doneBtnTxt: { color: '#fff', fontWeight: '800', fontSize: 14 },

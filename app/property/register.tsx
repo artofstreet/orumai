@@ -101,7 +101,7 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
           style={[detailStyles.headerBtn, { paddingHorizontal: 20, paddingVertical: 8 }]}
           activeOpacity={0.6}
           onPress={onSave}>
-          <Text style={[detailStyles.headerBtnText, { fontSize: 15 }]}>완료</Text>
+          <Text style={[detailStyles.headerBtnText, { fontSize: 15 }]}>저장</Text>
         </TouchableOpacity>
       </View>
 
