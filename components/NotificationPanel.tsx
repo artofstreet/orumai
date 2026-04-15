@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F0F4FF',
   },
   safeArea: { flex: 1 },
-  header:        { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 20, borderBottomWidth: 0.5, borderBottomColor: '#E2E8F0' },
+  header:        { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 20, borderBottomWidth: 0, borderBottomColor: 'transparent' },
   title:         { fontSize: 18, fontWeight: '800', color: '#0F172A' },
   headerClose:   { fontSize: 24, color: '#666', padding: 8 },
   list:          { flex: 1, padding: 16 },
