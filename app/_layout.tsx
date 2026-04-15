@@ -1,5 +1,5 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack, useRouter } from 'expo-router';
+import { Stack, usePathname, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Easing, Modal, Platform, Pressable, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
@@ -25,6 +25,7 @@ const makeShadow = (h: number, r: number, o: number, elev: number): object => (P
 
 export default function RootLayout() {
   const router = useRouter();
+  const pathname = usePathname(); // 현재 경로 감지 - 홈 중복 이동 방지용
   const colorScheme = useColorScheme();
   const { width: windowWidth } = useWindowDimensions();
   const [selectModalVisible, setSelectModalVisible] = useState<boolean>(false);
@@ -89,7 +90,7 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <SafeAreaProvider>
         <SafeAreaView style={styles.container}>
-          <TopBar onLogoPress={() => router.replace('/')} onRegisterPress={openSelectModal} onProfilePress={openProfilePanel} onPrintPress={() => setPrintModalVisible(true)} onNotificationPress={() => setShowNotification(true)} propertyCount={propertyCount} customerCount={customerCount} />
+          <TopBar onLogoPress={() => { if (pathname !== '/') router.replace('/'); }} onRegisterPress={openSelectModal} onProfilePress={openProfilePanel} onPrintPress={() => setPrintModalVisible(true)} onNotificationPress={() => setShowNotification(true)} propertyCount={propertyCount} customerCount={customerCount} />
           <View style={styles.content}><Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#F0F4FF' } }}><Stack.Screen name="results" /><Stack.Screen name="list" /><Stack.Screen name="property/[id]" /></Stack></View>
           <NotificationPanel visible={showNotification} onClose={() => setShowNotification(false)} panelW={panelW} />
 
