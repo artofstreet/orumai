@@ -176,10 +176,10 @@ export const printPropertyConsult = (property: Property): void => {
       .addr { font-size: 13px; color: #64748B; margin-bottom: 8px; }
       .price { font-size: 24px; font-weight: 800; color: ${priceColor}; }
       .specs { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid #E2E8F0; border-radius: 8px; overflow: hidden; margin-bottom: 16px; }
-      .spec-item { padding: 8px 16px; border-bottom: 1px solid #E2E8F0; }
+      .spec-item { display: flex; flex-direction: row; align-items: center; gap: 16px; padding: 8px 16px; border-bottom: 1px solid #E2E8F0; }
       .spec-item:nth-child(odd) { border-right: 1px solid #E2E8F0; }
-      .spec-label { font-size: 10px; color: #94A3B8; font-weight: 600; margin-bottom: 2px; }
-      .spec-value { font-size: 13px; font-weight: 700; }
+      .spec-label { font-size: 13px; color: #555; font-weight: 600; margin-bottom: 0; white-space: nowrap; }
+      .spec-value { font-size: 15px; font-weight: bold; color: #111; white-space: nowrap; }
       .memo-box { background: #F8FAFC; border-radius: 8px; padding: 14px 16px; margin-bottom: 16px; }
       .memo-label { font-size: 11px; color: #94A3B8; font-weight: 600; margin-bottom: 6px; }
       .memo-text { font-size: 15px; color: #334155; line-height: 1.8; }
