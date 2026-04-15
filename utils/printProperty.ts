@@ -63,7 +63,7 @@ export const printPropertyPost = (property: Property): void => {
   .header-bar { background: #1e3a8a; padding: 24px 32px;
                 display: flex; justify-content: space-between; align-items: center; }
   .deal-type { font-size: 36px; font-weight: 900; color: #1e293b; letter-spacing: 6px; }
-  .building-name { font-size: 42px; font-weight: 900; color: #0f172a; }
+  .building-name { font-size: 48px; font-weight: 900; color: #0f172a; }
   .addr { font-size: 16px; color: #475569; margin-top: 4px; }
 
   /* 가격 영역 - 제일 크게 */
@@ -75,13 +75,13 @@ export const printPropertyPost = (property: Property): void => {
                  margin-bottom: 8px; }
 
   /* 핵심 스펙 3~4개만 */
-  .specs { padding: 24px 32px; flex: 1; }
+  .specs { padding: 32px 32px; flex: 1; }
   .spec-row { display: flex; align-items: center;
               border-bottom: 2px solid #F1F5F9; padding: 16px 0; }
   .spec-row:last-child { border-bottom: none; }
-  .spec-label { width: 140px; font-size: 20px; font-weight: 700;
-                color: #64748B; }
-  .spec-value { font-size: 40px; font-weight: 900; color: #0F172A; }
+  .spec-label { width: 140px; font-size: 30px; font-weight: 700;
+                color: #64748B; line-height: 1; }
+  .spec-value { font-size: 50px; font-weight: 900; color: #0F172A; line-height: 1; }
 
   /* 하단 연락처 - 크게 */
   .footer-bar { background: #0F172A; padding: 24px 32px;
@@ -144,7 +144,6 @@ export const printPropertyPost = (property: Property): void => {
   <div class="footer-bar">
     <div>
       <div class="office-name">${escapeHtml(agent.officeName)}</div>
-      <div class="agent-name">${escapeHtml(agent.agentName)} ${escapeHtml(agent.position)}</div>
     </div>
     <div class="phone">${escapeHtml(agent.phone)}</div>
   </div>
