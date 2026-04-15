@@ -70,6 +70,39 @@ const specLayoutStyles = StyleSheet.create({
   specTextVertical: { textAlignVertical: 'center' },
 });
 
+/** 모바일 전용: 스펙 4칸 — 라벨 위·값 아래(줄바꿈·말줄임 없음) */
+const specMobileStyles = StyleSheet.create({
+  specRowMobile: {
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    flex: 1,
+  },
+  specCellMobile: {
+    flex: 1,
+    minWidth: 0,
+    paddingVertical: 12,
+    paddingHorizontal: 6,
+    flexDirection: 'column',
+    gap: 8,
+    justifyContent: 'flex-start',
+  },
+  specCellMobileRight: {
+    borderRightWidth: 1,
+    borderRightColor: '#F1F5F9',
+  },
+  specLabelMobile: {
+    fontSize: 11,
+    color: '#94A3B8',
+    fontWeight: '500',
+  },
+  specValueMobile: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#1E293B',
+    alignSelf: 'stretch',
+  },
+});
+
 // 지도/주소 복사 버튼 스타일 (detailStyles.ts가 아닌 이 파일 내부에서만 추가)
 const localStyles = StyleSheet.create({
   addrBtnRow: {
@@ -337,23 +370,37 @@ export default function PropertyDetailScreen() {
 
         <View style={[styles.infoRow]}>
           <View style={[styles.specGrid, narrow && styles.specGridFull, isUltraWide && styles.specGridUltra, !narrow && styles.specGridFlex]}>
-            {isUltraWide ? (
-              <>
-                <View style={[styles.specRow, styles.specRowBottom, specLayoutStyles.specRow]}>
+            {Platform.OS === 'web' ? (
+              isUltraWide ? (
+                <>
+                  <View style={[styles.specRow, styles.specRowBottom, specLayoutStyles.specRow]}>
+                    {specs.map((spec, idx) => (
+                      <View key={spec.label} style={[styles.specCellUltra2col, specLayoutStyles.specItem, idx < specs.length - 1 && styles.specCellRight]}>
+                        <Text style={[styles.specLabel, specFontStyles.specLabel, specLayoutStyles.specTextVertical]} numberOfLines={1} ellipsizeMode="tail">{spec.label}</Text>
+                        <Text style={[styles.specValue, specFontStyles.specValue, specLayoutStyles.specTextVertical]} numberOfLines={1} ellipsizeMode="tail">{spec.value}</Text>
+                      </View>
+                    ))}
+                  </View>
+                </>
+              ) : (
+                <View style={[styles.specRow, specLayoutStyles.specRow]}>
                   {specs.map((spec, idx) => (
-                    <View key={spec.label} style={[styles.specCellUltra2col, specLayoutStyles.specItem, idx < specs.length - 1 && styles.specCellRight]}>
-                      <Text style={[styles.specLabel, specFontStyles.specLabel, specLayoutStyles.specTextVertical]} numberOfLines={1} ellipsizeMode="tail">{spec.label}</Text>
-                      <Text style={[styles.specValue, specFontStyles.specValue, specLayoutStyles.specTextVertical]} numberOfLines={1} ellipsizeMode="tail">{spec.value}</Text>
+                    <View key={spec.label} style={[styles.specCell, specLayoutStyles.specItem, idx < specs.length - 1 && styles.specCellRight]}>
+                      <Text style={[styles.specLabel, specFontStyles.specLabel]} numberOfLines={1} ellipsizeMode="tail">{spec.label}</Text>
+                      <Text style={[styles.specValue, specFontStyles.specValue]} numberOfLines={1} ellipsizeMode="tail">{spec.value}</Text>
                     </View>
                   ))}
                 </View>
-              </>
+              )
             ) : (
-              <View style={[styles.specRow, specLayoutStyles.specRow]}>
+              <View style={specMobileStyles.specRowMobile}>
                 {specs.map((spec, idx) => (
-                  <View key={spec.label} style={[styles.specCell, specLayoutStyles.specItem, idx < specs.length - 1 && styles.specCellRight]}>
-                    <Text style={[styles.specLabel, specFontStyles.specLabel]} numberOfLines={1} ellipsizeMode="tail">{spec.label}</Text>
-                    <Text style={[styles.specValue, specFontStyles.specValue]} numberOfLines={1} ellipsizeMode="tail">{spec.value}</Text>
+                  <View
+                    key={spec.label}
+                    style={[specMobileStyles.specCellMobile, idx < specs.length - 1 && specMobileStyles.specCellMobileRight]}
+                  >
+                    <Text style={specMobileStyles.specLabelMobile}>{spec.label}</Text>
+                    <Text style={specMobileStyles.specValueMobile}>{spec.value}</Text>
                   </View>
                 ))}
               </View>
