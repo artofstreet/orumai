@@ -48,6 +48,17 @@ export default function ResultsScreen() {
     setSearchQuery(initialQuery);
   }, [initialQuery, setSearchQuery]);
 
+  // 검색 결과가 있는 탭으로 자동 전환 — 현재 탭만 비어 있고 다른 탭에 건수가 있을 때
+  useEffect(() => {
+    const nProp = filteredProperties.length;
+    const nCust = filteredCustomers.length;
+    if (tab === 'properties' && nProp === 0 && nCust > 0) {
+      setTab('customers');
+    } else if (tab === 'customers' && nCust === 0 && nProp > 0) {
+      setTab('properties');
+    }
+  }, [tab, filteredProperties.length, filteredCustomers.length]);
+
   const tabCountProperties = filteredProperties.length;
   const tabCountCustomers = filteredCustomers.length;
 
