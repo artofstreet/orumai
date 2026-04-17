@@ -65,6 +65,10 @@ export default function ResultsScreen() {
   }, [tab, filteredProperties.length, filteredCustomers.length]);
 
   const totalPages = Math.max(1, Math.ceil((tab === 'properties' ? filteredProperties.length : filteredCustomers.length) / PAGE_SIZE));
+  useEffect(() => {
+    // totalPages 줄어들면 page 범위 보정
+    setPage((prev) => Math.min(prev, totalPages));
+  }, [totalPages]);
   const pagedProperties = useMemo(() => filteredProperties.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE), [filteredProperties, page]);
   const pagedCustomers = useMemo(() => filteredCustomers.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE), [filteredCustomers, page]);
   const tabCountProperties = filteredProperties.length;
