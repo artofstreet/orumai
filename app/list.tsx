@@ -44,6 +44,10 @@ export default function ListScreen() {
   useEffect(() => { setTab(params.type === 'customers' ? 'customers' : 'properties'); setPage(1); flatListRef.current?.scrollToOffset({ offset: 0, animated: true }); }, [params.type]);
   const handleTabChange = useCallback((newTab: TabKey) => { setTab(newTab); setPage(1); flatListRef.current?.scrollToOffset({ offset: 0, animated: true }); }, []);
   const totalPages = Math.max(1, Math.ceil(((tab === 'properties' ? allProperties.length : allCustomers.length) / PAGE_SIZE)));
+  useEffect(() => {
+    // totalPages 줄어들면 page 범위 보정
+    setPage((prev) => Math.min(prev, totalPages));
+  }, [totalPages]);
   const pagedProperties = useMemo(() => allProperties.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE), [allProperties, page]);
   const pagedCustomers = useMemo(() => allCustomers.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE), [allCustomers, page]);
 
