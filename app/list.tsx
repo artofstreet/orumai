@@ -9,6 +9,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+
+const safeTime = (value: string): number => {
+  // 잘못된 날짜는 0으로 처리하여 안전 정렬
+  const t = new Date(value).getTime();
+  return Number.isFinite(t) ? t : 0;
+};
 // TODO-DB: Supabase 연결 후 실데이터로 교체 예정
 type TabKey = 'properties' | 'customers';
 const GAP = 8;
@@ -26,8 +32,15 @@ export default function ListScreen() {
   const { properties } = useProperties();
   const { filteredProperties: rawProperties, filteredCustomers: rawCustomers } = useSearch({ properties });
 
-  const allProperties = useMemo(() => [...rawProperties].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()), [rawProperties]);
-  const allCustomers = useMemo(() => [...rawCustomers].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()), [rawCustomers]);
+  const allProperties = useMemo(
+    () => [...rawProperties].sort((a, b) => safeTime(b.createdAt) - safeTime(a.createdAt)),
+    [rawProperties]
+  );
+
+  const allCustomers = useMemo(
+    () => [...rawCustomers].sort((a, b) => safeTime(b.createdAt) - safeTime(a.createdAt)),
+    [rawCustomers]
+  );
   useEffect(() => { setTab(params.type === 'customers' ? 'customers' : 'properties'); setPage(1); flatListRef.current?.scrollToOffset({ offset: 0, animated: true }); }, [params.type]);
   const handleTabChange = useCallback((newTab: TabKey) => { setTab(newTab); setPage(1); flatListRef.current?.scrollToOffset({ offset: 0, animated: true }); }, []);
   const totalPages = Math.max(1, Math.ceil(((tab === 'properties' ? allProperties.length : allCustomers.length) / PAGE_SIZE)));
