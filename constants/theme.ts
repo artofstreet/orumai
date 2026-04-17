@@ -2,9 +2,15 @@ import { Platform } from 'react-native';
 
 // ── 레이아웃 공통 상수 — 모든 페이지 컨테이너에서 공유 ──
 export const LAYOUT_MAX_WIDTH = 1200; // 콘텐츠 최대 너비 (일반 데스크톱 기준)
-export const LAYOUT_PADDING = 32; // 좌우 기본 여백(중간 화면 기준, 레거시)
+export const LAYOUT_PADDING = 32; // ⚠️ 레거시 - 신규 코드에서는 getHorizontalPadding(windowWidth) 사용 권장
 
-/** 화면 폭 구간 (디자인 기준, px) — 와이드 1920+ / 일반 1280~1920 / 노트북 1024~1280 / 태블릿 768~1024 / 폰 375~768 */
+/** 브레이크포인트 (각 값은 해당 구간의 하한 경계값)
+ *  - 폰: 0 ~ 768 미만
+ *  - 태블릿: 768 ~ 1024 미만
+ *  - 노트북: 1024 ~ 1280 미만
+ *  - 일반 데스크톱: 1280 ~ 1920 미만
+ *  - 와이드: 1920 이상
+ */
 export const BREAKPOINT = {
   phone: 768,
   tablet: 1024,
