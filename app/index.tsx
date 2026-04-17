@@ -33,7 +33,9 @@ export default function HomeScreen() {
   }, [focusInput]);
 
   const 검색실행 = () => {
-    router.push({ pathname: '/results' as const, params: { query: 검색어 } });
+    const trimmed = 검색어.trim();
+    if (!trimmed) return;
+    router.push({ pathname: '/results' as const, params: { query: trimmed } });
   };
 
   const page = (
