@@ -22,7 +22,9 @@ export const loadAgentProfile = (): AgentProfile => {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     return raw ? { ...defaultProfile, ...JSON.parse(raw) } : defaultProfile;
-  } catch {
+  } catch (err) {
+    // localStorage 읽기 실패 시 경고 (시크릿 모드, 용량 초과 등)
+    console.warn('[orumai] 프로필 불러오기 실패:', err);
     return defaultProfile;
   }
 };
@@ -32,7 +34,10 @@ export const saveAgentProfile = (profile: AgentProfile): void => {
   if (Platform.OS !== 'web') return;
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
-  } catch {}
+  } catch (err) {
+    // localStorage 저장 실패 시 경고 (용량 초과, 시크릿 모드 등)
+    console.warn('[orumai] 프로필 저장 실패:', err);
+  }
 };
 
 type ScreenProps = {
