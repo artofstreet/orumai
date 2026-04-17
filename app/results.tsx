@@ -86,7 +86,10 @@ export default function ResultsScreen() {
   );
   const goPrevPage = useCallback(() => { setPage((p) => Math.max(1, p - 1)); flatListRef.current?.scrollToOffset({ offset: 0, animated: true }); }, []);
   const goNextPage = useCallback(() => { setPage((p) => Math.min(totalPages, p + 1)); flatListRef.current?.scrollToOffset({ offset: 0, animated: true }); }, [totalPages]);
-  const 검색제출무시 = useCallback(() => {}, []);
+  const handleSearchSubmit = useCallback(() => { // 검색어 제출 시 1페이지로 + 맨 위로 스크롤
+    setPage(1);
+    flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
+  }, []);
   const renderPropertyItem = useCallback(
     ({ item }: { item: Property }) => {
       const onPress = () => router.push({ pathname: '/property/[id]', params: { id: item.id } });
@@ -113,7 +116,7 @@ export default function ResultsScreen() {
               </Pressable>
             ) : null}
             <View style={styles.searchBarSlot}>
-              <SearchBar value={searchQuery} onChangeText={setSearchQuery} onSubmit={검색제출무시} />
+              <SearchBar value={searchQuery} onChangeText={setSearchQuery} onSubmit={handleSearchSubmit} />
             </View>
           </View>
           <Text style={styles.summaryText}>
