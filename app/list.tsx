@@ -75,7 +75,7 @@ export default function ListScreen() {
         {/* 헤더 */}
         <View style={[styles.header, { paddingHorizontal: layoutPadding }]}>
           <View style={styles.titleRow}>
-            <Pressable style={styles.backButton} onPress={() => router.push('/')}>
+            <Pressable style={styles.backButton} onPress={() => router.replace('/')}>
               <Ionicons name="arrow-back" size={22} color={primary} />
             </Pressable>
             <Text style={styles.titleText}>
