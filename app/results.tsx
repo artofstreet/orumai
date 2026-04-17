@@ -22,16 +22,22 @@ const getInitialQuery = (queryParam: unknown): string => {
   return '';
 };
 
+const safeTime = (value: string): number => {
+  // 잘못된 날짜는 0으로 처리하여 안전 정렬
+  const t = new Date(value).getTime();
+  return Number.isFinite(t) ? t : 0;
+};
+
 export default function ResultsScreen() {
   const { width: windowWidth } = useWindowDimensions();
   const { properties } = useProperties();
   const { filteredProperties: rawProperties, filteredCustomers: rawCustomers, searchQuery, setSearchQuery } = useSearch({ properties });
   const filteredProperties = useMemo(
-    () => [...rawProperties].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+    () => [...rawProperties].sort((a, b) => safeTime(b.createdAt) - safeTime(a.createdAt)),
     [rawProperties],
   );
   const filteredCustomers = useMemo(
-    () => [...rawCustomers].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+    () => [...rawCustomers].sort((a, b) => safeTime(b.createdAt) - safeTime(a.createdAt)),
     [rawCustomers],
   );
   const params = useLocalSearchParams<{ query?: string }>();
