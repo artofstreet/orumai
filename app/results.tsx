@@ -105,7 +105,7 @@ export default function ResultsScreen() {
         <View style={[styles.header, { paddingHorizontal: layoutPadding, maxWidth: layoutWidth }]}>
           <View style={styles.searchRow}>
             {windowWidth > 600 ? (
-              <Pressable onPress={() => router.push('/')}>
+              <Pressable onPress={() => router.replace('/')}>
                 <Text style={styles.logoLine}>
                   <Text style={styles.logoO}>오름</Text>
                   <Text style={styles.logoAI}>AI</Text>
