@@ -18,14 +18,14 @@ export const defaultProfile: AgentProfile = { officeName: '', agentName: '', pos
 
 export const loadAgentProfile = (): AgentProfile => {
   // TODO-STORAGE: 모바일 저장소는 AsyncStorage/SecureStore로 교체 예정
-  if (Platform.OS !== 'web') return defaultProfile;
+  if (Platform.OS !== 'web') return { ...defaultProfile };
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? { ...defaultProfile, ...JSON.parse(raw) } : defaultProfile;
+    return raw ? { ...defaultProfile, ...JSON.parse(raw) } : { ...defaultProfile };
   } catch (err) {
     // localStorage 읽기 실패 시 경고 (시크릿 모드, 용량 초과 등)
     console.warn('[orumai] 프로필 불러오기 실패:', err);
-    return defaultProfile;
+    return { ...defaultProfile };
   }
 };
 
