@@ -50,7 +50,7 @@ export interface PropertyCardProps {
 export default function PropertyCard({ property, width, onPress }: PropertyCardProps) {
   const priceColor  = useMemo(() => DEAL_PRICE_COLOR[property.deal] ?? PRICE_COLOR, [property.deal]); // 거래유형별 가격 색상
   const typeChip    = useMemo(() => getTypeChip(property.type), [property.type]);
-  const title       = property.buildingName ?? property.name; // 건물명 우선
+  const title       = property.buildingName ?? property.name ?? '이름 없음'; // 건물명 우선
   const createdDate = useMemo(() => formatDate(property.createdAt), [property.createdAt]);
   const photoCount  = property.photos?.length ?? 0; // 사진 장수
 
