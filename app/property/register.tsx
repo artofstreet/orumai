@@ -60,10 +60,10 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
   const [totalFloors, setTotalFloors] = useState<string>(() => str(d?.totalFloors));
   const [direction, setDirection] = useState<string>(() => str(d?.dir));
   const [moveInDate, setMoveInDate] = useState<string>(() => str(d?.moveInDate));
-  const [ownerName, setOwnerName] = useState<string>('');
-  const [relation, setRelation] = useState<RelationKind | undefined>(undefined);
-  const [ownerPhone, setOwnerPhone] = useState<string>('');
-  const [ownerMemo, setOwnerMemo] = useState<string>('');
+  const [ownerName, setOwnerName] = useState<string>(() => str(d?.ownerName));
+  const [relation, setRelation] = useState<RelationKind | undefined>(() => str(d?.relation) as RelationKind || undefined);
+  const [ownerPhone, setOwnerPhone] = useState<string>(() => formatPhoneHyphen(str(d?.ownerPhone)));
+  const [ownerMemo, setOwnerMemo] = useState<string>(() => str(d?.ownerMemo));
   const [memo, setMemo] = useState<string>(() => str(d?.memo));
   const [showSuggest, setShowSuggest] = useState<boolean>(false);
 
