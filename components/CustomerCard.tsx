@@ -69,7 +69,7 @@ export default function CustomerCard({ item, width }: CustomerCardProps) {
           <Text style={styles.avatarText}>{initial}</Text>
         </View>
         <View style={styles.textArea}>
-          <Text style={styles.name} numberOfLines={1}>{item.name}</Text>
+          <Text style={styles.name} numberOfLines={1}>{item.name || '이름 없음'}</Text>
           <Text style={styles.phone} numberOfLines={1}>{item.phone}</Text>
         </View>
       </View>
