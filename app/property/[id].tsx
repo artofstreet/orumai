@@ -176,7 +176,7 @@ export default function PropertyDetailScreen() {
       </View>
     );
   }
-  const title      = property.buildingName ?? property.name;
+  const title      = property.buildingName ?? property.name ?? '매물 상세';
   const typeBadge  = getBadge(property.type);
   const dealBadge  = getBadge(property.deal);
   const photos     = (property.photos ?? []).slice(0, 10);
