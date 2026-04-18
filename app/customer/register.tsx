@@ -1,16 +1,17 @@
 /**
  * 고객 등록/편집 화면
- * TODO-DB: 저장 시 Supabase `customers` insert / update
+ * 저장: useCustomers → Supabase `customers` insert / update
  * TODO-AUTH: 작성자 user_id 바인딩
  */
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
-import { Keyboard, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Alert, Keyboard, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { detailStyles } from '@/components/property/detailStyles';
 import { formatPhoneHyphen } from '@/components/property/registerMocks';
 import { registerStyles as styles } from '@/components/property/registerStyles';
+import { useCustomers } from '@/hooks/useCustomers';
 import { clearEditData, closeRegisterPanel } from '@/utils/registerEvents';
 
 type ScreenProps = {
@@ -23,6 +24,7 @@ const str = (v: unknown): string => { if (v === null || v === undefined) return 
 
 export default function CustomerRegisterScreen({ embedded = false, initialData }: ScreenProps) {
   const router = useRouter();
+  const { addCustomer, updateCustomer, loading, error } = useCustomers();
 
   const d = initialData ?? null;
   const isEdit = d !== null;
@@ -31,13 +33,40 @@ export default function CustomerRegisterScreen({ embedded = false, initialData }
   const [phone, setPhone] = useState<string>(() => str(d?.phone));
   const [memo, setMemo] = useState<string>(() => str(d?.memo));
 
+  /** 저장 요청 직후 훅의 loading/error로 성공·실패 판별 */
+  const pendingSaveRef = useRef(false);
+
   const onPhoneChange = (t: string) => setPhone(formatPhoneHyphen(t));
 
-  const onSave = () => {
-    Keyboard.dismiss();
+  useEffect(() => {
+    if (!pendingSaveRef.current || loading) return;
+    pendingSaveRef.current = false;
+    if (error) {
+      Alert.alert('저장 실패', error);
+      return;
+    }
     clearEditData();
-    // TODO-DB: isEdit ? supabase.update() : supabase.insert()
     closeRegisterPanel();
+  }, [loading, error]);
+
+  const onSave = async () => {
+    Keyboard.dismiss();
+    const trimmedName = name.trim();
+    const trimmedPhone = phone.trim();
+    if (!trimmedName || !trimmedPhone) {
+      Alert.alert('', '이름과 전화번호를 입력해주세요');
+      return;
+    }
+    if (isEdit && !str(d?.id)) {
+      Alert.alert('', '편집할 고객 정보가 없습니다.');
+      return;
+    }
+    pendingSaveRef.current = true;
+    if (isEdit) {
+      await updateCustomer(str(d?.id), { name: trimmedName, phone: trimmedPhone, memo });
+    } else {
+      await addCustomer({ name: trimmedName, phone: trimmedPhone, memo });
+    }
   };
 
   return (
