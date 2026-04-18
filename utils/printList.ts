@@ -85,7 +85,7 @@ export const printPropertyList = (properties: Property[]): void => {
 
   const rows = sorted.map((p) => `
     <tr>
-      <td class="col-name">${escapeHtml(p.buildingName ?? p.name)}</td>
+      <td class="col-name">${escapeHtml(p.buildingName?.trim() || p.name)}</td>
       <td class="col-addr">${escapeHtml(p.addr)}</td>
       <td>${escapeHtml(p.type)}</td>
       <td>
@@ -186,7 +186,7 @@ export const printCustomerList = (customers: Customer[]): void => {
     <tr>
       <td>${escapeHtml(c.name)}</td>
       <td>${escapeHtml(c.phone)}</td>
-      <td>${escapeHtml(c.memo.length > 40 ? c.memo.slice(0, 40) + '...' : c.memo)}</td>
+      <td>${escapeHtml((c.memo ?? '').length > 40 ? c.memo.slice(0, 40) + '...' : (c.memo ?? ''))}</td>
       <td>${escapeHtml(c.createdAt?.slice(0, 10) ?? '—')}</td>
     </tr>
   `).join('');
