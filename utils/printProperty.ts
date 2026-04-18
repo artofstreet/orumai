@@ -47,7 +47,7 @@ const printViaIframe = (html: string): void => {
 // ─────────────────────────────────────────
 export const printPropertyPost = (property: Property): void => {
   const agent = loadAgentProfile();
-  const title = escapeHtml(property.buildingName ?? property.name);
+  const title = escapeHtml(property.buildingName ?? property.name ?? '매물 상세');
   const priceColor = DEAL_COLOR[property.deal] ?? '#0F172A';
 
   const html = `
@@ -160,7 +160,7 @@ export const printPropertyPost = (property: Property): void => {
 // ─────────────────────────────────────────
 export const printPropertyConsult = (property: Property): void => {
   const agent = loadAgentProfile();
-  const title = escapeHtml(property.buildingName ?? property.name);
+  const title = escapeHtml(property.buildingName ?? property.name ?? '매물 상세');
   const priceColor = DEAL_COLOR[property.deal] ?? '#0F172A';
   const safeMemo = property.memo ? escapeHtml(property.memo) : '';
 
