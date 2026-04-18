@@ -23,6 +23,7 @@ const 모든단어포함여부 = (targetLower: string, words: string[]): boolean
 // 매물 검색에 포함할 텍스트 조각(상수)
 const PROPERTY_SEARCH_PARTS: Array<(p: Property) => string> = [
   (p) => p.name || '',
+  (p) => p.buildingName || '', // 건물명 검색 추가
   (p) => p.type || '',
   (p) => p.addr || '',
   (p) => p.deal || '',
