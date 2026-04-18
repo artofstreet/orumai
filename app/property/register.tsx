@@ -1,55 +1,44 @@
 /**
- * 매물 등록/편집 화면
- * TODO-DB: 저장 시 Supabase `properties` insert / update
- * TODO-AUTH: 작성자 user_id 바인딩
- * TODO-STORAGE: 매물 사진 업로드·URL 저장
+ * 매물 등록/편집 화면 — 저장: useProperties(Supabase `properties`)
+ * TODO-AUTH: 작성자 user_id · TODO-STORAGE: 사진 업로드
  */
 import { useRouter } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Keyboard, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Keyboard, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
 import { detailStyles } from '@/components/property/detailStyles';
 import { RegisterDealChips, RegisterPropChips } from '@/components/property/registerChipBlocks';
 import { MOCK_ADDRESS_ROWS, formatPhoneHyphen } from '@/components/property/registerMocks';
 import { RegisterMoreFields, formatAreaSqmInput, formatFloorInput } from '@/components/property/registerMoreFields';
 import { registerStyles as styles } from '@/components/property/registerStyles';
 import { PROP_OPTIONS, type DealKind, type PropKind, type RelationKind } from '@/components/property/registerTypes';
-import { DEAL_TYPES, PROPERTY_TYPES } from '@/types';
+import { type AddPropertyInput, useProperties } from '@/hooks/useProperties';
+import { DEAL_TYPES, PROPERTY_TYPES, type Property } from '@/types';
 import { clearEditData, closeRegisterPanel } from '@/utils/registerEvents';
-
 type ScreenProps = {
   embedded?: boolean;
   initialData?: Record<string, unknown> | null;
 };
-
-// 숫자/문자 등 원시값을 문자열로 통일 (서버 number 등 방어)
 const str = (v: unknown): string => { if (v === null || v === undefined) return ''; return String(v); };
-
 export default function PropertyRegisterScreen({ embedded = false, initialData }: ScreenProps) {
   const router = useRouter();
-  // 블러 타이머 ref — 언마운트 시 정리용
+  const { addProperty, updateProperty, loading, error } = useProperties();
   const blurTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
+  const pendingSaveRef = useRef(false);
   const d = initialData ?? null;
   const isEdit = d !== null;
-
   const stripUnit = (v: unknown) => str(v).replace('㎡', '').trim();
-
   const [address, setAddress] = useState<string>(() => str(d?.addr));
   const [buildingName, setBuildingName] = useState<string>(() => str(d?.buildingName));
   const [deal, setDeal] = useState<DealKind>(() => {
     const dealValue = str(d?.deal);
-    const initialDeal: DealKind = DEAL_TYPES.includes(dealValue as DealKind) ? (dealValue as DealKind) : '월세';
-    return initialDeal;
+    return DEAL_TYPES.includes(dealValue as DealKind) ? (dealValue as DealKind) : '월세';
   });
   const [propType, setPropType] = useState<PropKind>(() => {
     const typeValue = str(d?.type);
-    // PROPERTY_TYPES 허용 + 화면 칩 PropKind와 교집합 (사무실 등 타입 불일치 방어)
-    const initialProp: PropKind = PROPERTY_TYPES.includes(typeValue as (typeof PROPERTY_TYPES)[number]) && (PROP_OPTIONS as readonly string[]).includes(typeValue)
+    return PROPERTY_TYPES.includes(typeValue as (typeof PROPERTY_TYPES)[number]) && (PROP_OPTIONS as readonly string[]).includes(typeValue)
       ? (typeValue as PropKind)
       : '아파트';
-    return initialProp;
   });
   const [salePrice, setSalePrice] = useState<string>(() => str(d?.salePrice));
   const [jeonsePrice, setJeonsePrice] = useState<string>(() => str(d?.jeonsePrice));
@@ -66,24 +55,63 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
   const [ownerMemo, setOwnerMemo] = useState<string>(() => str(d?.ownerMemo));
   const [memo, setMemo] = useState<string>(() => str(d?.memo));
   const [showSuggest, setShowSuggest] = useState<boolean>(false);
-
   useEffect(() => () => { clearTimeout(blurTimerRef.current ?? undefined); }, []);
-
+  useEffect(() => {
+    if (!pendingSaveRef.current || loading) return;
+    pendingSaveRef.current = false;
+    if (error) {
+      Alert.alert('저장 실패', error);
+      return;
+    }
+    clearEditData();
+    closeRegisterPanel();
+  }, [loading, error]);
   const suggestions = useMemo(() => {
     const q = address.trim();
-    if (q.length < 1) return [];
-    return MOCK_ADDRESS_ROWS.filter((r) => r.label.includes(q)).slice(0, 3);
+    return q.length < 1 ? [] : MOCK_ADDRESS_ROWS.filter((r) => r.label.includes(q)).slice(0, 3);
   }, [address]);
-
   const onPhoneChange = (t: string) => setOwnerPhone(formatPhoneHyphen(t));
-
-  const onSave = () => {
+  const onSave = async () => {
     Keyboard.dismiss();
-    clearEditData();
-    // TODO-DB: isEdit ? supabase.update() : supabase.insert()
-    closeRegisterPanel();
+    const addrTrim = address.trim();
+    if (!addrTrim) {
+      Alert.alert('', '주소를 입력해주세요');
+      return;
+    }
+    if (isEdit && !str(d?.id)) {
+      Alert.alert('', '편집할 매물 정보가 없습니다.');
+      return;
+    }
+    const sN = Number(salePrice);
+    const jN = Number(jeonsePrice);
+    const dN = Number(deposit);
+    const mN = Number(monthly);
+    const price = deal === '매매' ? `${sN}억` : deal === '전세' ? `${jN}억` : `보${dN}/월${mN}`;
+    const name = buildingName.trim() || addrTrim;
+    const payload: AddPropertyInput = {
+      type: propType as Property['type'],
+      name,
+      addr: addrTrim,
+      deal,
+      price,
+      area: `${areaSqm.trim()}㎡`,
+      floor: floor.trim() || '—',
+      phone: ownerPhone.trim(),
+      memo: memo.trim(),
+      status: 'draft',
+      ...(buildingName.trim() ? { buildingName: buildingName.trim() } : {}),
+      ...(deal === '매매' && Number.isFinite(sN) ? { salePrice: sN } : {}),
+      ...(deal === '전세' && Number.isFinite(jN) ? { jeonsePrice: jN } : {}),
+      ...(deal === '월세' && Number.isFinite(dN) ? { deposit: dN } : {}),
+      ...(deal === '월세' && Number.isFinite(mN) ? { monthly: mN } : {}),
+    };
+    pendingSaveRef.current = true;
+    if (isEdit) {
+      await updateProperty(str(d?.id), { ...payload, status: str(d?.status) === 'active' ? 'active' : 'draft' });
+    } else {
+      await addProperty(payload);
+    }
   };
-
   return (
     <SafeAreaView style={safeAreaStyles.root}>
       <ScrollView
@@ -104,8 +132,6 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
           <Text style={[detailStyles.headerBtnText, { fontSize: 15 }]}>저장</Text>
         </TouchableOpacity>
       </View>
-
-      {/* 주소 */}
       <View style={styles.section}>
         <Text style={styles.sectionLabel}>주소</Text>
         <TextInput
@@ -136,8 +162,6 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
           </View>
         )}
       </View>
-
-      {/* 건물명 */}
       <View style={styles.section}>
         <Text style={styles.sectionLabel}>건물명</Text>
         <TextInput
@@ -148,7 +172,6 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
           placeholderTextColor="#9AA5B4"
         />
       </View>
-
       <RegisterDealChips deal={deal} setDeal={setDeal} />
       <RegisterPropChips propType={propType} setPropType={setPropType} />
       <RegisterMoreFields
@@ -172,8 +195,6 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
     </SafeAreaView>
   );
 }
-
-// 루트 SafeArea: 인셋 영역까지 스크롤 배경(#F0F4FF)과 톤 맞춤
 const safeAreaStyles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#F0F4FF' },
 });
