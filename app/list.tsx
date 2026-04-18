@@ -2,6 +2,7 @@ import CustomerCard from '@/components/CustomerCard';
 import PropertyCard from '@/components/PropertyCard';
 import { bg, border, primary, text2 } from '@/constants/colors';
 import { getContentMaxWidth, getGridColumns, getHorizontalPadding } from '@/constants/theme';
+import { useCustomers } from '@/hooks/useCustomers';
 import { useProperties } from '@/hooks/useProperties';
 import { useSearch } from '@/hooks/useSearch';
 import type { Customer, Property } from '@/types';
@@ -30,7 +31,8 @@ export default function ListScreen() {
   const flatListRef = useRef<{ scrollToOffset: (p: { offset: number; animated: boolean }) => void } | null>(null);
 
   const { properties } = useProperties();
-  const { filteredProperties: rawProperties, filteredCustomers: rawCustomers } = useSearch({ properties });
+  const { customers } = useCustomers(); // Supabase `customers` 목록
+  const { filteredProperties: rawProperties, filteredCustomers: rawCustomers } = useSearch({ properties, customers });
 
   const allProperties = useMemo(
     () => [...rawProperties].sort((a, b) => safeTime(b.createdAt) - safeTime(a.createdAt)),
