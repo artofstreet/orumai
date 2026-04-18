@@ -1,6 +1,6 @@
 import { Platform, StyleSheet } from 'react-native';
 
-import { bg, border, red, text, text2 } from '@/constants/colors';
+import { bg, border, red, text } from '@/constants/colors';
 
 // 플랫폼별 그림자 유틸
 const makeShadow = (h: number, r: number, o: number, elev: number) =>
