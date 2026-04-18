@@ -11,6 +11,7 @@ export type AdCopyResult = {
 // 매물 정보를 한국어 요약 문자열로 변환
 const buildPropertySummary = (p: Property): string => {
   const lines: string[] = [
+    p.buildingName ? `건물명: ${p.buildingName}` : '',
     `매물종류: ${p.type}`,
     `거래유형: ${p.deal} ${p.price}`,
     `위치: ${p.addr}`,
