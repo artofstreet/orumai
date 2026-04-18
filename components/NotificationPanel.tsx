@@ -21,8 +21,6 @@ type Props = {
   visible: boolean;
   onClose: () => void;
   panelW?: number;
-  /** 네이티브: 상단바 아래 시작 오프셋(px). 미지정 시 46 */
-  topOffset?: number;
 };
 
 export default function NotificationPanel({ visible, onClose, panelW = 340 }: Props) {
