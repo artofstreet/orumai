@@ -62,7 +62,7 @@ export function RegisterRelationChips({ relation, setRelation }: RelProps) {
       {REL_OPTIONS.map((r) => {
         const on = relation === r;
         return (
-          <TouchableOpacity key={r} style={[styles.chip, on && styles.chipOn]} onPress={() => setRelation(r)}>
+          <TouchableOpacity key={r} style={[styles.chip, { borderRadius: 4 }, on && styles.chipOn]} onPress={() => setRelation(r)}>
             <Text style={[styles.chipTxt, on && styles.chipTxtOn]}>{r}</Text>
           </TouchableOpacity>
         );
