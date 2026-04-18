@@ -11,7 +11,11 @@ const formatDateShort = (v?: string): string => {
   if (!v) return '';
   const d = new Date(v);
   if (isNaN(d.getTime())) return v.slice(0, 10);
-  return d.toISOString().slice(0, 10);
+  // 로컬 날짜 기준 (UTC 변환 방지)
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
 };
 
 // TODO-STYLE: _layout.tsx와 중복 — 나중에 constants/theme.ts로 통합 예정
