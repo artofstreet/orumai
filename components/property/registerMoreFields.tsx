@@ -40,14 +40,6 @@ export function formatFloorInput(raw: string): string {
   return d ? `${d}층` : '';
 }
 
-/** 입주일: 숫자만(최대 8자리) → 하이픈 자동(YYYY-MM-DD) */
-export function formatMoveInDateInput(raw: string): string {
-  const d = digitsOnly(raw, 8);
-  if (d.length <= 4) return d;
-  if (d.length <= 6) return `${d.slice(0, 4)}-${d.slice(4)}`;
-  return `${d.slice(0, 4)}-${d.slice(4, 6)}-${d.slice(6, 8)}`;
-}
-
 const MEMO_LINE_HEIGHT = 24;
 const MEMO_BASE_HEIGHT = 80;
 
@@ -138,7 +130,7 @@ export function RegisterMoreFields(p: Props) {
         <TextInput style={styles.input} value={p.floor} onChangeText={(t) => p.setFloor(formatFloorInput(t))} keyboardType="number-pad" placeholder="해당 층" placeholderTextColor="#9AA5B4" />
         <TextInput style={styles.input} value={p.totalFloors} onChangeText={(t) => p.setTotalFloors(formatFloorInput(t))} keyboardType="number-pad" placeholder="총 층수" placeholderTextColor="#9AA5B4" />
         <TextInput style={styles.input} value={p.direction} onChangeText={p.setDirection} placeholder="방향 (예: 남향)" placeholderTextColor="#9AA5B4" />
-        <TextInput style={styles.input} value={p.moveInDate} onChangeText={(t) => p.setMoveInDate(formatMoveInDateInput(t))} keyboardType="number-pad" placeholder="입주일 예: 2026-05-01" placeholderTextColor="#9AA5B4" />
+        <TextInput style={styles.input} value={p.moveInDate} onChangeText={(t) => p.setMoveInDate(t)} placeholder="예: 2026-06-01 또는 즉시입주" placeholderTextColor="#9AA5B4" />
       </View>
       <View style={styles.section}>
         <TouchableOpacity style={styles.relationPickerBtn} onPress={() => setRelationModalOpen(true)} activeOpacity={0.85}>
