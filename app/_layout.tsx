@@ -10,6 +10,8 @@ import TopBar from '@/components/TopBar';
 import { DUMMY_CUSTOMERS } from '@/constants/dummyCustomers';
 import { DUMMY_PROPERTIES } from '@/constants/dummyProperties';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useProperties } from '@/hooks/useProperties';
+import { useCustomers } from '@/hooks/useCustomers';
 import { printCustomerList, printPropertyList } from '@/utils/printList';
 import { registerClosePanel, registerOpenPanel } from '@/utils/registerEvents';
 import CustomerRegisterScreen from './customer/register';
@@ -38,9 +40,11 @@ export default function RootLayout() {
   const [profileKey, setProfileKey] = useState<number>(0);
   const [showNotification, setShowNotification] = useState<boolean>(false);
 
-  // 실제 매물/고객 수 (TODO-DB: Supabase 연결 후 실데이터로 교체)
-  const propertyCount = DUMMY_PROPERTIES.length;
-  const customerCount = DUMMY_CUSTOMERS.length;
+  const { properties } = useProperties();
+  const { customers } = useCustomers();
+  // Supabase 훅으로 불러온 매물/고객 목록 개수
+  const propertyCount = properties.length;
+  const customerCount = customers.length;
 
   const panelW = useMemo(() => (windowWidth < 768 ? windowWidth : Math.min(480, Math.floor(windowWidth * 0.92))), [windowWidth]);
   const slideX = useRef(new Animated.Value(panelW)).current;
