@@ -4,7 +4,7 @@
  */
 import { useRouter } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Keyboard, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { detailStyles } from '@/components/property/detailStyles';
 import { RegisterDealChips, RegisterPropChips } from '@/components/property/registerChipBlocks';
@@ -114,6 +114,8 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
   };
   return (
     <SafeAreaView style={safeAreaStyles.root}>
+      {/* 키보드가 입력란을 가리지 않도록 플랫폼별 동작 */}
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={safeAreaStyles.keyboardAvoiding}>
       <ScrollView
         style={[styles.page, embedded ? { flex: 1, width: '100%' } : { maxWidth: 480, alignSelf: 'center', width: '100%' }]}
         contentContainerStyle={styles.scrollContent}
@@ -175,8 +177,7 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
       <RegisterDealChips deal={deal} setDeal={setDeal} />
       <RegisterPropChips propType={propType} setPropType={setPropType} />
       <RegisterMoreFields
-        deal={deal}
-        salePrice={salePrice} setSalePrice={setSalePrice}
+        deal={deal} salePrice={salePrice} setSalePrice={setSalePrice}
         jeonsePrice={jeonsePrice} setJeonsePrice={setJeonsePrice}
         deposit={deposit} setDeposit={setDeposit}
         monthly={monthly} setMonthly={setMonthly}
@@ -192,9 +193,8 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
         memo={memo} setMemo={setMemo}
       />
       </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
-const safeAreaStyles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#F0F4FF' },
-});
+const safeAreaStyles = StyleSheet.create({ root: { flex: 1, backgroundColor: '#F0F4FF' }, keyboardAvoiding: { flex: 1 } });
