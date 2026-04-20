@@ -1,21 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Alert, Animated, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-// TODO-DB: 나중에 Supabase로 교체
-export type Notice = {
-  id: string;
-  type: 'notice' | 'event';
-  title: string;
-  body: string;
+import { Notice, useNotices } from '@/hooks/useNotices';
+
+// 화면 표시용 공지 타입(기존 JSX 구조 유지 목적)
+type NoticeItem = Notice & {
   date: string;
 };
-
-const DUMMY_NOTICES: Notice[] = [
-  { id: '1', type: 'notice', title: '앱 업데이트 안내',  body: '오름AI v2.0이 출시되었습니다. 새로운 AI 광고문구 기능을 확인해보세요!', date: '2026-04-09' },
-  { id: '2', type: 'event',  title: '봄 프로모션 🌸',   body: 'PRO 플랜 첫 달 50% 할인! 4월 30일까지 적용됩니다.',                   date: '2026-04-07' },
-  { id: '3', type: 'notice', title: '서버 점검 안내',    body: '4월 15일 새벽 2시~4시 서버 점검이 있을 예정입니다.',                  date: '2026-04-05' },
-];
 
 type Props = {
   visible: boolean;
@@ -24,7 +16,20 @@ type Props = {
 };
 
 export default function NotificationPanel({ visible, onClose, panelW = 340 }: Props) {
-  const [notices, setNotices] = useState<Notice[]>(DUMMY_NOTICES);
+  const { notices: fetchedNotices } = useNotices();
+  // 서버 데이터는 유지하고, UI에서만 "숨김(삭제)" 처리
+  const [hiddenIds, setHiddenIds] = useState<Set<string>>(() => new Set());
+  const notices = useMemo<NoticeItem[]>(
+    () =>
+      fetchedNotices
+        .filter((n) => !hiddenIds.has(n.id))
+        .map((n) => ({
+          ...n,
+          // 기존 UI에서 date 필드를 쓰고 있어 created_at을 변환해서 채움
+          date: n.created_at.slice(0, 10),
+        })),
+    [fetchedNotices, hiddenIds],
+  );
   const [mounted, setMounted] = useState<boolean>(visible);
   const slideAnim = useRef<Animated.Value>(new Animated.Value(panelW)).current;
 
@@ -32,14 +37,14 @@ export default function NotificationPanel({ visible, onClose, panelW = 340 }: Pr
   const handleDelete = (id: string) => {
     if (Platform.OS === 'web' && typeof window !== 'undefined') {
       const ok = window.confirm('정말 삭제하시겠습니까?');
-      if (ok) setNotices((prev) => prev.filter((n) => n.id !== id));
+      if (ok) setHiddenIds((prev) => new Set(prev).add(id));
     } else {
       Alert.alert(
         '알림 삭제',
         '정말 삭제하시겠습니까?',
         [
           { text: '취소', style: 'cancel' },
-          { text: '삭제', style: 'destructive', onPress: () => setNotices((prev) => prev.filter((n) => n.id !== id)) },
+          { text: '삭제', style: 'destructive', onPress: () => setHiddenIds((prev) => new Set(prev).add(id)) },
         ],
       );
     }
