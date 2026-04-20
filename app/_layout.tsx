@@ -1,3 +1,10 @@
+import NotificationPanel from '@/components/NotificationPanel';
+import TopBar from '@/components/TopBar';
+import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useCustomers } from '@/hooks/useCustomers';
+import { useProperties } from '@/hooks/useProperties';
+import { printCustomerList, printPropertyList } from '@/utils/printList';
+import { registerClosePanel, registerOpenPanel } from '@/utils/registerEvents';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack, usePathname, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -5,15 +12,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Easing, Modal, Platform, Pressable, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import 'react-native-reanimated';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import NotificationPanel from '@/components/NotificationPanel';
-import TopBar from '@/components/TopBar';
-import { DUMMY_CUSTOMERS } from '@/constants/dummyCustomers';
-import { DUMMY_PROPERTIES } from '@/constants/dummyProperties';
-import { useColorScheme } from '@/hooks/use-color-scheme';
-import { useProperties } from '@/hooks/useProperties';
-import { useCustomers } from '@/hooks/useCustomers';
-import { printCustomerList, printPropertyList } from '@/utils/printList';
-import { registerClosePanel, registerOpenPanel } from '@/utils/registerEvents';
 import CustomerRegisterScreen from './customer/register';
 import ProfileScreen from './profile';
 import PropertyRegisterScreen from './property/register';
@@ -113,8 +111,8 @@ export default function RootLayout() {
           <Modal visible={printModalVisible} transparent animationType="fade" onRequestClose={() => setPrintModalVisible(false)}>
             <Pressable style={styles.modalBackdrop} onPress={() => setPrintModalVisible(false)} accessibilityRole="button" accessibilityLabel="인쇄 선택 모달 닫기">
               <Pressable style={styles.modalCard} onPress={(e) => e.stopPropagation?.()}>
-                <TouchableOpacity style={styles.modalOptionRow} onPress={() => { setPrintModalVisible(false); printPropertyList(DUMMY_PROPERTIES); }}><Text style={styles.modalOptionTxt}>🏠 전체 매물 인쇄</Text></TouchableOpacity>
-                <TouchableOpacity style={[styles.modalOptionRow, { borderTopWidth: 1, borderTopColor: '#F1F5F9' }]} onPress={() => { setPrintModalVisible(false); printCustomerList(DUMMY_CUSTOMERS); }}><Text style={styles.modalOptionTxt}>👤 전체 고객 인쇄</Text></TouchableOpacity>
+                <TouchableOpacity style={styles.modalOptionRow} onPress={() => { setPrintModalVisible(false); printPropertyList(properties); }}><Text style={styles.modalOptionTxt}>🏠 전체 매물 인쇄</Text></TouchableOpacity>
+                <TouchableOpacity style={[styles.modalOptionRow, { borderTopWidth: 1, borderTopColor: '#F1F5F9' }]} onPress={() => { setPrintModalVisible(false); printCustomerList(customers); }}><Text style={styles.modalOptionTxt}>👤 전체 고객 인쇄</Text></TouchableOpacity>
               </Pressable>
             </Pressable>
           </Modal>
