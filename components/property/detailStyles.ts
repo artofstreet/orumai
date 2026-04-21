@@ -61,7 +61,7 @@ export const detailStyles = StyleSheet.create({
     flexDirection: 'column',
   },
   memoBoxUltra:          { minWidth: 0 },
-  memoBoxFlex:           { minWidth: 0, flex: 1 },
+  memoBoxFlex:           { minWidth: 0 },
   memoBoxFull:           { width: '100%' },
   memoBody:              { paddingBottom: 8 },
   memoLabel:             { fontSize: 11, color: '#94A3B8', fontWeight: '600', marginBottom: 8 },
