@@ -61,6 +61,12 @@ export type Property = {
   parking?: string;
   // 난방방식(선택, 예: 지역난방)
   heating?: string;
+  // 집주인명(선택)
+  ownerName?: string;
+  // 집주인메모(선택)
+  ownerMemo?: string;
+  // 집주인 관계(선택, 예: 본인/배우자/세입자)
+  relation?: string;
   // 매물 상태(작성중/활성)
   status: 'draft' | 'active';
   // 연락처(전화번호)
