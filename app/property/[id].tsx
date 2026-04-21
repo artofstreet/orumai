@@ -415,6 +415,9 @@ export default function PropertyDetailScreen() {
               {property.ownerName && (
                 <Text style={styles.memoText}>집주인: {property.ownerName}{property.relation ? ` (${property.relation})` : ''}</Text>
               )}
+              {property.phone && (
+                <Text style={styles.memoText}>집주인연락처: {property.phone}</Text>
+              )}
               {property.ownerMemo && (
                 <Text style={styles.memoText}>집주인메모: {property.ownerMemo}</Text>
               )}
