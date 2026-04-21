@@ -104,6 +104,11 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
       ...(deal === '전세' && Number.isFinite(jN) ? { jeonsePrice: jN } : {}),
       ...(deal === '월세' && Number.isFinite(dN) ? { deposit: dN } : {}),
       ...(deal === '월세' && Number.isFinite(mN) ? { monthly: mN } : {}),
+      ...(direction.trim() ? { dir: direction.trim() } : {}),
+      ...(moveInDate.trim() ? { moveInDate: moveInDate.trim() } : {}),
+      ...(ownerName.trim() ? { ownerName: ownerName.trim() } : {}),
+      ...(ownerMemo.trim() ? { ownerMemo: ownerMemo.trim() } : {}),
+      ...(relation ? { relation } : {}),
     };
     pendingSaveRef.current = true;
     if (isEdit) {
