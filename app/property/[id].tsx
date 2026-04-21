@@ -19,7 +19,7 @@ import { detailStyles } from '@/components/property/detailStyles';
 import PropertyCarousel from '@/components/PropertyCarousel';
 import { BADGE_COLORS, text } from '@/constants/colors';
 import { getContentMaxWidth, getHorizontalPadding } from '@/constants/theme';
-import { useProperties } from '@/hooks/useProperties';
+import { usePropertiesContext } from '@/contexts/PropertiesContext';
 import { printPropertyPost, printPropertyConsult } from '@/utils/printProperty';
 import { openRegisterPanel } from '@/utils/registerEvents';
 // TODO-DB: supabase.from('properties').select().eq('id', id).single() 로 교체 예정
@@ -153,7 +153,7 @@ export default function PropertyDetailScreen() {
   const isUltraWide   = windowWidth >= 1920;
   const headerTitleSize = windowWidth < 400 ? 18 : windowWidth < 768 ? 20 : 22;
 
-  const { getPropertyById, properties } = useProperties();
+  const { getPropertyById, properties } = usePropertiesContext();
 
   const params = useLocalSearchParams<{ id?: string | string[] }>();
   const id = Array.isArray(params.id) ? params.id[0] : params.id; // 배열 방어 — expo-router 쿼리 중복 시 string[]

@@ -12,7 +12,8 @@ import { MOCK_ADDRESS_ROWS, formatPhoneHyphen } from '@/components/property/regi
 import { RegisterMoreFields, formatAreaSqmInput, formatFloorInput } from '@/components/property/registerMoreFields';
 import { registerStyles as styles } from '@/components/property/registerStyles';
 import { PROP_OPTIONS, type DealKind, type PropKind, type RelationKind } from '@/components/property/registerTypes';
-import { type AddPropertyInput, useProperties } from '@/hooks/useProperties';
+import { type AddPropertyInput } from '@/hooks/useProperties';
+import { usePropertiesContext } from '@/contexts/PropertiesContext';
 import { DEAL_TYPES, PROPERTY_TYPES, type Property } from '@/types';
 import { clearEditData, closeRegisterPanel } from '@/utils/registerEvents';
 type ScreenProps = {
@@ -22,7 +23,7 @@ type ScreenProps = {
 const str = (v: unknown): string => { if (v === null || v === undefined) return ''; return String(v); };
 export default function PropertyRegisterScreen({ embedded = false, initialData }: ScreenProps) {
   const router = useRouter();
-  const { addProperty, updateProperty, loading, error } = useProperties();
+  const { addProperty, updateProperty, loading, error } = usePropertiesContext();
   const blurTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pendingSaveRef = useRef(false);
   const d = initialData ?? null;
