@@ -1,5 +1,6 @@
 import NotificationPanel from '@/components/NotificationPanel';
 import TopBar from '@/components/TopBar';
+import { PropertiesProvider } from '@/contexts/PropertiesContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useCustomers } from '@/hooks/useCustomers';
 import { useProperties } from '@/hooks/useProperties';
@@ -92,7 +93,8 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <SafeAreaProvider>
-        <SafeAreaView style={styles.container}>
+        <PropertiesProvider>
+          <SafeAreaView style={styles.container}>
           <TopBar onLogoPress={() => { if (pathname !== '/') router.replace('/'); }} onRegisterPress={openSelectModal} onProfilePress={openProfilePanel} onPrintPress={() => setPrintModalVisible(true)} onNotificationPress={() => setShowNotification(true)} propertyCount={propertyCount} customerCount={customerCount} />
           <View style={styles.content}><Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#F0F4FF' } }}><Stack.Screen name="results" /><Stack.Screen name="list" /><Stack.Screen name="property/[id]" /></Stack></View>
           <NotificationPanel visible={showNotification} onClose={() => setShowNotification(false)} panelW={panelW} />
@@ -122,9 +124,10 @@ export default function RootLayout() {
 
           {/* 프로필 슬라이드 패널 */}
           {profileOpen && (<><Pressable style={styles.backdrop} onPress={closeProfilePanel} accessibilityRole="button" accessibilityLabel="프로필 패널 닫기" /><Animated.View style={[styles.panel, { width: panelW, transform: [{ translateX: profileSlideX }] }]}><ProfileScreen key={profileKey} embedded={true} onClose={closeProfilePanel} /></Animated.View></>)}
-        </SafeAreaView>
-        {/* 상태바: 상단 배경(네이비)과 톤을 맞춤 */}
-        <StatusBar style="light" backgroundColor="#0B132B" />
+          </SafeAreaView>
+          {/* 상태바: 상단 배경(네이비)과 톤을 맞춤 */}
+          <StatusBar style="light" backgroundColor="#0B132B" />
+        </PropertiesProvider>
       </SafeAreaProvider>
     </ThemeProvider>
   );
