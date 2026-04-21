@@ -153,11 +153,11 @@ export default function PropertyDetailScreen() {
   const isUltraWide   = windowWidth >= 1920;
   const headerTitleSize = windowWidth < 400 ? 18 : windowWidth < 768 ? 20 : 22;
 
-  const { getPropertyById } = useProperties();
+  const { getPropertyById, properties } = useProperties();
 
   const params = useLocalSearchParams<{ id?: string | string[] }>();
   const id = Array.isArray(params.id) ? params.id[0] : params.id; // 배열 방어 — expo-router 쿼리 중복 시 string[]
-  const property = useMemo(() => (id ? getPropertyById(id) : undefined), [getPropertyById, id]);
+  const property = useMemo(() => (id ? getPropertyById(id) : undefined), [getPropertyById, id, properties]);
 
   const [adCopyVisible, setAdCopyVisible] = useState<boolean>(false);
   const 준비중 = () => Alert.alert('준비 중', '곧 지원될 예정입니다.');
