@@ -186,7 +186,7 @@ export default function PropertyDetailScreen() {
 
   const specs = [
     { label: '면적', value: property.area },
-    { label: '층/총층', value: `${property.floor}/${property.totalFloors ?? '—'}` },
+    { label: '층/총층', value: `${property.floor.replace(/[^0-9]/g, '') || '—'}/${property.totalFloors ?? '—'}` },
     { label: '방향', value: property.dir ?? '—' },
     { label: '입주일', value: property.moveInDate ?? '—' },
   ];

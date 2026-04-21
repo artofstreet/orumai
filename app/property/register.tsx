@@ -97,7 +97,7 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
       price,
       area: `${areaSqm.trim()}㎡`,
       floor: floor.trim() || '—',
-      ...(totalFloors.trim() ? { totalFloors: Number(totalFloors.trim()) || undefined } : {}),
+      ...(totalFloors.trim() ? { totalFloors: Number(totalFloors.trim().replace(/[^0-9]/g, '')) || undefined } : {}),
       phone: ownerPhone.trim(),
       memo: memo.trim(),
       status: 'draft',
