@@ -17,7 +17,9 @@ interface PropertyRow {
   sale_price: number | null; jeonse_price: number | null; deposit: number | null; monthly: number | null;
   area: string; area_m2: number | null; floor: string; floor_number: number | null; dir: string | null;
   move_in_date: string | null; total_floors: number | null; built_year: number | null;
-  parking: string | null; heating: string | null; status: string; phone: string; memo: string;
+  parking: string | null; heating: string | null;
+  owner_name: string | null; owner_memo: string | null; relation: string | null;
+  status: string; phone: string; memo: string;
   photos: string[] | null; created_at: string;
 }
 
@@ -46,6 +48,9 @@ function rowToProperty(row: PropertyRow): Property {
     builtYear: row.built_year ?? undefined,
     parking: row.parking ?? undefined,
     heating: row.heating ?? undefined,
+    ownerName: row.owner_name ?? undefined,
+    ownerMemo: row.owner_memo ?? undefined,
+    relation: row.relation ?? undefined,
     status: row.status as Property['status'],
     phone: row.phone,
     memo: row.memo,
@@ -76,6 +81,9 @@ function addInputToInsertRow(input: AddPropertyInput): PropertyInsert {
     built_year: input.builtYear ?? null,
     parking: input.parking ?? null,
     heating: input.heating ?? null,
+    owner_name: input.ownerName ?? null,
+    owner_memo: input.ownerMemo ?? null,
+    relation: input.relation ?? null,
     status: input.status,
     phone: input.phone,
     memo: input.memo,
