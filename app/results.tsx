@@ -7,6 +7,7 @@ import SearchBar from '@/components/SearchBar';
 import type { Customer, Property } from '@/types';
 import { bg, border, primary, text, text2 } from '@/constants/colors';
 import { getContentMaxWidth, getGridColumns, getHorizontalPadding } from '@/constants/theme';
+import { useCustomers } from '@/hooks/useCustomers';
 import { useProperties } from '@/hooks/useProperties';
 import { useSearch } from '@/hooks/useSearch';
 
@@ -31,7 +32,8 @@ const safeTime = (value: string): number => {
 export default function ResultsScreen() {
   const { width: windowWidth } = useWindowDimensions();
   const { properties } = useProperties();
-  const { filteredProperties: rawProperties, filteredCustomers: rawCustomers, searchQuery, setSearchQuery } = useSearch({ properties });
+  const { customers } = useCustomers();
+  const { filteredProperties: rawProperties, filteredCustomers: rawCustomers, searchQuery, setSearchQuery } = useSearch({ properties, customers });
   const filteredProperties = useMemo(
     () => [...rawProperties].sort((a, b) => safeTime(b.createdAt) - safeTime(a.createdAt)),
     [rawProperties],
