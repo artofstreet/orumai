@@ -113,6 +113,9 @@ function updatesToRowPatch(updates: UpdatePropertyInput): Partial<PropertyRow> {
   if (updates.builtYear !== undefined) patch.built_year = updates.builtYear ?? null;
   if (updates.parking !== undefined) patch.parking = updates.parking ?? null;
   if (updates.heating !== undefined) patch.heating = updates.heating ?? null;
+  if (updates.ownerName !== undefined) patch.owner_name = updates.ownerName ?? null;
+  if (updates.ownerMemo !== undefined) patch.owner_memo = updates.ownerMemo ?? null;
+  if (updates.relation !== undefined) patch.relation = updates.relation ?? null;
   if (updates.status !== undefined) patch.status = updates.status;
   if (updates.phone !== undefined) patch.phone = updates.phone;
   if (updates.memo !== undefined) patch.memo = updates.memo;
