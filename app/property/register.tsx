@@ -132,14 +132,21 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
           <Text style={styles.backTxt}>← 뒤로</Text>
         </TouchableOpacity>
       )}
-      <Text style={styles.title}>{isEdit ? '매물 편집' : '매물 등록'}</Text>
-      <View style={{ flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' }}>
-        <TouchableOpacity
-          style={[detailStyles.headerBtn, { paddingHorizontal: 20, paddingVertical: 8 }]}
-          activeOpacity={0.6}
-          onPress={onSave}>
-          <Text style={[detailStyles.headerBtnText, { fontSize: 15 }]}>저장</Text>
-        </TouchableOpacity>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Text style={styles.title}>{isEdit ? '매물 편집' : '매물 등록'}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+          <TouchableOpacity
+            style={[detailStyles.headerBtn, { paddingHorizontal: 20, paddingVertical: 8 }]}
+            activeOpacity={0.6}
+            onPress={onSave}>
+            <Text style={[detailStyles.headerBtnText, { fontSize: 15 }]}>저장</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            activeOpacity={0.6}
+            onPress={() => { clearEditData(); closeRegisterPanel(); }}>
+            <Text style={{ fontSize: 22, color: '#666', paddingHorizontal: 4 }}>✕</Text>
+          </TouchableOpacity>
+        </View>
       </View>
       <View style={styles.section}>
         <Text style={styles.sectionLabel}>주소</Text>
