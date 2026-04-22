@@ -2,11 +2,6 @@ import { useCallback, useMemo, useState } from 'react';
 
 import type { Customer, Property } from '@/types';
 
-import { DUMMY_CUSTOMERS, DUMMY_PROPERTIES } from '@/constants/dummyData';
-
-// TODO-DB: 검색 데이터 소스를 DUMMY_PROPERTIES/DUMMY_CUSTOMERS 대신 store(useProperties 결과)로 교체 예정
-// TODO-DB: Supabase 스키마 변경 시 검색 범위도 함께 보완 예정
-
 const 검색단어분리 = (query: string): string[] => {
   return query
     .trim()
@@ -53,8 +48,8 @@ type UseSearchOptions = {
 export function useSearch(options?: UseSearchOptions): UseSearchReturn {
   const [searchQuery, setSearchQueryState] = useState<string>('');
 
-  const properties = options?.properties ?? DUMMY_PROPERTIES;
-  const customers = options?.customers ?? DUMMY_CUSTOMERS;
+  const properties = options?.properties ?? [];
+  const customers = options?.customers ?? [];
 
   const setSearchQuery = useCallback((query: string) => {
     setSearchQueryState(query);
