@@ -11,7 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { detailStyles } from '@/components/property/detailStyles';
 import { formatPhoneHyphen } from '@/components/property/registerMocks';
 import { registerStyles as styles } from '@/components/property/registerStyles';
-import { useCustomers } from '@/hooks/useCustomers';
+import { useCustomersContext } from '@/contexts/CustomersContext';
 import { clearEditData, closeRegisterPanel } from '@/utils/registerEvents';
 
 type ScreenProps = {
@@ -24,7 +24,7 @@ const str = (v: unknown): string => { if (v === null || v === undefined) return 
 
 export default function CustomerRegisterScreen({ embedded = false, initialData }: ScreenProps) {
   const router = useRouter();
-  const { addCustomer, updateCustomer, loading, error } = useCustomers();
+  const { addCustomer, updateCustomer, loading, error } = useCustomersContext();
 
   const d = initialData ?? null;
   const isEdit = d !== null;

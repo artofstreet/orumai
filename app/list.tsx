@@ -2,8 +2,8 @@ import CustomerCard from '@/components/CustomerCard';
 import PropertyCard from '@/components/PropertyCard';
 import { bg, border, primary, text2 } from '@/constants/colors';
 import { getContentMaxWidth, getGridColumns, getHorizontalPadding } from '@/constants/theme';
-import { useCustomers } from '@/hooks/useCustomers';
-import { useProperties } from '@/hooks/useProperties';
+import { useCustomersContext } from '@/contexts/CustomersContext';
+import { usePropertiesContext } from '@/contexts/PropertiesContext';
 import { useSearch } from '@/hooks/useSearch';
 import type { Customer, Property } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
@@ -30,8 +30,8 @@ export default function ListScreen() {
   const [page, setPage] = useState<number>(1);
   const flatListRef = useRef<{ scrollToOffset: (p: { offset: number; animated: boolean }) => void } | null>(null);
 
-  const { properties } = useProperties();
-  const { customers } = useCustomers(); // Supabase `customers` 목록
+  const { properties } = usePropertiesContext();
+  const { customers } = useCustomersContext(); // Supabase `customers` 목록
   const { filteredProperties: rawProperties, filteredCustomers: rawCustomers } = useSearch({ properties, customers });
 
   const allProperties = useMemo(

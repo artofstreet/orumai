@@ -3,7 +3,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { detailStyles } from '@/components/property/detailStyles';
-import { useCustomers } from '@/hooks/useCustomers';
+import { useCustomersContext } from '@/contexts/CustomersContext';
 import { openRegisterPanel } from '@/utils/registerEvents';
 
 // 날짜 포맷 유틸 (ISO 문자열 → YYYY-MM-DD)
@@ -45,7 +45,7 @@ export default function CustomerDetailScreen() {
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
   const router = useRouter();
 
-  const { getCustomerById } = useCustomers();
+  const { getCustomerById } = useCustomersContext();
   const 고객 = getCustomerById(id);
 
   if (!고객) {

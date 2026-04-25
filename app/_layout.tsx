@@ -1,5 +1,6 @@
 import NotificationPanel from '@/components/NotificationPanel';
 import TopBar from '@/components/TopBar';
+import { CustomersProvider } from '@/contexts/CustomersContext';
 import { PropertiesProvider } from '@/contexts/PropertiesContext';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useCustomers } from '@/hooks/useCustomers';
@@ -94,39 +95,41 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <SafeAreaProvider>
         <PropertiesProvider>
-          <SafeAreaView style={styles.container}>
-          <TopBar onLogoPress={() => { if (pathname !== '/') router.replace('/'); }} onRegisterPress={openSelectModal} onProfilePress={openProfilePanel} onPrintPress={() => setPrintModalVisible(true)} onNotificationPress={() => setShowNotification(true)} propertyCount={propertyCount} customerCount={customerCount} />
-          <View style={styles.content}><Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#F0F4FF' } }}><Stack.Screen name="results" /><Stack.Screen name="list" /><Stack.Screen name="property/[id]" /></Stack></View>
-          <NotificationPanel visible={showNotification} onClose={() => setShowNotification(false)} panelW={panelW} />
+          <CustomersProvider>
+            <SafeAreaView style={styles.container}>
+            <TopBar onLogoPress={() => { if (pathname !== '/') router.replace('/'); }} onRegisterPress={openSelectModal} onProfilePress={openProfilePanel} onPrintPress={() => setPrintModalVisible(true)} onNotificationPress={() => setShowNotification(true)} propertyCount={propertyCount} customerCount={customerCount} />
+            <View style={styles.content}><Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#F0F4FF' } }}><Stack.Screen name="results" /><Stack.Screen name="list" /><Stack.Screen name="property/[id]" /></Stack></View>
+            <NotificationPanel visible={showNotification} onClose={() => setShowNotification(false)} panelW={panelW} />
 
-          {/* 매물/고객 선택 모달 */}
-          <Modal visible={selectModalVisible} transparent animationType="fade" onRequestClose={() => setSelectModalVisible(false)}>
-            <Pressable style={styles.modalBackdrop} onPress={() => setSelectModalVisible(false)} accessibilityRole="button" accessibilityLabel="등록 선택 모달 닫기">
-              <Pressable style={styles.modalCard} onPress={(e) => e.stopPropagation?.()}>
-                <TouchableOpacity style={styles.modalOptionRow} onPress={() => onSelectKind('property')}><Text style={styles.modalOptionTxt}>🏠 매물 등록</Text></TouchableOpacity>
-                <TouchableOpacity style={[styles.modalOptionRow, { borderTopWidth: 1, borderTopColor: '#F1F5F9' }]} onPress={() => onSelectKind('customer')}><Text style={styles.modalOptionTxt}>👤 고객 등록</Text></TouchableOpacity>
+            {/* 매물/고객 선택 모달 */}
+            <Modal visible={selectModalVisible} transparent animationType="fade" onRequestClose={() => setSelectModalVisible(false)}>
+              <Pressable style={styles.modalBackdrop} onPress={() => setSelectModalVisible(false)} accessibilityRole="button" accessibilityLabel="등록 선택 모달 닫기">
+                <Pressable style={styles.modalCard} onPress={(e) => e.stopPropagation?.()}>
+                  <TouchableOpacity style={styles.modalOptionRow} onPress={() => onSelectKind('property')}><Text style={styles.modalOptionTxt}>🏠 매물 등록</Text></TouchableOpacity>
+                  <TouchableOpacity style={[styles.modalOptionRow, { borderTopWidth: 1, borderTopColor: '#F1F5F9' }]} onPress={() => onSelectKind('customer')}><Text style={styles.modalOptionTxt}>👤 고객 등록</Text></TouchableOpacity>
+                </Pressable>
               </Pressable>
-            </Pressable>
-          </Modal>
+            </Modal>
 
-          {/* 인쇄 선택 모달 */}
-          <Modal visible={printModalVisible} transparent animationType="fade" onRequestClose={() => setPrintModalVisible(false)}>
-            <Pressable style={styles.modalBackdrop} onPress={() => setPrintModalVisible(false)} accessibilityRole="button" accessibilityLabel="인쇄 선택 모달 닫기">
-              <Pressable style={styles.modalCard} onPress={(e) => e.stopPropagation?.()}>
-                <TouchableOpacity style={styles.modalOptionRow} onPress={() => { setPrintModalVisible(false); printPropertyList(properties); }}><Text style={styles.modalOptionTxt}>🏠 전체 매물 인쇄</Text></TouchableOpacity>
-                <TouchableOpacity style={[styles.modalOptionRow, { borderTopWidth: 1, borderTopColor: '#F1F5F9' }]} onPress={() => { setPrintModalVisible(false); printCustomerList(customers); }}><Text style={styles.modalOptionTxt}>👤 전체 고객 인쇄</Text></TouchableOpacity>
+            {/* 인쇄 선택 모달 */}
+            <Modal visible={printModalVisible} transparent animationType="fade" onRequestClose={() => setPrintModalVisible(false)}>
+              <Pressable style={styles.modalBackdrop} onPress={() => setPrintModalVisible(false)} accessibilityRole="button" accessibilityLabel="인쇄 선택 모달 닫기">
+                <Pressable style={styles.modalCard} onPress={(e) => e.stopPropagation?.()}>
+                  <TouchableOpacity style={styles.modalOptionRow} onPress={() => { setPrintModalVisible(false); printPropertyList(properties); }}><Text style={styles.modalOptionTxt}>🏠 전체 매물 인쇄</Text></TouchableOpacity>
+                  <TouchableOpacity style={[styles.modalOptionRow, { borderTopWidth: 1, borderTopColor: '#F1F5F9' }]} onPress={() => { setPrintModalVisible(false); printCustomerList(customers); }}><Text style={styles.modalOptionTxt}>👤 전체 고객 인쇄</Text></TouchableOpacity>
+                </Pressable>
               </Pressable>
-            </Pressable>
-          </Modal>
+            </Modal>
 
-          {/* 등록 슬라이드 패널 */}
-          {registerOpen && (<><Pressable style={styles.backdrop} onPress={closePanel} accessibilityRole="button" accessibilityLabel="등록 패널 닫기" /><Animated.View style={[styles.panel, { width: panelW, transform: [{ translateX: slideX }] }]}>{registerKind === 'property' && (<PropertyRegisterScreen key={panelKey} embedded initialData={panelEditData} />)}{registerKind === 'customer' && (<CustomerRegisterScreen key={panelKey} embedded initialData={panelEditData} />)}</Animated.View></>)}
+            {/* 등록 슬라이드 패널 */}
+            {registerOpen && (<><Pressable style={styles.backdrop} onPress={closePanel} accessibilityRole="button" accessibilityLabel="등록 패널 닫기" /><Animated.View style={[styles.panel, { width: panelW, transform: [{ translateX: slideX }] }]}>{registerKind === 'property' && (<PropertyRegisterScreen key={panelKey} embedded initialData={panelEditData} />)}{registerKind === 'customer' && (<CustomerRegisterScreen key={panelKey} embedded initialData={panelEditData} />)}</Animated.View></>)}
 
-          {/* 프로필 슬라이드 패널 */}
-          {profileOpen && (<><Pressable style={styles.backdrop} onPress={closeProfilePanel} accessibilityRole="button" accessibilityLabel="프로필 패널 닫기" /><Animated.View style={[styles.panel, { width: panelW, transform: [{ translateX: profileSlideX }] }]}><ProfileScreen key={profileKey} embedded={true} onClose={closeProfilePanel} /></Animated.View></>)}
-          </SafeAreaView>
-          {/* 상태바: 상단 배경(네이비)과 톤을 맞춤 */}
-          <StatusBar style="light" backgroundColor="#0B132B" />
+            {/* 프로필 슬라이드 패널 */}
+            {profileOpen && (<><Pressable style={styles.backdrop} onPress={closeProfilePanel} accessibilityRole="button" accessibilityLabel="프로필 패널 닫기" /><Animated.View style={[styles.panel, { width: panelW, transform: [{ translateX: profileSlideX }] }]}><ProfileScreen key={profileKey} embedded={true} onClose={closeProfilePanel} /></Animated.View></>)}
+            </SafeAreaView>
+            {/* 상태바: 상단 배경(네이비)과 톤을 맞춤 */}
+            <StatusBar style="light" backgroundColor="#0B132B" />
+          </CustomersProvider>
         </PropertiesProvider>
       </SafeAreaProvider>
     </ThemeProvider>
