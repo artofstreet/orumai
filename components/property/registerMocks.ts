@@ -15,7 +15,7 @@ export const VOICE_DUMMY_FILL = {
   ownerName: '김오름',
   relation: '집주인' as const,
   ownerPhone: '01012345678',
-  memo: '음성으로 입력한 더미 요약입니다. TODO-DB 연동 시 STT 결과로 대체.',
+  memo: '음성으로 입력한 더미 요약입니다.',
 };
 
 // 주소 자동완성 Mock (선택 시 면적·층수 자동 입력)
