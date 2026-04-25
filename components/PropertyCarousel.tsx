@@ -1,26 +1,17 @@
 import { useEffect, useState } from 'react';
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import PhotoDetailModal, { SavePayload } from './PhotoDetailModal';
+import PhotoDetailModal from './PhotoDetailModal';
 
 const COLOR_ORANGE    = '#FF6B35';
 const COLOR_BADGE_BG  = 'rgba(0,0,0,0.55)';
 const THUMB_COUNT     = 4;
-
-// 저장된 AI 인테리어 사진 타입
-type SavedPhoto = {
-  id: number;
-  uri: string;
-  style: string;
-  emoji: string;
-};
 
 export default function PropertyCarousel({ photos = [] }: { photos: string[] }) {
   const list = photos;
   const [startIdx, setStartIdx]       = useState<number>(0);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [selectedIdx, setSelectedIdx] = useState<number>(0);
-  const [savedPhotos, setSavedPhotos] = useState<SavedPhoto[]>([]);
 
   useEffect(() => {
     setStartIdx(0); // photos 변경 시 슬라이드 위치 초기화
@@ -97,22 +88,6 @@ export default function PropertyCarousel({ photos = [] }: { photos: string[] }) 
         </>
       )}
 
-      {savedPhotos.length > 0 && (
-        <View style={styles.savedSection}>
-          <Text style={styles.savedTitle}>✦ 저장된 AI 인테리어 ({savedPhotos.length}장)</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {savedPhotos.map(sp => (
-              <View key={sp.id} style={styles.savedItem}>
-                <Image source={{ uri: sp.uri }} style={styles.savedImg} resizeMode="cover" />
-                <View style={styles.savedLabel}>
-                  <Text style={styles.savedLabelTxt}>{sp.emoji} {sp.style}</Text>
-                </View>
-              </View>
-            ))}
-          </ScrollView>
-        </View>
-      )}
-
       {list.length > 0 && (
         <PhotoDetailModal
           visible={modalVisible}
@@ -120,7 +95,6 @@ export default function PropertyCarousel({ photos = [] }: { photos: string[] }) 
           photoIndex={selectedIdx}
           totalPhotos={list.length}
           onClose={() => setModalVisible(false)}
-          onSave={(p: SavePayload) => setSavedPhotos(prev => [{ ...p, id: Date.now() }, ...prev])}
         />
       )}
     </View>
@@ -147,10 +121,4 @@ const styles = StyleSheet.create({
   dot:           { height: 4, borderRadius: 2 },
   dotOn:         { width: 16, backgroundColor: COLOR_ORANGE },
   dotOff:        { width: 5, backgroundColor: '#ddd' },
-  savedSection:  { marginTop: 12, paddingTop: 12, borderTopWidth: 1, borderTopColor: '#f0f0f0' },
-  savedTitle:    { fontSize: 12, fontWeight: '500', color: '#888', marginBottom: 8, paddingHorizontal: 12 },
-  savedItem:     { width: 80, marginRight: 8, borderRadius: 6, overflow: 'hidden', borderWidth: 1.5, borderColor: COLOR_ORANGE },
-  savedImg:      { width: '100%', aspectRatio: 9/16 },
-  savedLabel:    { backgroundColor: COLOR_ORANGE, paddingVertical: 3, alignItems: 'center' },
-  savedLabelTxt: { color: '#fff', fontSize: 9, fontWeight: '500' },
 });
