@@ -63,9 +63,17 @@ export default function RootLayout() {
 
   useEffect(() => { if (!registerOpen) return; Animated.timing(slideX, { toValue: 0, duration: 280, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start(); }, [registerOpen, slideX]);
   const closePanel = useCallback(() => {
-    Animated.timing(slideX, { toValue: panelW, duration: 260, easing: Easing.in(Easing.cubic), useNativeDriver: true }).start(({ finished }) => {
-      if (!finished) return;
-      setRegisterOpen(false); setRegisterKind(null); setPanelEditData(null);
+    slideX.stopAnimation(() => {
+      Animated.timing(slideX, {
+        toValue: panelW,
+        duration: 260,
+        easing: Easing.in(Easing.cubic),
+        useNativeDriver: Platform.OS !== 'web',
+      }).start(() => {
+        setRegisterOpen(false);
+        setRegisterKind(null);
+        setPanelEditData(null);
+      });
     });
   }, [panelW, slideX]);
 

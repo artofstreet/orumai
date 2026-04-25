@@ -23,9 +23,8 @@ type ScreenProps = {
 const str = (v: unknown): string => { if (v === null || v === undefined) return ''; return String(v); };
 export default function PropertyRegisterScreen({ embedded = false, initialData }: ScreenProps) {
   const router = useRouter();
-  const { addProperty, updateProperty, loading, error } = usePropertiesContext();
+  const { addProperty, updateProperty, loading } = usePropertiesContext();
   const blurTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const pendingSaveRef = useRef(false);
   const d = initialData ?? null;
   const isEdit = d !== null;
   const stripUnit = (v: unknown) => str(v).replace('㎡', '').trim();
@@ -57,16 +56,6 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
   const [memo, setMemo] = useState<string>(() => str(d?.memo));
   const [showSuggest, setShowSuggest] = useState<boolean>(false);
   useEffect(() => () => { clearTimeout(blurTimerRef.current ?? undefined); }, []);
-  useEffect(() => {
-    if (!pendingSaveRef.current || loading) return;
-    pendingSaveRef.current = false;
-    if (error) {
-      Alert.alert('저장 실패', error);
-      return;
-    }
-    clearEditData();
-    closeRegisterPanel();
-  }, [loading, error]);
   const suggestions = useMemo(() => {
     const q = address.trim();
     return q.length < 1 ? [] : MOCK_ADDRESS_ROWS.filter((r) => r.label.includes(q)).slice(0, 3);
@@ -112,11 +101,16 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
       ...(ownerMemo.trim() ? { ownerMemo: ownerMemo.trim() } : {}),
       ...(relation ? { relation } : {}),
     };
-    pendingSaveRef.current = true;
-    if (isEdit) {
-      await updateProperty(str(d?.id), { ...payload, status: str(d?.status) === 'active' ? 'active' : 'draft' });
-    } else {
-      await addProperty(payload);
+    try {
+      if (isEdit) {
+        await updateProperty(str(d?.id), { ...payload, status: str(d?.status) === 'active' ? 'active' : 'draft' });
+      } else {
+        await addProperty(payload);
+      }
+      clearEditData();
+      closeRegisterPanel();
+    } catch (err: unknown) {
+      Alert.alert('저장 실패', String(err));
     }
   };
   return (
