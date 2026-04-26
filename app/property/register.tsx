@@ -34,10 +34,29 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
       ? (typeValue as PropKind)
       : '아파트';
   });
-  const [salePrice, setSalePrice] = useState<string>(() => str(d?.salePrice));
-  const [jeonsePrice, setJeonsePrice] = useState<string>(() => str(d?.jeonsePrice));
-  const [deposit, setDeposit] = useState<string>(() => str(d?.deposit));
-  const [monthly, setMonthly] = useState<string>(() => str(d?.monthly));
+  // 편집 시 price 필드에서 가격 텍스트 추출 (자유 텍스트 방식)
+  const [salePrice, setSalePrice] = useState<string>(() => {
+    if (d?.deal === '매매' && d?.price) return String(d.price).trim();
+    return str(d?.salePrice);
+  });
+  const [jeonsePrice, setJeonsePrice] = useState<string>(() => {
+    if (d?.deal === '전세' && d?.price) return String(d.price).trim();
+    return str(d?.jeonsePrice);
+  });
+  const [deposit, setDeposit] = useState<string>(() => {
+    if (d?.deal === '월세' && d?.price) {
+      const m = String(d.price).match(/보([^/]*)/);
+      return m ? m[1].trim() : str(d?.deposit);
+    }
+    return str(d?.deposit);
+  });
+  const [monthly, setMonthly] = useState<string>(() => {
+    if (d?.deal === '월세' && d?.price) {
+      const m = String(d.price).match(/월(.*)/);
+      return m ? m[1].trim() : str(d?.monthly);
+    }
+    return str(d?.monthly);
+  });
   const [areaSqm, setAreaSqm] = useState<string>(() => stripUnit(d?.area));
   const [floor, setFloor] = useState<string>(() => str(d?.floor));
   const [totalFloors, setTotalFloors] = useState<string>(() => str(d?.totalFloors));
@@ -69,11 +88,16 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
       Alert.alert('', '편집할 매물 정보가 없습니다.');
       return;
     }
-    const sN = Number(salePrice);
-    const jN = Number(jeonsePrice);
-    const dN = Number(deposit);
-    const mN = Number(monthly);
-    const price = deal === '매매' ? `${sN}억` : deal === '전세' ? `${jN}억` : `보${dN}/월${mN}`;
+    const sN = Number(salePrice) || 0;
+    const jN = Number(jeonsePrice) || 0;
+    const dN = Number(deposit) || 0;
+    const mN = Number(monthly) || 0;
+    // 가격 표시: 입력값 그대로 사용 (자유 텍스트)
+    const price = deal === '매매'
+      ? salePrice.trim() || '—'
+      : deal === '전세'
+        ? jeonsePrice.trim() || '—'
+        : `보${deposit.trim()}/월${monthly.trim()}`;
     const name = buildingName.trim() || addrTrim;
     const payload: AddPropertyInput = {
       type: propType as Property['type'],
