@@ -45,7 +45,7 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
   const [moveInDate, setMoveInDate] = useState<string>(() => str(d?.moveInDate));
   const [ownerName, setOwnerName] = useState<string>(() => str(d?.ownerName));
   const [relation, setRelation] = useState<RelationKind | undefined>(() => str(d?.relation) as RelationKind || undefined);
-  const [ownerPhone, setOwnerPhone] = useState<string>(() => formatPhoneHyphen(str(d?.ownerPhone)));
+  const [ownerPhone, setOwnerPhone] = useState<string>(() => formatPhoneHyphen(str(d?.phone ?? d?.ownerPhone)));
   const [ownerMemo, setOwnerMemo] = useState<string>(() => str(d?.ownerMemo));
   const [memo, setMemo] = useState<string>(() => str(d?.memo));
   const [showSuggest, setShowSuggest] = useState<boolean>(false);
