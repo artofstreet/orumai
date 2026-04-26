@@ -153,7 +153,7 @@ export default function PropertyDetailScreen() {
   const isUltraWide   = windowWidth >= 1920;
   const headerTitleSize = windowWidth < 400 ? 18 : windowWidth < 768 ? 20 : 22;
 
-  const { getPropertyById, properties } = usePropertiesContext();
+  const { getPropertyById, deleteProperty, properties } = usePropertiesContext();
 
   const params = useLocalSearchParams<{ id?: string | string[] }>();
   const id = Array.isArray(params.id) ? params.id[0] : params.id; // 배열 방어 — expo-router 쿼리 중복 시 string[]
@@ -349,7 +349,20 @@ export default function PropertyDetailScreen() {
               <TouchableOpacity style={styles.headerBtn} onPress={() => openRegisterPanel('property', property.id, property as Record<string, unknown>)}>
                 <Text style={styles.headerBtnText}>편집</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.headerBtn} onPress={준비중}>
+              <TouchableOpacity
+                style={styles.headerBtn}
+                onPress={() => {
+                  if (Platform.OS === 'web') {
+                    if (window.confirm('정말로 삭제하시겠습니까?')) {
+                      deleteProperty(property.id).then(() => router.back());
+                    }
+                  } else {
+                    Alert.alert('매물 삭제', '정말로 삭제하시겠습니까?', [
+                      { text: '취소', style: 'cancel' },
+                      { text: '삭제', style: 'destructive', onPress: () => { deleteProperty(property.id).then(() => router.back()); } },
+                    ]);
+                  }
+                }}>
                 <Text style={[styles.headerBtnText, styles.headerBtnDel]}>삭제</Text>
               </TouchableOpacity>
             </View>

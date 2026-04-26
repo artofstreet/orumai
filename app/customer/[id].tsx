@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { detailStyles } from '@/components/property/detailStyles';
 import { useCustomersContext } from '@/contexts/CustomersContext';
@@ -45,7 +45,7 @@ export default function CustomerDetailScreen() {
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
   const router = useRouter();
 
-  const { getCustomerById } = useCustomersContext();
+  const { getCustomerById, deleteCustomer } = useCustomersContext();
   const 고객 = getCustomerById(id);
 
   if (!고객) {
@@ -79,12 +79,30 @@ export default function CustomerDetailScreen() {
           <Text style={styles.phone}>{고객.phone}</Text>
           <Text style={styles.date}>등록일 {등록일}</Text>
         </View>
-        <TouchableOpacity
-          style={[detailStyles.headerBtn, { alignSelf: 'flex-end', marginBottom: 4 }]}
-          activeOpacity={0.6}
-          onPress={() => openRegisterPanel('customer', 고객.id, 고객 as Record<string, unknown>)}>
-          <Text style={detailStyles.headerBtnText}>편집</Text>
-        </TouchableOpacity>
+        <View style={{ flexDirection: 'row', alignSelf: 'flex-end', gap: 8, marginBottom: 4 }}>
+          <TouchableOpacity
+            style={[detailStyles.headerBtn, { alignSelf: 'flex-end' }]}
+            activeOpacity={0.6}
+            onPress={() => openRegisterPanel('customer', 고객.id, 고객 as Record<string, unknown>)}>
+            <Text style={detailStyles.headerBtnText}>편집</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={detailStyles.headerBtn}
+            onPress={() => {
+              if (Platform.OS === 'web') {
+                if (window.confirm('정말로 삭제하시겠습니까?')) {
+                  deleteCustomer(고객.id).then(() => router.back());
+                }
+              } else {
+                Alert.alert('고객 삭제', '정말로 삭제하시겠습니까?', [
+                  { text: '취소', style: 'cancel' },
+                  { text: '삭제', style: 'destructive', onPress: () => { deleteCustomer(고객.id).then(() => router.back()); } },
+                ]);
+              }
+            }}>
+            <Text style={[detailStyles.headerBtnText, detailStyles.headerBtnDel]}>삭제</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <View style={styles.memoBox}>
