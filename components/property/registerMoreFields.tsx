@@ -160,7 +160,7 @@ export function RegisterMoreFields(p: Props) {
           </View>
         </Modal>
         <TextInput style={styles.input} value={p.ownerPhone} onChangeText={p.onPhoneChange} keyboardType="phone-pad" placeholder="전화번호" placeholderTextColor="#9AA5B4" />
-        <RegisterMemoField value={p.ownerMemo} onChangeText={p.setOwnerMemo} placeholder="메모" maxLength={300} />
+        {/* 집주인메모 제거: 일반 메모란에 통합 */}
       </View>
       <View style={styles.section}>
         <Text style={styles.sectionLabel}>메모</Text>

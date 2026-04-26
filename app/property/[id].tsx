@@ -473,9 +473,7 @@ export default function PropertyDetailScreen() {
               {property.phone && (
                 <Text style={styles.memoText}>집주인연락처: {property.phone}</Text>
               )}
-              {property.ownerMemo && (
-                <Text style={styles.memoText}>집주인메모: {property.ownerMemo}</Text>
-              )}
+              {/* 집주인메모 제거: 일반 메모란에 통합 */}
               <Text style={styles.memoText}>{property.memo || '—'}</Text>
             </View>
           </View>
