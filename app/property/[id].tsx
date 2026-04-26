@@ -470,15 +470,6 @@ export default function PropertyDetailScreen() {
               {property.ownerMemo && (
                 <Text style={styles.memoText}>집주인메모: {property.ownerMemo}</Text>
               )}
-              {property.builtYear && (
-                <Text style={styles.memoText}>건축년도: {property.builtYear}년</Text>
-              )}
-              {property.parking && (
-                <Text style={styles.memoText}>주차: {property.parking}</Text>
-              )}
-              {property.heating && (
-                <Text style={styles.memoText}>난방: {property.heating}</Text>
-              )}
               <Text style={styles.memoText}>{property.memo || '—'}</Text>
             </View>
           </View>

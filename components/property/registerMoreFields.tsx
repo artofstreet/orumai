@@ -55,8 +55,8 @@ function memoHeightFromNewlines(text: string): number {
 
 const webMemoTextareaStyle = {
   ...StyleSheet.flatten(styles.input),
-  minHeight: 80,
-  overflow: 'hidden' as const,
+  height: 250,
+  overflow: 'auto' as const,
   resize: 'none' as const,
   width: '100%' as const,
   boxSizing: 'border-box' as const,
@@ -72,6 +72,7 @@ type MemoFieldProps = {
 
 /** 멀티라인 메모: 웹은 textarea + scrollHeight, 네이티브는 TextInput */
 function RegisterMemoField({ value, onChangeText, placeholder, scrollEnabled, maxLength }: MemoFieldProps) {
+  // 웹: 고정 높이 250px + 넘치면 스크롤
   if (Platform.OS === 'web') {
     return (
       <textarea
@@ -79,10 +80,7 @@ function RegisterMemoField({ value, onChangeText, placeholder, scrollEnabled, ma
         placeholder={placeholder}
         maxLength={maxLength}
         onChange={(e) => {
-          const el = e.target as HTMLTextAreaElement;
-          el.style.height = 'auto';
-          el.style.height = `${el.scrollHeight}px`;
-          onChangeText(el.value);
+          onChangeText((e.target as HTMLTextAreaElement).value);
         }}
         style={webMemoTextareaStyle}
       />
