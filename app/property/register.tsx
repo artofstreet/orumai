@@ -1,7 +1,7 @@
 /** 매물 등록/편집 화면 — 저장: useProperties(Supabase `properties`) */
 import { useRouter } from 'expo-router';
 import { useEffect, useMemo, useRef, useState, type ComponentType } from 'react';
-import { Alert, Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, type GestureResponderEvent, type KeyboardAvoidingViewProps, type ViewProps } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, type KeyboardAvoidingViewProps, type ViewProps } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { detailStyles } from '@/components/property/detailStyles';
 import { RegisterDealChips, RegisterPropChips } from '@/components/property/registerChipBlocks';
@@ -57,7 +57,6 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
   }, [address]);
   const onPhoneChange = (t: string) => setOwnerPhone(formatPhoneHyphen(t));
   const onSave = async () => {
-    Keyboard.dismiss();
     const addrTrim = address.trim();
     if (!addrTrim) {
       Alert.alert('', '주소를 입력해주세요');
@@ -102,8 +101,8 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
       } else {
         await addProperty(payload);
       }
-      closeRegisterPanel();
       clearEditData();
+      closeRegisterPanel();
     } catch (err: unknown) {
       Alert.alert('저장 실패', String(err));
     }
@@ -117,7 +116,7 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
       <View style={safeAreaStyles.headerBar}>
         <Text style={styles.title}>{isEdit ? '매물 편집' : '매물 등록'}</Text>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
-          <Pressable style={({ pressed }) => [detailStyles.headerBtn, { paddingHorizontal: 20, paddingVertical: 8 }, pressed ? { opacity: 0.6 } : null]} onPressIn={() => {}} onTouchStart={(e: GestureResponderEvent) => e.preventDefault()} onPress={onSave}>
+          <Pressable style={({ pressed }) => [detailStyles.headerBtn, { paddingHorizontal: 20, paddingVertical: 8 }, pressed ? { opacity: 0.6 } : null]} onPress={onSave}>
             <Text style={[detailStyles.headerBtnText, { fontSize: 15 }]}>저장</Text>
           </Pressable>
           <TouchableOpacity activeOpacity={0.6} onPress={() => { clearEditData(); closeRegisterPanel(); }}>
