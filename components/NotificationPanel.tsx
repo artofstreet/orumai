@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F0F4FF',
   },
   safeArea: { flex: 1 },
-  header:        { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 16, paddingHorizontal: 20, borderBottomWidth: 1, borderBottomColor: '#ddd', backgroundColor: '#fff' },
+  header:        { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 16, paddingHorizontal: 20, borderBottomWidth: 1, borderBottomColor: '#ddd', backgroundColor: '#fff', height: 64 },
   title:         { fontSize: 20, fontWeight: '800', color: '#0F172A' },
   headerClose:   { fontSize: 22, color: '#666', paddingHorizontal: 4 },
   list:          { flex: 1, padding: 16 },

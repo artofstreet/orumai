@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
   safeAreaRoot: { flex: 1, backgroundColor: '#F0F4FF' },
   page: { flex: 1, backgroundColor: '#F0F4FF' },
   content: { padding: 24, gap: 16, maxWidth: 480, alignSelf: 'center', width: '100%' },
-  headerBar: { paddingVertical: 16, paddingHorizontal: 20, borderBottomWidth: 1, borderBottomColor: '#ddd', backgroundColor: '#fff', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  headerBar: { paddingVertical: 16, paddingHorizontal: 20, borderBottomWidth: 1, borderBottomColor: '#ddd', backgroundColor: '#fff', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', height: 64 },
   title: { fontSize: 20, fontWeight: '800', color: '#0F172A', flex: 1, marginLeft: 4 },
   headerRight: { flexDirection: 'row', alignItems: 'center', gap: 16 },
   editBtn: { borderWidth: 1, borderColor: '#D8DCE6', borderRadius: 8, paddingHorizontal: 14, paddingVertical: 6 },
