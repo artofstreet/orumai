@@ -186,7 +186,12 @@ export default function PropertyDetailScreen() {
   const priceColor = DEAL_PRICE_COLOR[property.deal] ?? '#0F172A';
 
   const specs = [
-    { label: '면적', value: property.area },
+    { label: '면적', value: (() => {
+      const num = parseFloat((property.area ?? '').replace(/[^0-9.]/g, ''));
+      if (!num || isNaN(num)) return property.area ?? '—';
+      const pyeong = Math.round(num * 0.3025 * 10) / 10;
+      return `${num}㎡/${pyeong}평`;
+    })() },
     { label: '층/총층', value: `${property.floor.replace(/[^0-9]/g, '') || '—'}/${property.totalFloors ?? '—'}` },
     { label: '방향', value: property.dir ?? '—' },
     { label: '입주일', value: property.moveInDate ?? '—' },

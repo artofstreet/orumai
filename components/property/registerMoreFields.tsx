@@ -32,16 +32,14 @@ function digitsOnly(raw: string, maxLen: number): string {
   return raw.replace(/\D/g, '').slice(0, maxLen);
 }
 
-/** 면적: 숫자만 입력 → 표시 84㎡ */
+/** 면적: 숫자만 추출 (접미사는 TextInput 밖 Text에서 표시) */
 export function formatAreaSqmInput(raw: string): string {
-  const d = digitsOnly(raw, 6);
-  return d ? `${d}㎡` : '';
+  return digitsOnly(raw, 6);
 }
 
-/** 층수: 숫자만 입력 → 표시 25층 */
+/** 층수: 숫자만 추출 후 반환 (접미사 붙이지 않음) */
 export function formatFloorInput(raw: string): string {
-  const d = digitsOnly(raw, 4);
-  return d ? `${d}층` : '';
+  return digitsOnly(raw, 4);
 }
 
 const MEMO_LINE_HEIGHT = 24;
@@ -128,9 +126,9 @@ export function RegisterMoreFields(p: Props) {
       </View>
       <View style={styles.section}>
         <Text style={styles.sectionLabel}>면적·층·방향·입주</Text>
-        <TextInput style={styles.input} value={p.areaSqm} onChangeText={(t) => p.setAreaSqm(formatAreaSqmInput(t))} keyboardType="number-pad" placeholder="면적(㎡)" placeholderTextColor="#9AA5B4" />
-        <TextInput style={styles.input} value={p.floor} onChangeText={(t) => p.setFloor(formatFloorInput(t))} keyboardType="number-pad" placeholder="해당 층" placeholderTextColor="#9AA5B4" />
-        <TextInput style={styles.input} value={p.totalFloors} onChangeText={(t) => p.setTotalFloors(formatFloorInput(t))} keyboardType="number-pad" placeholder="총 층수" placeholderTextColor="#9AA5B4" />
+        <TextInput style={styles.input} value={p.areaSqm} onChangeText={(t: string) => p.setAreaSqm(formatAreaSqmInput(t))} keyboardType="number-pad" placeholder="면적(㎡)" placeholderTextColor="#9AA5B4" maxLength={6} />
+        <TextInput style={styles.input} value={p.floor} onChangeText={(t: string) => p.setFloor(formatFloorInput(t))} keyboardType="number-pad" placeholder="해당 층" placeholderTextColor="#9AA5B4" maxLength={4} />
+        <TextInput style={styles.input} value={p.totalFloors} onChangeText={(t: string) => p.setTotalFloors(formatFloorInput(t))} keyboardType="number-pad" placeholder="총 층수" placeholderTextColor="#9AA5B4" maxLength={4} />
         <TextInput style={styles.input} value={p.direction} onChangeText={p.setDirection} placeholder="방향 (예: 남향)" placeholderTextColor="#9AA5B4" />
         <TextInput style={styles.input} value={p.moveInDate} onChangeText={(t) => p.setMoveInDate(t)} placeholder="예: 2026-06-01 또는 즉시입주" placeholderTextColor="#9AA5B4" />
       </View>
