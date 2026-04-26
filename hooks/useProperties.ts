@@ -148,6 +148,7 @@ export function useProperties(): UsePropertiesReturn {
       const { data, error: fetchError } = await supabase
         .from('properties')
         .select('*')
+        .neq('status', 'deleted')
         .order('created_at', { ascending: false });
       if (cancelled) return;
       setLoading(false);
@@ -201,7 +202,7 @@ export function useProperties(): UsePropertiesReturn {
   const deleteProperty = useCallback(async (id: string) => {
     setLoading(true);
     setError(null);
-    const { error: deleteError } = await supabase.from('properties').delete().eq('id', id);
+    const { error: deleteError } = await supabase.from('properties').update({ status: 'deleted' }).eq('id', id);
     setLoading(false);
     if (deleteError) {
       setError(deleteError.message);

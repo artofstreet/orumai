@@ -73,6 +73,7 @@ export function useCustomers(): UseCustomersReturn {
       const { data, error: fetchError } = await supabase
         .from('customers')
         .select('*')
+        .neq('status', 'deleted')
         .order('created_at', { ascending: false });
       if (cancelled) return;
       setLoading(false);
@@ -126,7 +127,7 @@ export function useCustomers(): UseCustomersReturn {
   const deleteCustomer = useCallback(async (id: string) => {
     setLoading(true);
     setError(null);
-    const { error: deleteError } = await supabase.from('customers').delete().eq('id', id);
+    const { error: deleteError } = await supabase.from('customers').update({ status: 'deleted' }).eq('id', id);
     setLoading(false);
     if (deleteError) {
       setError(deleteError.message);
