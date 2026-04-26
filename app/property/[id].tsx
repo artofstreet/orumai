@@ -161,12 +161,13 @@ export default function PropertyDetailScreen() {
 
   const [adCopyVisible, setAdCopyVisible] = useState<boolean>(false);
   const 준비중 = () => Alert.alert('준비 중', '곧 지원될 예정입니다.');
+  // 웹 전용: 캐러셀 높이 제한 (앱은 PropertyCarousel의 aspectRatio 3/4로 충분)
   const carouselMidDesktopClip = useMemo(() => {
-    if (windowWidth >= 1280 && windowWidth < 1920) {
-      return { height: 380, overflow: 'hidden' as const, width: '100%' as const };
+    if (Platform.OS === 'web' && !narrow) {
+      return { height: 280, overflow: 'hidden' as const, width: '100%' as const };
     }
     return undefined;
-  }, [windowWidth]);
+  }, [narrow]);
 
   if (!property) {
     return (
