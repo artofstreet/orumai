@@ -466,9 +466,8 @@ export default function PropertyDetailScreen() {
           <View style={[styles.memoBox, narrow && styles.memoBoxFull, isUltraWide && styles.memoBoxUltra, !narrow && styles.memoBoxFlex, { padding: layoutPadding }]}>
             <Text style={styles.memoLabel}>메모</Text>
             <View style={styles.memoBody}>
-              {/* 관계가 "집주인"이면 중복이므로 생략 */}
               {property.ownerName && (
-                <Text style={styles.memoText}>집주인: {property.ownerName}{property.relation && property.relation !== '집주인' ? ` (${property.relation})` : ''}</Text>
+                <Text style={styles.memoText}>집주인: {property.ownerName}</Text>
               )}
               {property.phone && (
                 <Text style={styles.memoText}>연락처: {property.phone}</Text>
