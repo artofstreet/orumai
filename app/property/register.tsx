@@ -3,7 +3,6 @@ import { useRouter } from 'expo-router';
 import { useEffect, useMemo, useRef, useState, type ComponentType } from 'react';
 import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, type KeyboardAvoidingViewProps, type ViewProps } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { detailStyles } from '@/components/property/detailStyles';
 import { RegisterDealChips, RegisterPropChips } from '@/components/property/registerChipBlocks';
 import { MOCK_ADDRESS_ROWS, formatPhoneHyphen } from '@/components/property/registerMocks';
 import { RegisterMoreFields, formatAreaSqmInput, formatFloorInput } from '@/components/property/registerMoreFields';
@@ -113,11 +112,30 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
       <FormWrapper
         {...(Platform.OS === 'web' ? {} : { behavior: Platform.OS === 'ios' ? 'padding' : 'height' })}
         style={safeAreaStyles.keyboardAvoiding}>
-      <View style={safeAreaStyles.headerBar}>
+      <View style={{
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        backgroundColor: '#fff',
+        borderBottomWidth: 1,
+        borderBottomColor: '#ddd',
+        minHeight: 64,
+      }}>
         <Text style={styles.title}>{isEdit ? '매물 편집' : '매물 등록'}</Text>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
-          <Pressable style={({ pressed }) => [detailStyles.headerBtn, { paddingHorizontal: 20, paddingVertical: 8 }, pressed ? { opacity: 0.6 } : null]} onPress={onSave}>
-            <Text style={[detailStyles.headerBtnText, { fontSize: 15 }]}>저장</Text>
+          <Pressable style={({ pressed }) => [{
+            borderWidth: 1,
+            borderColor: '#D8DCE6',
+            borderRadius: 6,
+            height: 36,
+            minWidth: 68,
+            paddingHorizontal: 16,
+            alignItems: 'center' as const,
+            justifyContent: 'center' as const,
+          }, pressed ? { opacity: 0.6 } : null]} onPress={onSave}>
+            <Text allowFontScaling={false} numberOfLines={1} style={{ color: '#18202E', fontSize: 15, lineHeight: 18, fontWeight: '600', textAlign: 'center' as const }}>저장</Text>
           </Pressable>
           <TouchableOpacity activeOpacity={0.6} onPress={() => { clearEditData(); closeRegisterPanel(); }}>
             <Text style={{ fontSize: 22, color: '#666', paddingHorizontal: 4 }}>✕</Text>
