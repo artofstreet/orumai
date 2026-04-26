@@ -1,10 +1,7 @@
-/**
- * 매물 등록/편집 화면 — 저장: useProperties(Supabase `properties`)
- * TODO-AUTH: 작성자 user_id · TODO-STORAGE: 사진 업로드
- */
+/** 매물 등록/편집 화면 — 저장: useProperties(Supabase `properties`) */
 import { useRouter } from 'expo-router';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useEffect, useMemo, useRef, useState, type ComponentType } from 'react';
+import { Alert, Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, type GestureResponderEvent, type KeyboardAvoidingViewProps, type ViewProps } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { detailStyles } from '@/components/property/detailStyles';
 import { RegisterDealChips, RegisterPropChips } from '@/components/property/registerChipBlocks';
@@ -16,10 +13,7 @@ import { type AddPropertyInput } from '@/hooks/useProperties';
 import { usePropertiesContext } from '@/contexts/PropertiesContext';
 import { DEAL_TYPES, PROPERTY_TYPES, type Property } from '@/types';
 import { clearEditData, closeRegisterPanel } from '@/utils/registerEvents';
-type ScreenProps = {
-  embedded?: boolean;
-  initialData?: Record<string, unknown> | null;
-};
+type ScreenProps = { embedded?: boolean; initialData?: Record<string, unknown> | null };
 const str = (v: unknown): string => { if (v === null || v === undefined) return ''; return String(v); };
 export default function PropertyRegisterScreen({ embedded = false, initialData }: ScreenProps) {
   const router = useRouter();
@@ -27,6 +21,7 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
   const blurTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const d = initialData ?? null;
   const isEdit = d !== null;
+  const FormWrapper: ComponentType<ViewProps & Partial<KeyboardAvoidingViewProps>> = Platform.OS === 'web' ? View : KeyboardAvoidingView;
   const stripUnit = (v: unknown) => str(v).replace('㎡', '').trim();
   const [address, setAddress] = useState<string>(() => str(d?.addr));
   const [buildingName, setBuildingName] = useState<string>(() => str(d?.buildingName));
@@ -107,8 +102,8 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
       } else {
         await addProperty(payload);
       }
-      clearEditData();
       closeRegisterPanel();
+      clearEditData();
     } catch (err: unknown) {
       Alert.alert('저장 실패', String(err));
     }
@@ -116,7 +111,20 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
   return (
     <SafeAreaView style={safeAreaStyles.root}>
       {/* 키보드가 입력란을 가리지 않도록 플랫폼별 동작 */}
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={safeAreaStyles.keyboardAvoiding}>
+      <FormWrapper
+        {...(Platform.OS === 'web' ? {} : { behavior: Platform.OS === 'ios' ? 'padding' : 'height' })}
+        style={safeAreaStyles.keyboardAvoiding}>
+      <View style={safeAreaStyles.headerBar}>
+        <Text style={styles.title}>{isEdit ? '매물 편집' : '매물 등록'}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
+          <Pressable style={({ pressed }) => [detailStyles.headerBtn, { paddingHorizontal: 20, paddingVertical: 8 }, pressed ? { opacity: 0.6 } : null]} onPressIn={() => {}} onTouchStart={(e: GestureResponderEvent) => e.preventDefault()} onPress={onSave}>
+            <Text style={[detailStyles.headerBtnText, { fontSize: 15 }]}>저장</Text>
+          </Pressable>
+          <TouchableOpacity activeOpacity={0.6} onPress={() => { clearEditData(); closeRegisterPanel(); }}>
+            <Text style={{ fontSize: 22, color: '#666', paddingHorizontal: 4 }}>✕</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
       <ScrollView
         style={[styles.page, embedded ? { flex: 1, width: '100%' } : { maxWidth: 480, alignSelf: 'center', width: '100%' }]}
         contentContainerStyle={styles.scrollContent}
@@ -126,22 +134,6 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
           <Text style={styles.backTxt}>← 뒤로</Text>
         </TouchableOpacity>
       )}
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Text style={styles.title}>{isEdit ? '매물 편집' : '매물 등록'}</Text>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-          <TouchableOpacity
-            style={[detailStyles.headerBtn, { paddingHorizontal: 20, paddingVertical: 8 }]}
-            activeOpacity={0.6}
-            onPress={onSave}>
-            <Text style={[detailStyles.headerBtnText, { fontSize: 15 }]}>저장</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            activeOpacity={0.6}
-            onPress={() => { clearEditData(); closeRegisterPanel(); }}>
-            <Text style={{ fontSize: 22, color: '#666', paddingHorizontal: 4 }}>✕</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
       <View style={styles.section}>
         <Text style={styles.sectionLabel}>주소</Text>
         <TextInput
@@ -184,25 +176,10 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
       </View>
       <RegisterDealChips deal={deal} setDeal={setDeal} />
       <RegisterPropChips propType={propType} setPropType={setPropType} />
-      <RegisterMoreFields
-        deal={deal} salePrice={salePrice} setSalePrice={setSalePrice}
-        jeonsePrice={jeonsePrice} setJeonsePrice={setJeonsePrice}
-        deposit={deposit} setDeposit={setDeposit}
-        monthly={monthly} setMonthly={setMonthly}
-        areaSqm={areaSqm} setAreaSqm={setAreaSqm}
-        floor={floor} setFloor={setFloor}
-        totalFloors={totalFloors} setTotalFloors={setTotalFloors}
-        direction={direction} setDirection={setDirection}
-        moveInDate={moveInDate} setMoveInDate={setMoveInDate}
-        ownerName={ownerName} setOwnerName={setOwnerName}
-        relation={relation} setRelation={setRelation}
-        ownerPhone={ownerPhone} onPhoneChange={onPhoneChange}
-        ownerMemo={ownerMemo} setOwnerMemo={setOwnerMemo}
-        memo={memo} setMemo={setMemo}
-      />
+      <RegisterMoreFields deal={deal} salePrice={salePrice} setSalePrice={setSalePrice} jeonsePrice={jeonsePrice} setJeonsePrice={setJeonsePrice} deposit={deposit} setDeposit={setDeposit} monthly={monthly} setMonthly={setMonthly} areaSqm={areaSqm} setAreaSqm={setAreaSqm} floor={floor} setFloor={setFloor} totalFloors={totalFloors} setTotalFloors={setTotalFloors} direction={direction} setDirection={setDirection} moveInDate={moveInDate} setMoveInDate={setMoveInDate} ownerName={ownerName} setOwnerName={setOwnerName} relation={relation} setRelation={setRelation} ownerPhone={ownerPhone} onPhoneChange={onPhoneChange} ownerMemo={ownerMemo} setOwnerMemo={setOwnerMemo} memo={memo} setMemo={setMemo} />
       </ScrollView>
-      </KeyboardAvoidingView>
+      </FormWrapper>
     </SafeAreaView>
   );
 }
-const safeAreaStyles = StyleSheet.create({ root: { flex: 1, backgroundColor: '#F0F4FF' }, keyboardAvoiding: { flex: 1 } });
+const safeAreaStyles = StyleSheet.create({ root: { flex: 1, backgroundColor: '#F0F4FF' }, keyboardAvoiding: { flex: 1 }, headerBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 16, paddingHorizontal: 20, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#ddd' } });

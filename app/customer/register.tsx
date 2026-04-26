@@ -5,7 +5,7 @@
  */
 import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { Alert, Keyboard, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Keyboard, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, type GestureResponderEvent } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { detailStyles } from '@/components/property/detailStyles';
@@ -71,6 +71,17 @@ export default function CustomerRegisterScreen({ embedded = false, initialData }
 
   return (
     <SafeAreaView style={safeAreaStyles.root}>
+      <View style={safeAreaStyles.headerBar}>
+        <Text style={styles.title}>{isEdit ? '고객 편집' : '고객 등록'}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
+          <Pressable style={({ pressed }) => [detailStyles.headerBtn, { paddingHorizontal: 20, paddingVertical: 8 }, pressed ? { opacity: 0.6 } : null]} onPressIn={() => {}} onTouchStart={(e: GestureResponderEvent) => e.preventDefault()} onPress={onSave}>
+            <Text style={[detailStyles.headerBtnText, { fontSize: 15 }]}>저장</Text>
+          </Pressable>
+          <TouchableOpacity activeOpacity={0.6} onPress={() => { clearEditData(); closeRegisterPanel(); }}>
+            <Text style={{ fontSize: 22, color: '#666', paddingHorizontal: 4 }}>✕</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
       <ScrollView
         style={[styles.page, embedded ? { flex: 1, width: '100%' } : { maxWidth: 480, alignSelf: 'center', width: '100%' }]}
         contentContainerStyle={styles.scrollContent}
@@ -80,23 +91,6 @@ export default function CustomerRegisterScreen({ embedded = false, initialData }
           <Text style={styles.backTxt}>← 뒤로</Text>
         </TouchableOpacity>
       )}
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Text style={styles.title}>{isEdit ? '고객 편집' : '고객 등록'}</Text>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-          <TouchableOpacity
-            style={[detailStyles.headerBtn, { paddingHorizontal: 20, paddingVertical: 8 }]}
-            activeOpacity={0.6}
-            onPress={onSave}>
-            <Text style={[detailStyles.headerBtnText, { fontSize: 15 }]}>저장</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            activeOpacity={0.6}
-            onPress={() => { clearEditData(); closeRegisterPanel(); }}>
-            <Text style={{ fontSize: 22, color: '#666', paddingHorizontal: 4 }}>✕</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-
       <View style={styles.section}>
         <Text style={styles.sectionLabel}>이름</Text>
         <TextInput
@@ -170,4 +164,5 @@ export default function CustomerRegisterScreen({ embedded = false, initialData }
 // 루트 SafeArea: 인셋 영역까지 스크롤 배경(#F0F4FF)과 톤 맞춤
 const safeAreaStyles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#F0F4FF' },
+  headerBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 16, paddingHorizontal: 20, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#ddd' },
 });

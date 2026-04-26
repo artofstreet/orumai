@@ -118,8 +118,7 @@ export default function ProfileScreen({ embedded = false, onClose }: ScreenProps
 
   return (
     <SafeAreaView style={styles.safeAreaRoot}>
-      <ScrollView style={[styles.page, embedded && { flex: 1, width: '100%' }]} contentContainerStyle={styles.content}>
-        <View style={styles.header}>
+      <View style={styles.headerBar}>
           <Text style={styles.title}>마이</Text>
           <View style={styles.headerRight}>
             {isEdit ? (
@@ -138,7 +137,9 @@ export default function ProfileScreen({ embedded = false, onClose }: ScreenProps
               </Pressable>
             )}
           </View>
-        </View>
+      </View>
+
+      <ScrollView style={[styles.page, embedded && { flex: 1, width: '100%' }]} contentContainerStyle={styles.content}>
 
         {!isEdit && (
           <>
@@ -212,13 +213,13 @@ const styles = StyleSheet.create({
   safeAreaRoot: { flex: 1, backgroundColor: '#F0F4FF' },
   page: { flex: 1, backgroundColor: '#F0F4FF' },
   content: { padding: 24, gap: 16, maxWidth: 480, alignSelf: 'center', width: '100%' },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 },
+  headerBar: { paddingVertical: 16, paddingHorizontal: 20, borderBottomWidth: 1, borderBottomColor: '#ddd', backgroundColor: '#fff', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   title: { fontSize: 20, fontWeight: '800', color: '#0F172A', flex: 1, marginLeft: 4 },
-  headerRight: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  headerRight: { flexDirection: 'row', alignItems: 'center', gap: 16 },
   editBtn: { borderWidth: 1, borderColor: '#D8DCE6', borderRadius: 8, paddingHorizontal: 14, paddingVertical: 6 },
   // 닫기(X): 터치 영역 확보
-  closeBtn: { padding: 12, minWidth: 36, alignItems: 'center', justifyContent: 'center' },
-  closeBtnTxt: { fontSize: 24, color: '#0F172A', fontWeight: '600' },
+  closeBtn: { minWidth: 36, alignItems: 'center', justifyContent: 'center' },
+  closeBtnTxt: { fontSize: 22, color: '#666', paddingHorizontal: 4 },
   editBtnTxt: { fontSize: 14, color: '#1E293B', fontWeight: '600' },
   doneBtn: { backgroundColor: SILVER, borderRadius: 8, paddingHorizontal: 16, paddingVertical: 7 },
   doneBtnTxt: { color: '#fff', fontWeight: '800', fontSize: 14 },
