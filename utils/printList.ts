@@ -36,10 +36,10 @@ const formatPrice = (deal: string, price: string): string => {
   if (deal === '월세') {
     const slashIdx = p.indexOf('/');
     if (slashIdx !== -1) {
-      const deposit = p.slice(0, slashIdx).trim().replace(/만$/, '');
-      const monthly = p.slice(slashIdx + 1).trim()
-        .replace(/^월\s*/, '')
-        .replace(/만$/, '');
+      /* 기존 "보" 접두사 + "만" 접미사 제거 */
+      const deposit = p.slice(0, slashIdx).trim().replace(/^보/, '').replace(/만$/, '');
+      /* 기존 "월" 접두사 + "만" 접미사 제거 */
+      const monthly = p.slice(slashIdx + 1).trim().replace(/^월/, '').replace(/만$/, '');
       return `보${deposit} / 월${monthly}`;
     }
     return p;
