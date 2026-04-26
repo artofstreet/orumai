@@ -142,23 +142,9 @@ export function RegisterMoreFields(p: Props) {
         <TextInput style={styles.input} value={p.extra1} onChangeText={p.setExtra1} placeholder="(예비)" placeholderTextColor="#9AA5B4" />
       </View>
       <View style={styles.section}>
-        <TouchableOpacity style={styles.relationPickerBtn} onPress={() => setRelationModalOpen(true)} activeOpacity={0.85}>
-          <Text style={styles.relationPickerBtnTxt}>{p.relation === undefined ? '관계 선택' : p.relation}</Text>
-        </TouchableOpacity>
-        <TextInput style={styles.input} value={p.ownerName} onChangeText={p.setOwnerName} placeholder="이름" placeholderTextColor="#9AA5B4" />
-        <Modal visible={relationModalOpen} transparent animationType="fade" onRequestClose={() => setRelationModalOpen(false)}>
-          <View style={styles.modalBackdrop}>
-            <TouchableOpacity style={StyleSheet.absoluteFill} activeOpacity={1} onPress={() => setRelationModalOpen(false)} accessibilityRole="button" />
-            <View style={styles.modalCard}>
-              <Text style={styles.modalTitle}>관계 선택</Text>
-              {REL_OPTIONS.map((r) => (
-                <TouchableOpacity key={r} style={styles.modalOptionRow} onPress={() => { p.setRelation(r); setRelationModalOpen(false); }} activeOpacity={0.85}>
-                  <Text style={styles.modalOptionTxt}>{r}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
-        </Modal>
+        <Text style={styles.sectionLabel}>집주인</Text>
+        {/* 관계 선택 버튼 제거: 대리인 등은 이름에 직접 입력 예) 홍길동(대리인) */}
+        <TextInput style={styles.input} value={p.ownerName} onChangeText={p.setOwnerName} placeholder="이름 (대리인이면 홍길동(대리인))" placeholderTextColor="#9AA5B4" />
         <TextInput style={styles.input} value={p.ownerPhone} onChangeText={p.onPhoneChange} keyboardType="phone-pad" placeholder="전화번호" placeholderTextColor="#9AA5B4" />
         {/* 집주인메모 제거: 일반 메모란에 통합 */}
       </View>

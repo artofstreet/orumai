@@ -471,7 +471,7 @@ export default function PropertyDetailScreen() {
                 <Text style={styles.memoText}>집주인: {property.ownerName}{property.relation && property.relation !== '집주인' ? ` (${property.relation})` : ''}</Text>
               )}
               {property.phone && (
-                <Text style={styles.memoText}>집주인연락처: {property.phone}</Text>
+                <Text style={styles.memoText}>연락처: {property.phone}</Text>
               )}
               {/* 집주인메모 제거: 일반 메모란에 통합 */}
               <Text style={styles.memoText}>{property.memo || '—'}</Text>
