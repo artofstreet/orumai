@@ -192,6 +192,14 @@ export default function PropertyDetailScreen() {
     { label: '입주일', value: property.moveInDate ?? '—' },
   ];
 
+  // 스펙 2번째 줄: 주차, 난방, 건축년, 빈칸
+  const specs2 = [
+    { label: '주차', value: property.parking ?? '—' },
+    { label: '난방', value: property.heating ?? '—' },
+    { label: '건축년', value: property.builtYear ? `${property.builtYear}년` : '—' },
+    { label: '', value: '' },
+  ];
+
   // 국토부 실거래가(rt.molit.go.kr) — 주소를 쿼리로 전달(사이트가 무시하면 메인으로 열림)
   const openMolitRealTrade = useCallback(async () => {
     const base = 'https://rt.molit.go.kr';
@@ -397,6 +405,14 @@ export default function PropertyDetailScreen() {
                       </View>
                     ))}
                   </View>
+                  <View style={[styles.specRow, styles.specRowBottom, specLayoutStyles.specRow]}>
+                    {specs2.map((spec, idx) => (
+                      <View key={`s2-${idx}`} style={[styles.specCellUltra2col, specLayoutStyles.specItem, idx < specs2.length - 1 && styles.specCellRight]}>
+                        <Text style={[styles.specLabel, specFontStyles.specLabel, specLayoutStyles.specTextVertical]} numberOfLines={1} ellipsizeMode="tail">{spec.label}</Text>
+                        <Text style={[styles.specValue, specFontStyles.specValue, specLayoutStyles.specTextVertical]} numberOfLines={1} ellipsizeMode="tail">{spec.value}</Text>
+                      </View>
+                    ))}
+                  </View>
                 </>
               ) : (
                 <View style={[styles.specRow, specLayoutStyles.specRow]}>
@@ -406,20 +422,39 @@ export default function PropertyDetailScreen() {
                       <Text style={[styles.specValue, specFontStyles.specValue]} numberOfLines={1} ellipsizeMode="tail">{spec.value}</Text>
                     </View>
                   ))}
+                  {specs2.map((spec, idx) => (
+                    <View key={`s2-${idx}`} style={[styles.specCell, specLayoutStyles.specItem, idx < specs2.length - 1 && styles.specCellRight]}>
+                      <Text style={[styles.specLabel, specFontStyles.specLabel]} numberOfLines={1} ellipsizeMode="tail">{spec.label}</Text>
+                      <Text style={[styles.specValue, specFontStyles.specValue]} numberOfLines={1} ellipsizeMode="tail">{spec.value}</Text>
+                    </View>
+                  ))}
                 </View>
               )
             ) : (
-              <View style={specMobileStyles.specRowMobile}>
-                {specs.map((spec, idx) => (
-                  <View
-                    key={spec.label}
-                    style={[specMobileStyles.specCellMobile, idx < specs.length - 1 && specMobileStyles.specCellMobileRight]}
-                  >
-                    <Text style={specMobileStyles.specLabelMobile}>{spec.label}</Text>
-                    <Text style={specMobileStyles.specValueMobile}>{spec.value}</Text>
-                  </View>
-                ))}
-              </View>
+              <>
+                <View style={specMobileStyles.specRowMobile}>
+                  {specs.map((spec, idx) => (
+                    <View
+                      key={spec.label}
+                      style={[specMobileStyles.specCellMobile, idx < specs.length - 1 && specMobileStyles.specCellMobileRight]}
+                    >
+                      <Text style={specMobileStyles.specLabelMobile}>{spec.label}</Text>
+                      <Text style={specMobileStyles.specValueMobile}>{spec.value}</Text>
+                    </View>
+                  ))}
+                </View>
+                <View style={specMobileStyles.specRowMobile}>
+                  {specs2.map((spec, idx) => (
+                    <View
+                      key={`s2-${idx}`}
+                      style={[specMobileStyles.specCellMobile, idx < specs2.length - 1 && specMobileStyles.specCellMobileRight]}
+                    >
+                      <Text style={specMobileStyles.specLabelMobile}>{spec.label}</Text>
+                      <Text style={specMobileStyles.specValueMobile}>{spec.value}</Text>
+                    </View>
+                  ))}
+                </View>
+              </>
             )}
           </View>
 

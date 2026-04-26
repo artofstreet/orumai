@@ -43,6 +43,10 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
   const [totalFloors, setTotalFloors] = useState<string>(() => str(d?.totalFloors));
   const [direction, setDirection] = useState<string>(() => str(d?.dir));
   const [moveInDate, setMoveInDate] = useState<string>(() => str(d?.moveInDate));
+  const [parking, setParking] = useState<string>(() => str(d?.parking));
+  const [heating, setHeating] = useState<string>(() => str(d?.heating));
+  const [builtYear, setBuiltYear] = useState<string>(() => str(d?.builtYear));
+  const [extra1, setExtra1] = useState<string>('');
   const [ownerName, setOwnerName] = useState<string>(() => str(d?.ownerName));
   const [relation, setRelation] = useState<RelationKind | undefined>(() => str(d?.relation) as RelationKind || undefined);
   const [ownerPhone, setOwnerPhone] = useState<string>(() => formatPhoneHyphen(str(d?.phone ?? d?.ownerPhone)));
@@ -92,6 +96,9 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
       ...(moveInDate.trim() ? { moveInDate: moveInDate.trim() } : {}),
       ...(ownerName.trim() ? { ownerName: ownerName.trim() } : {}),
       ...(ownerMemo.trim() ? { ownerMemo: ownerMemo.trim() } : {}),
+      ...(parking.trim() ? { parking: parking.trim() } : {}),
+      ...(heating.trim() ? { heating: heating.trim() } : {}),
+      ...(builtYear.trim() ? { builtYear: Number(builtYear.trim()) || undefined } : {}),
       ...(relation ? { relation } : {}),
     };
     try {
@@ -193,7 +200,7 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
       </View>
       <RegisterDealChips deal={deal} setDeal={setDeal} />
       <RegisterPropChips propType={propType} setPropType={setPropType} />
-      <RegisterMoreFields deal={deal} salePrice={salePrice} setSalePrice={setSalePrice} jeonsePrice={jeonsePrice} setJeonsePrice={setJeonsePrice} deposit={deposit} setDeposit={setDeposit} monthly={monthly} setMonthly={setMonthly} areaSqm={areaSqm} setAreaSqm={setAreaSqm} floor={floor} setFloor={setFloor} totalFloors={totalFloors} setTotalFloors={setTotalFloors} direction={direction} setDirection={setDirection} moveInDate={moveInDate} setMoveInDate={setMoveInDate} ownerName={ownerName} setOwnerName={setOwnerName} relation={relation} setRelation={setRelation} ownerPhone={ownerPhone} onPhoneChange={onPhoneChange} ownerMemo={ownerMemo} setOwnerMemo={setOwnerMemo} memo={memo} setMemo={setMemo} />
+      <RegisterMoreFields deal={deal} salePrice={salePrice} setSalePrice={setSalePrice} jeonsePrice={jeonsePrice} setJeonsePrice={setJeonsePrice} deposit={deposit} setDeposit={setDeposit} monthly={monthly} setMonthly={setMonthly} areaSqm={areaSqm} setAreaSqm={setAreaSqm} floor={floor} setFloor={setFloor} totalFloors={totalFloors} setTotalFloors={setTotalFloors} direction={direction} setDirection={setDirection} moveInDate={moveInDate} setMoveInDate={setMoveInDate} parking={parking} setParking={setParking} heating={heating} setHeating={setHeating} builtYear={builtYear} setBuiltYear={setBuiltYear} extra1={extra1} setExtra1={setExtra1} ownerName={ownerName} setOwnerName={setOwnerName} relation={relation} setRelation={setRelation} ownerPhone={ownerPhone} onPhoneChange={onPhoneChange} ownerMemo={ownerMemo} setOwnerMemo={setOwnerMemo} memo={memo} setMemo={setMemo} />
       </ScrollView>
       </FormWrapper>
     </SafeAreaView>

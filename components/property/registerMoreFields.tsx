@@ -16,6 +16,10 @@ type Props = {
   totalFloors: string; setTotalFloors: (v: string) => void;
   direction: string; setDirection: (v: string) => void;
   moveInDate: string; setMoveInDate: (v: string) => void;
+  parking: string; setParking: (v: string) => void;       // 주차
+  heating: string; setHeating: (v: string) => void;       // 난방방식
+  builtYear: string; setBuiltYear: (v: string) => void;   // 건축년도
+  extra1: string; setExtra1: (v: string) => void;         // 예비 필드
   ownerName: string; setOwnerName: (v: string) => void;
   relation: RelationKind | undefined; setRelation: (v: RelationKind) => void; // 미선택 시 undefined
   ownerPhone: string; onPhoneChange: (v: string) => void;
@@ -131,6 +135,15 @@ export function RegisterMoreFields(p: Props) {
         <TextInput style={styles.input} value={p.totalFloors} onChangeText={(t) => p.setTotalFloors(formatFloorInput(t))} keyboardType="number-pad" placeholder="총 층수" placeholderTextColor="#9AA5B4" />
         <TextInput style={styles.input} value={p.direction} onChangeText={p.setDirection} placeholder="방향 (예: 남향)" placeholderTextColor="#9AA5B4" />
         <TextInput style={styles.input} value={p.moveInDate} onChangeText={(t) => p.setMoveInDate(t)} placeholder="예: 2026-06-01 또는 즉시입주" placeholderTextColor="#9AA5B4" />
+      </View>
+
+      {/* 주차·난방·건축년·예비 */}
+      <View style={styles.section}>
+        <Text style={styles.sectionLabel}>주차·난방·건축년</Text>
+        <TextInput style={styles.input} value={p.parking} onChangeText={p.setParking} placeholder="주차 (예: 1대)" placeholderTextColor="#9AA5B4" />
+        <TextInput style={styles.input} value={p.heating} onChangeText={p.setHeating} placeholder="난방 (예: 지역난방)" placeholderTextColor="#9AA5B4" />
+        <TextInput style={styles.input} value={p.builtYear} onChangeText={p.setBuiltYear} keyboardType="number-pad" placeholder="건축년도 (예: 2015)" placeholderTextColor="#9AA5B4" />
+        <TextInput style={styles.input} value={p.extra1} onChangeText={p.setExtra1} placeholder="(예비)" placeholderTextColor="#9AA5B4" />
       </View>
       <View style={styles.section}>
         <TouchableOpacity style={styles.relationPickerBtn} onPress={() => setRelationModalOpen(true)} activeOpacity={0.85}>
