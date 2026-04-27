@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
-import { Alert, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const STORAGE_KEY = 'orumai_agent_profile';
@@ -147,7 +147,14 @@ export default function ProfileScreen({ embedded = false, onClose }: ScreenProps
           </View>
       </View>
 
-      <ScrollView style={[styles.page, embedded && { flex: 1, width: '100%' }]} contentContainerStyle={styles.content}>
+      {/* 모바일: 키보드가 메모 입력란을 가리지 않도록 보정 */}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={keyboardStyles.kavRoot}
+        keyboardVerticalOffset={0}>
+        <ScrollView
+          style={[styles.page, embedded && { flex: 1, width: '100%' }]}
+          contentContainerStyle={[styles.content, keyboardStyles.scrollContentExtra]}>
 
         {!isEdit && (
           <>
@@ -213,7 +220,8 @@ export default function ProfileScreen({ embedded = false, onClose }: ScreenProps
             )}
           </View>
         )}
-      </ScrollView>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -223,6 +231,12 @@ const SILVER = '#9CA3AF';
 const memoStyles = StyleSheet.create({
   // 앱(네이티브) 메모 입력칸은 높이 고정 + 내부 스크롤 사용
   memoTextInput: { height: 250, maxHeight: 250, textAlignVertical: 'top' as const },
+});
+
+const keyboardStyles = StyleSheet.create({
+  kavRoot: { flex: 1 },
+  // 메모박스 아래 여백 확보(키보드에 가려지는 것 방지)
+  scrollContentExtra: { paddingBottom: 200 },
 });
 
 const styles = StyleSheet.create({
