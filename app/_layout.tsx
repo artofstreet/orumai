@@ -13,6 +13,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Easing, Modal, Platform, Pressable, StyleSheet, Text, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import 'react-native-reanimated';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import CustomerRegisterScreen from './customer/register';
 import ProfileScreen from './profile';
@@ -34,7 +35,13 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <PropertiesProvider>
           <CustomersProvider>
-            <RootLayoutContent />
+            {Platform.OS === 'web' ? (
+              <RootLayoutContent />
+            ) : (
+              <KeyboardProvider>
+                <RootLayoutContent />
+              </KeyboardProvider>
+            )}
           </CustomersProvider>
         </PropertiesProvider>
       </SafeAreaProvider>

@@ -5,7 +5,8 @@
  */
 import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
-import { Alert, Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, type GestureResponderEvent } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
+import { Alert, Keyboard, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, type GestureResponderEvent } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { detailStyles } from '@/components/property/detailStyles';
@@ -83,15 +84,12 @@ export default function CustomerRegisterScreen({ embedded = false, initialData }
         </View>
       </View>
       {/* 모바일: 키보드가 메모 입력란을 가리지 않도록 보정 */}
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={keyboardStyles.kavRoot}
-        // iOS 슬라이드 패널 헤더 높이 보정값
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}>
-        <ScrollView
-          style={[styles.page, embedded ? { flex: 1, width: '100%' } : { maxWidth: 480, alignSelf: 'center', width: '100%' }]}
-          contentContainerStyle={[styles.scrollContent, keyboardStyles.scrollContentExtra]}
-          keyboardShouldPersistTaps="handled">
+      <View style={keyboardStyles.kavRoot}>
+        {Platform.OS === 'web' ? (
+          <ScrollView
+            style={[styles.page, embedded ? { flex: 1, width: '100%' } : { maxWidth: 480, alignSelf: 'center', width: '100%' }]}
+            contentContainerStyle={[styles.scrollContent, keyboardStyles.scrollContentExtra]}
+            keyboardShouldPersistTaps="handled">
       {!embedded && (
         <TouchableOpacity style={styles.backRow} onPress={() => router.back()}>
           <Text style={styles.backTxt}>← 뒤로</Text>
@@ -145,8 +143,57 @@ export default function CustomerRegisterScreen({ embedded = false, initialData }
           />
         )}
       </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+          </ScrollView>
+        ) : (
+          <KeyboardAwareScrollView
+            bottomOffset={50}
+            style={[styles.page, embedded ? { flex: 1, width: '100%' } : { maxWidth: 480, alignSelf: 'center', width: '100%' }]}
+            contentContainerStyle={[styles.scrollContent, keyboardStyles.scrollContentExtra]}
+            keyboardShouldPersistTaps="handled">
+            {!embedded && (
+              <TouchableOpacity style={styles.backRow} onPress={() => router.back()}>
+                <Text style={styles.backTxt}>← 뒤로</Text>
+              </TouchableOpacity>
+            )}
+            <View style={styles.section}>
+              <Text style={styles.sectionLabel}>이름</Text>
+              <TextInput
+                style={styles.input}
+                value={name}
+                onChangeText={setName}
+                placeholder="고객 이름"
+                placeholderTextColor="#9AA5B4"
+              />
+            </View>
+
+            <View style={styles.section}>
+              <Text style={styles.sectionLabel}>전화번호</Text>
+              <TextInput
+                style={styles.input}
+                value={phone}
+                onChangeText={onPhoneChange}
+                placeholder="010-0000-0000"
+                placeholderTextColor="#9AA5B4"
+                keyboardType="phone-pad"
+                maxLength={13}
+              />
+            </View>
+
+            <View style={styles.section}>
+              <Text style={styles.sectionLabel}>메모</Text>
+              <TextInput
+                style={[styles.input, customerRegisterStyles.memoTextInput]}
+                value={memo}
+                onChangeText={setMemo}
+                placeholder="고객 메모 (녹음 내용이 여기에 입력됩니다)"
+                placeholderTextColor="#9AA5B4"
+                multiline
+                scrollEnabled
+              />
+            </View>
+          </KeyboardAwareScrollView>
+        )}
+      </View>
     </SafeAreaView>
   );
 }

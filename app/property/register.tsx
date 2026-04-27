@@ -1,7 +1,8 @@
 /** 매물 등록/편집 화면 — 저장: useProperties(Supabase `properties`) */
 import { useRouter } from 'expo-router';
-import { useEffect, useMemo, useRef, useState, type ComponentType } from 'react';
-import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, type KeyboardAvoidingViewProps, type ViewProps } from 'react-native';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
+import { Alert, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { RegisterDealChips, RegisterPropChips } from '@/components/property/registerChipBlocks';
 import { MOCK_ADDRESS_ROWS, formatPhoneHyphen } from '@/components/property/registerMocks';
@@ -20,7 +21,6 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
   const blurTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const d = initialData ?? null;
   const isEdit = d !== null;
-  const FormWrapper: ComponentType<ViewProps & Partial<KeyboardAvoidingViewProps>> = Platform.OS === 'web' ? View : KeyboardAvoidingView;
   const stripUnit = (v: unknown) => str(v).replace('㎡', '').trim();
   const [address, setAddress] = useState<string>(() => str(d?.addr));
   const [buildingName, setBuildingName] = useState<string>(() => str(d?.buildingName));
@@ -169,15 +169,12 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
           </TouchableOpacity>
         </View>
       </View>
-      {/* 키보드가 입력란을 가리지 않도록 플랫폼별 동작 */}
-      <FormWrapper
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
-        style={safeAreaStyles.keyboardAvoiding}>
-        <ScrollView
-          style={[styles.page, embedded ? { flex: 1, width: '100%' } : { maxWidth: 480, alignSelf: 'center', width: '100%' }]}
-          contentContainerStyle={[styles.scrollContent, { paddingBottom: 200 }]}
-          keyboardShouldPersistTaps="handled">
+      <View style={safeAreaStyles.keyboardAvoiding}>
+        {Platform.OS === 'web' ? (
+          <ScrollView
+            style={[styles.page, embedded ? { flex: 1, width: '100%' } : { maxWidth: 480, alignSelf: 'center', width: '100%' }]}
+            contentContainerStyle={[styles.scrollContent, { paddingBottom: 200 }]}
+            keyboardShouldPersistTaps="handled">
       {!embedded && (
         <TouchableOpacity style={styles.backRow} onPress={() => router.back()}>
           <Text style={styles.backTxt}>← 뒤로</Text>
@@ -226,8 +223,64 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
       <RegisterDealChips deal={deal} setDeal={setDeal} />
       <RegisterPropChips propType={propType} setPropType={setPropType} />
       <RegisterMoreFields deal={deal} salePrice={salePrice} setSalePrice={setSalePrice} jeonsePrice={jeonsePrice} setJeonsePrice={setJeonsePrice} deposit={deposit} setDeposit={setDeposit} monthly={monthly} setMonthly={setMonthly} areaSqm={areaSqm} setAreaSqm={setAreaSqm} floor={floor} setFloor={setFloor} totalFloors={totalFloors} setTotalFloors={setTotalFloors} direction={direction} setDirection={setDirection} moveInDate={moveInDate} setMoveInDate={setMoveInDate} parking={parking} setParking={setParking} heating={heating} setHeating={setHeating} builtYear={builtYear} setBuiltYear={setBuiltYear} extra1={extra1} setExtra1={setExtra1} ownerName={ownerName} setOwnerName={setOwnerName} relation={relation} setRelation={setRelation} ownerPhone={ownerPhone} onPhoneChange={onPhoneChange} ownerMemo={ownerMemo} setOwnerMemo={setOwnerMemo} memo={memo} setMemo={setMemo} />
-        </ScrollView>
-      </FormWrapper>
+          </ScrollView>
+        ) : (
+          <KeyboardAwareScrollView
+            bottomOffset={50}
+            style={[styles.page, embedded ? { flex: 1, width: '100%' } : { maxWidth: 480, alignSelf: 'center', width: '100%' }]}
+            contentContainerStyle={[styles.scrollContent, { paddingBottom: 200 }]}
+            keyboardShouldPersistTaps="handled">
+            {!embedded && (
+              <TouchableOpacity style={styles.backRow} onPress={() => router.back()}>
+                <Text style={styles.backTxt}>← 뒤로</Text>
+              </TouchableOpacity>
+            )}
+            <View style={styles.section}>
+              <Text style={styles.sectionLabel}>주소</Text>
+              <TextInput
+                style={styles.input}
+                value={address}
+                onChangeText={(t) => { setAddress(t); setShowSuggest(true); }}
+                onFocus={() => setShowSuggest(true)}
+                onBlur={() => {
+                  if (blurTimerRef.current) clearTimeout(blurTimerRef.current);
+                  blurTimerRef.current = setTimeout(() => setShowSuggest(false), 200);
+                }}
+                placeholder="주소를 입력하세요"
+                placeholderTextColor="#9AA5B4"
+              />
+              {showSuggest && suggestions.length > 0 && (
+                <View style={styles.suggestBox}>
+                  {suggestions.map((s) => (
+                    <TouchableOpacity key={s.id} style={styles.suggestRow} onPress={() => {
+                      setAddress(s.label);
+                      setAreaSqm(formatAreaSqmInput(s.areaSqm));
+                      setFloor(formatFloorInput(s.floor));
+                      setTotalFloors(formatFloorInput(s.totalFloors));
+                      setShowSuggest(false);
+                    }}>
+                      <Text style={styles.suggestTxt}>{s.label}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              )}
+            </View>
+            <View style={styles.section}>
+              <Text style={styles.sectionLabel}>건물명</Text>
+              <TextInput
+                style={styles.input}
+                value={buildingName}
+                onChangeText={setBuildingName}
+                placeholder="건물명 (선택)"
+                placeholderTextColor="#9AA5B4"
+              />
+            </View>
+            <RegisterDealChips deal={deal} setDeal={setDeal} />
+            <RegisterPropChips propType={propType} setPropType={setPropType} />
+            <RegisterMoreFields deal={deal} salePrice={salePrice} setSalePrice={setSalePrice} jeonsePrice={jeonsePrice} setJeonsePrice={setJeonsePrice} deposit={deposit} setDeposit={setDeposit} monthly={monthly} setMonthly={setMonthly} areaSqm={areaSqm} setAreaSqm={setAreaSqm} floor={floor} setFloor={setFloor} totalFloors={totalFloors} setTotalFloors={setTotalFloors} direction={direction} setDirection={setDirection} moveInDate={moveInDate} setMoveInDate={setMoveInDate} parking={parking} setParking={setParking} heating={heating} setHeating={setHeating} builtYear={builtYear} setBuiltYear={setBuiltYear} extra1={extra1} setExtra1={setExtra1} ownerName={ownerName} setOwnerName={setOwnerName} relation={relation} setRelation={setRelation} ownerPhone={ownerPhone} onPhoneChange={onPhoneChange} ownerMemo={ownerMemo} setOwnerMemo={setOwnerMemo} memo={memo} setMemo={setMemo} />
+          </KeyboardAwareScrollView>
+        )}
+      </View>
     </SafeAreaView>
   );
 }
