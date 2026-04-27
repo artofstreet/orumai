@@ -1,10 +1,10 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
-import { Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
+import { Alert, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const STORAGE_KEY = 'orumai_agent_profile';
-
 export type AgentProfile = {
   officeName: string;
   agentName: string;
@@ -115,14 +115,37 @@ export default function ProfileScreen({ embedded = false, onClose }: ScreenProps
   const firstChar = profile.agentName.trim().charAt(0) || '?';
 
   // 웹 textarea는 React Native 스타일 타입과 달라 CSSProperties로 관리
-  const webMemoStyle: CSSProperties = {
-    ...(StyleSheet.flatten(styles.input) as unknown as CSSProperties),
-    height: 250,
-    overflow: 'auto',
-    resize: 'none',
-    width: '100%',
-    boxSizing: 'border-box',
-  };
+  const webMemoStyle: CSSProperties = { ...(StyleSheet.flatten(styles.input) as unknown as CSSProperties), height: 250, overflow: 'auto', resize: 'none', width: '100%', boxSizing: 'border-box' };
+
+  const scrollBody = (<>
+    {!isEdit && (<><LinearGradient colors={['#6B7280', '#D1D5DB', '#9CA3AF', '#E5E7EB', '#6B7280']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.idCard}>
+      <View style={styles.profileRow}>
+        <View style={styles.avatar}><Text style={styles.avatarTxt}>{firstChar}</Text></View>
+        <View style={styles.profileInfo}>
+          <Text style={styles.nameText}>{profile.agentName || '이름 없음'}{profile.position ? <Text style={{ fontSize: 14, fontWeight: '400', color: '#555555' }}>  {profile.position}</Text> : null}</Text>
+          <Text style={styles.subText}>{profile.officeName}</Text><Text style={styles.subText}>{profile.phone}</Text>
+        </View>
+      </View>
+      <View style={styles.divider} />
+      <View style={styles.planRow}><Text style={styles.planLabel}>요금제</Text><View style={styles.planBadge}><Text style={styles.planBadgeTxt}>{profile.plan || 'FREE'}</Text></View></View>
+    </LinearGradient><View style={styles.memoBox}><Text style={styles.memoLabel}>메모</Text><Text style={styles.memoTxt}>{profile.memo || '메모 없음'}</Text></View></>)}
+    {isEdit && (<View style={styles.card}>
+      <Text style={styles.label}>상호</Text><TextInput style={styles.input} value={profile.officeName} onChangeText={(v) => setProfile((p) => ({ ...p, officeName: v }))} placeholder="예: 오름부동산" placeholderTextColor="#94A3B8" />
+      <Text style={styles.label}>중개사 이름</Text><TextInput style={styles.input} value={profile.agentName} onChangeText={(v) => setProfile((p) => ({ ...p, agentName: v }))} placeholder="예: 홍길동" placeholderTextColor="#94A3B8" />
+      <Text style={styles.label}>직급</Text><TextInput style={styles.input} value={profile.position} onChangeText={(v) => setProfile((p) => ({ ...p, position: v }))} placeholder="예: 공인중개사" placeholderTextColor="#94A3B8" />
+      <Text style={styles.label}>전화번호</Text><TextInput style={styles.input} value={profile.phone} onChangeText={handlePhoneChange} placeholder="예: 010-1234-5678" placeholderTextColor="#94A3B8" keyboardType="phone-pad" />
+      <Text style={styles.label}>나의 요금제</Text>
+      {/* TODO-DB: 요금제는 사용자가 직접 입력하는 것이 아님 */}
+      {/* TODO-DB: Supabase 구독 테이블에서 자동으로 읽어와야 함 */}
+      {/* TODO-DB: 편집 불가(readOnly) 처리 필요 */}
+      <TextInput style={styles.input} value={profile.plan} editable={false} placeholder="예: PRO" placeholderTextColor="#94A3B8" />
+      <Text style={styles.label}>메모</Text>
+      {Platform.OS === 'web'
+        ? <textarea value={profile.memo} placeholder="메모를 입력하세요" // 웹: 자동 높이 조절 제거, 값만 저장
+          onChange={(e) => setProfile((p) => ({ ...p, memo: (e.target as HTMLTextAreaElement).value }))} style={webMemoStyle} />
+        : <TextInput style={[styles.input, memoStyles.memoTextInput]} value={profile.memo} onChangeText={(v) => setProfile((p) => ({ ...p, memo: v }))} multiline scrollEnabled placeholder="메모를 입력하세요" placeholderTextColor="#94A3B8" />}
+    </View>)}
+  </>);
 
   return (
     <SafeAreaView style={styles.safeAreaRoot}>
@@ -148,128 +171,30 @@ export default function ProfileScreen({ embedded = false, onClose }: ScreenProps
       </View>
 
       {/* 모바일: 키보드가 메모 입력란을 가리지 않도록 보정 */}
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={keyboardStyles.kavRoot}
-        keyboardVerticalOffset={0}>
-        <ScrollView
-          style={[styles.page, embedded && { flex: 1, width: '100%' }]}
-          contentContainerStyle={[styles.content, keyboardStyles.scrollContentExtra]}>
-
-        {!isEdit && (
-          <>
-            <LinearGradient colors={['#6B7280', '#D1D5DB', '#9CA3AF', '#E5E7EB', '#6B7280']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.idCard}>
-              <View style={styles.profileRow}>
-                <View style={styles.avatar}><Text style={styles.avatarTxt}>{firstChar}</Text></View>
-                <View style={styles.profileInfo}>
-                  <Text style={styles.nameText}>
-                    {profile.agentName || '이름 없음'}
-                    {profile.position ? <Text style={{ fontSize: 14, fontWeight: '400', color: '#555555' }}>  {profile.position}</Text> : null}
-                  </Text>
-                  <Text style={styles.subText}>{profile.officeName}</Text>
-                  <Text style={styles.subText}>{profile.phone}</Text>
-                </View>
-              </View>
-              <View style={styles.divider} />
-              <View style={styles.planRow}>
-                <Text style={styles.planLabel}>요금제</Text>
-                <View style={styles.planBadge}><Text style={styles.planBadgeTxt}>{profile.plan || 'FREE'}</Text></View>
-              </View>
-            </LinearGradient>
-            <View style={styles.memoBox}>
-              <Text style={styles.memoLabel}>메모</Text>
-              <Text style={styles.memoTxt}>{profile.memo || '메모 없음'}</Text>
-            </View>
-          </>
-        )}
-
-        {isEdit && (
-          <View style={styles.card}>
-            <Text style={styles.label}>상호</Text>
-            <TextInput style={styles.input} value={profile.officeName} onChangeText={(v) => setProfile((p) => ({ ...p, officeName: v }))} placeholder="예: 오름부동산" placeholderTextColor="#94A3B8" />
-            <Text style={styles.label}>중개사 이름</Text>
-            <TextInput style={styles.input} value={profile.agentName} onChangeText={(v) => setProfile((p) => ({ ...p, agentName: v }))} placeholder="예: 홍길동" placeholderTextColor="#94A3B8" />
-            <Text style={styles.label}>직급</Text>
-            <TextInput style={styles.input} value={profile.position} onChangeText={(v) => setProfile((p) => ({ ...p, position: v }))} placeholder="예: 공인중개사" placeholderTextColor="#94A3B8" />
-            <Text style={styles.label}>전화번호</Text>
-            <TextInput style={styles.input} value={profile.phone} onChangeText={handlePhoneChange} placeholder="예: 010-1234-5678" placeholderTextColor="#94A3B8" keyboardType="phone-pad" />
-            <Text style={styles.label}>나의 요금제</Text>
-            {/* TODO-DB: 요금제는 사용자가 직접 입력하는 것이 아님 */}
-            {/* TODO-DB: Supabase 구독 테이블에서 자동으로 읽어와야 함 */}
-            {/* TODO-DB: 편집 불가(readOnly) 처리 필요 */}
-            <TextInput style={styles.input} value={profile.plan} editable={false} placeholder="예: PRO" placeholderTextColor="#94A3B8" />
-            <Text style={styles.label}>메모</Text>
-            {Platform.OS === 'web' ? (
-              <textarea
-                value={profile.memo}
-                placeholder="메모를 입력하세요"
-                // 웹: 자동 높이 조절 제거, 값만 저장
-                onChange={(e) => setProfile((p) => ({ ...p, memo: (e.target as HTMLTextAreaElement).value }))}
-                style={webMemoStyle}
-              />
-            ) : (
-              <TextInput
-                style={[styles.input, memoStyles.memoTextInput]}
-                value={profile.memo}
-                onChangeText={(v) => setProfile((p) => ({ ...p, memo: v }))}
-                multiline
-                scrollEnabled
-                placeholder="메모를 입력하세요"
-                placeholderTextColor="#94A3B8"
-              />
-            )}
-          </View>
-        )}
-        </ScrollView>
-      </KeyboardAvoidingView>
+      <View style={keyboardStyles.kavRoot}>
+        {Platform.OS === 'web'
+          ? <ScrollView style={[styles.page, embedded && { flex: 1, width: '100%' }]} contentContainerStyle={[styles.content, keyboardStyles.scrollContentExtra]}>{scrollBody}</ScrollView>
+          : <KeyboardAwareScrollView bottomOffset={50} style={[styles.page, embedded && { flex: 1, width: '100%' }]} contentContainerStyle={[styles.content, keyboardStyles.scrollContentExtra]}>{scrollBody}</KeyboardAwareScrollView>}
+      </View>
     </SafeAreaView>
   );
 }
 
 const SILVER = '#9CA3AF';
 
-const memoStyles = StyleSheet.create({
-  // 앱(네이티브) 메모 입력칸은 높이 고정 + 내부 스크롤 사용
-  memoTextInput: { height: 250, maxHeight: 250, textAlignVertical: 'top' as const },
-});
-
-const keyboardStyles = StyleSheet.create({
-  kavRoot: { flex: 1 },
-  // 메모박스 아래 여백 확보(키보드에 가려지는 것 방지)
-  scrollContentExtra: { paddingBottom: 200 },
-});
-
+const memoStyles = StyleSheet.create({ memoTextInput: { height: 250, maxHeight: 250, textAlignVertical: 'top' as const } });
+const keyboardStyles = StyleSheet.create({ kavRoot: { flex: 1 }, scrollContentExtra: { paddingBottom: 200 } });
 const styles = StyleSheet.create({
-  // 루트 SafeArea: 인셋 영역까지 본문과 동일 배경 (#F0F4FF)
-  safeAreaRoot: { flex: 1, backgroundColor: '#F0F4FF' },
-  page: { flex: 1, backgroundColor: '#F0F4FF' },
-  content: { padding: 24, gap: 16, maxWidth: 480, alignSelf: 'center', width: '100%' },
+  safeAreaRoot: { flex: 1, backgroundColor: '#F0F4FF' }, page: { flex: 1, backgroundColor: '#F0F4FF' }, content: { padding: 24, gap: 16, maxWidth: 480, alignSelf: 'center', width: '100%' },
   headerBar: { paddingVertical: 16, paddingHorizontal: 20, borderBottomWidth: 1, borderBottomColor: '#ddd', backgroundColor: '#fff', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', height: 64 },
-  title: { fontSize: 20, fontWeight: '800', color: '#0F172A', flex: 1, marginLeft: 4 },
-  headerRight: { flexDirection: 'row', alignItems: 'center', gap: 16 },
-  editBtn: { borderWidth: 1, borderColor: '#D8DCE6', borderRadius: 8, paddingHorizontal: 14, paddingVertical: 6 },
-  // 닫기(X): 터치 영역 확보
-  closeBtn: { minWidth: 36, alignItems: 'center', justifyContent: 'center' },
-  closeBtnTxt: { fontSize: 22, color: '#666', paddingHorizontal: 4 },
-  editBtnTxt: { fontSize: 14, color: '#1E293B', fontWeight: '600' },
-  doneBtn: { backgroundColor: SILVER, borderRadius: 8, paddingHorizontal: 16, paddingVertical: 7 },
-  doneBtnTxt: { color: '#fff', fontWeight: '800', fontSize: 14 },
-  idCard: { borderRadius: 16, padding: 28, gap: 20, borderWidth: 1.5, borderColor: '#E5E7EB' },
-  profileRow: { flexDirection: 'row', alignItems: 'center', gap: 20 },
-  avatar: { width: 72, height: 72, borderRadius: 999, borderWidth: 2, borderColor: 'rgba(255,255,255,0.9)', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.3)' },
-  avatarTxt: { color: '#fff', fontSize: 28, fontWeight: '800' },
-  profileInfo: { flex: 1, gap: 5 },
-  nameText: { fontSize: 22, fontWeight: '800', color: '#1A1A1A' },
-  subText: { fontSize: 15, color: '#444444' },
-  divider: { borderTopWidth: 0.5, borderTopColor: 'rgba(0,0,0,0.15)' },
-  planRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  planLabel: { fontSize: 14, color: '#444444' },
-  planBadge: { backgroundColor: '#FFC107', borderRadius: 20, paddingHorizontal: 14, paddingVertical: 4 },
-  planBadgeTxt: { fontSize: 13, fontWeight: '700', color: '#7B4F00' },
-  memoBox: { backgroundColor: '#F8FAFF', borderRadius: 12, borderLeftWidth: 4, borderLeftColor: SILVER, padding: 20, gap: 10 },
-  memoLabel: { fontSize: 13, fontWeight: '700', color: '#888' },
-  memoTxt: { fontSize: 15, color: '#222', lineHeight: 24 },
-  card: { backgroundColor: '#F8FAFF', borderRadius: 16, padding: 20, gap: 8, borderWidth: 1, borderColor: '#E2E8F0' },
-  label: { fontSize: 12, color: '#64748B', fontWeight: '600', marginTop: 8 },
+  title: { fontSize: 20, fontWeight: '800', color: '#0F172A', flex: 1, marginLeft: 4 }, headerRight: { flexDirection: 'row', alignItems: 'center', gap: 16 },
+  editBtn: { borderWidth: 1, borderColor: '#D8DCE6', borderRadius: 8, paddingHorizontal: 14, paddingVertical: 6 }, closeBtn: { minWidth: 36, alignItems: 'center', justifyContent: 'center' }, closeBtnTxt: { fontSize: 22, color: '#666', paddingHorizontal: 4 },
+  editBtnTxt: { fontSize: 14, color: '#1E293B', fontWeight: '600' }, doneBtn: { backgroundColor: SILVER, borderRadius: 8, paddingHorizontal: 16, paddingVertical: 7 }, doneBtnTxt: { color: '#fff', fontWeight: '800', fontSize: 14 },
+  idCard: { borderRadius: 16, padding: 28, gap: 20, borderWidth: 1.5, borderColor: '#E5E7EB' }, profileRow: { flexDirection: 'row', alignItems: 'center', gap: 20 },
+  avatar: { width: 72, height: 72, borderRadius: 999, borderWidth: 2, borderColor: 'rgba(255,255,255,0.9)', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.3)' }, avatarTxt: { color: '#fff', fontSize: 28, fontWeight: '800' },
+  profileInfo: { flex: 1, gap: 5 }, nameText: { fontSize: 22, fontWeight: '800', color: '#1A1A1A' }, subText: { fontSize: 15, color: '#444444' }, divider: { borderTopWidth: 0.5, borderTopColor: 'rgba(0,0,0,0.15)' },
+  planRow: { flexDirection: 'row', alignItems: 'center', gap: 10 }, planLabel: { fontSize: 14, color: '#444444' }, planBadge: { backgroundColor: '#FFC107', borderRadius: 20, paddingHorizontal: 14, paddingVertical: 4 }, planBadgeTxt: { fontSize: 13, fontWeight: '700', color: '#7B4F00' },
+  memoBox: { backgroundColor: '#F8FAFF', borderRadius: 12, borderLeftWidth: 4, borderLeftColor: SILVER, padding: 20, gap: 10 }, memoLabel: { fontSize: 13, fontWeight: '700', color: '#888' }, memoTxt: { fontSize: 15, color: '#222', lineHeight: 24 },
+  card: { backgroundColor: '#F8FAFF', borderRadius: 16, padding: 20, gap: 8, borderWidth: 1, borderColor: '#E2E8F0' }, label: { fontSize: 12, color: '#64748B', fontWeight: '600', marginTop: 8 },
   input: { borderWidth: 1, borderColor: '#E2E8F0', borderRadius: 8, padding: 10, fontSize: 15, color: '#0F172A', backgroundColor: '#F8FAFF' },
 });
