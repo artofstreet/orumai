@@ -4,7 +4,7 @@
  * TODO-AUTH: 작성자 user_id 바인딩
  */
 import { useRouter } from 'expo-router';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { Alert, Keyboard, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, type GestureResponderEvent } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -121,38 +121,21 @@ export default function CustomerRegisterScreen({ embedded = false, initialData }
           <textarea
             value={memo}
             onChange={(e) => setMemo((e.target as HTMLTextAreaElement).value)}
-            onInput={(e) => {
-              const el = e.target as HTMLTextAreaElement;
-              el.style.height = 'auto';
-              el.style.height = el.scrollHeight + 'px';
-            }}
             placeholder="고객 메모 (녹음 내용이 여기에 입력됩니다)"
             rows={3}
             maxLength={300}
-            style={{
-              width: '100%',
-              border: '1px solid #D8DCE6',
-              borderRadius: 8,
-              padding: '10px 12px',
-              fontSize: 15,
-              color: '#18202E',
-              backgroundColor: '#FFFFFF',
-              resize: 'none',
-              overflow: 'hidden',
-              fontFamily: 'inherit',
-              boxSizing: 'border-box',
-              minHeight: 80,
-              lineHeight: '1.5',
-            } as object}
+            // 웹 textarea는 React Native StyleSheet 타입과 달라서 CSSProperties로 캐스팅
+            style={customerRegisterStyles.memoTextarea as unknown as CSSProperties}
           />
         ) : (
           <TextInput
-            style={[styles.input, { minHeight: 80, textAlignVertical: 'top' }]}
+            style={[styles.input, customerRegisterStyles.memoTextInput]}
             value={memo}
             onChangeText={setMemo}
             placeholder="고객 메모 (녹음 내용이 여기에 입력됩니다)"
             placeholderTextColor="#9AA5B4"
             multiline
+            scrollEnabled
           />
         )}
       </View>
@@ -165,4 +148,30 @@ export default function CustomerRegisterScreen({ embedded = false, initialData }
 const safeAreaStyles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#F0F4FF' },
   headerBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 16, paddingHorizontal: 20, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#ddd', height: 64 },
+});
+
+const customerRegisterStyles = StyleSheet.create({
+  // 웹 메모 textarea 스타일
+  memoTextarea: {
+    width: '100%',
+    border: '1px solid #D8DCE6',
+    borderRadius: 8,
+    padding: '10px 12px',
+    fontSize: 15,
+    color: '#18202E',
+    backgroundColor: '#FFFFFF',
+    resize: 'none',
+    overflow: 'auto',
+    fontFamily: 'inherit',
+    boxSizing: 'border-box',
+    height: 250,
+    lineHeight: '1.5',
+  } as unknown as object,
+
+  // 앱(네이티브) 메모 TextInput 스타일
+  memoTextInput: {
+    height: 250,
+    maxHeight: 250,
+    textAlignVertical: 'top',
+  },
 });

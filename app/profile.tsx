@@ -1,5 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { Alert, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -114,7 +114,15 @@ export default function ProfileScreen({ embedded = false, onClose }: ScreenProps
 
   const firstChar = profile.agentName.trim().charAt(0) || '?';
 
-  const webMemoStyle = { ...StyleSheet.flatten(styles.input), minHeight: 80, overflow: 'hidden' as const, resize: 'none' as const, width: '100%' as const, boxSizing: 'border-box' as const };
+  // 웹 textarea는 React Native 스타일 타입과 달라 CSSProperties로 관리
+  const webMemoStyle: CSSProperties = {
+    ...(StyleSheet.flatten(styles.input) as unknown as CSSProperties),
+    height: 250,
+    overflow: 'auto',
+    resize: 'none',
+    width: '100%',
+    boxSizing: 'border-box',
+  };
 
   return (
     <SafeAreaView style={styles.safeAreaRoot}>
@@ -188,16 +196,20 @@ export default function ProfileScreen({ embedded = false, onClose }: ScreenProps
               <textarea
                 value={profile.memo}
                 placeholder="메모를 입력하세요"
-                onChange={(e) => {
-                  const el = e.target as HTMLTextAreaElement;
-                  el.style.height = 'auto';
-                  el.style.height = `${el.scrollHeight}px`;
-                  setProfile((p) => ({ ...p, memo: el.value }));
-                }}
+                // 웹: 자동 높이 조절 제거, 값만 저장
+                onChange={(e) => setProfile((p) => ({ ...p, memo: (e.target as HTMLTextAreaElement).value }))}
                 style={webMemoStyle}
               />
             ) : (
-              <TextInput style={[styles.input, { minHeight: 80, textAlignVertical: 'top' }]} value={profile.memo} onChangeText={(v) => setProfile((p) => ({ ...p, memo: v }))} multiline scrollEnabled={false} placeholder="메모를 입력하세요" placeholderTextColor="#94A3B8" />
+              <TextInput
+                style={[styles.input, memoStyles.memoTextInput]}
+                value={profile.memo}
+                onChangeText={(v) => setProfile((p) => ({ ...p, memo: v }))}
+                multiline
+                scrollEnabled
+                placeholder="메모를 입력하세요"
+                placeholderTextColor="#94A3B8"
+              />
             )}
           </View>
         )}
@@ -207,6 +219,11 @@ export default function ProfileScreen({ embedded = false, onClose }: ScreenProps
 }
 
 const SILVER = '#9CA3AF';
+
+const memoStyles = StyleSheet.create({
+  // 앱(네이티브) 메모 입력칸은 높이 고정 + 내부 스크롤 사용
+  memoTextInput: { height: 250, maxHeight: 250, textAlignVertical: 'top' as const },
+});
 
 const styles = StyleSheet.create({
   // 루트 SafeArea: 인셋 영역까지 본문과 동일 배경 (#F0F4FF)
