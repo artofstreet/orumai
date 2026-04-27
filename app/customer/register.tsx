@@ -6,10 +6,9 @@
 import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
-import { Alert, Keyboard, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, type GestureResponderEvent } from 'react-native';
+import { Alert, Keyboard, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { detailStyles } from '@/components/property/detailStyles';
 import { formatPhoneHyphen } from '@/components/property/registerMocks';
 import { registerStyles as styles } from '@/components/property/registerStyles';
 import { useCustomersContext } from '@/contexts/CustomersContext';
@@ -75,8 +74,17 @@ export default function CustomerRegisterScreen({ embedded = false, initialData }
       <View style={safeAreaStyles.headerBar}>
         <Text style={styles.title}>{isEdit ? '고객 편집' : '고객 등록'}</Text>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
-          <Pressable style={({ pressed }) => [detailStyles.headerBtn, { paddingHorizontal: 20, paddingVertical: 8 }, pressed ? { opacity: 0.6 } : null]} onPressIn={() => {}} onTouchStart={(e: GestureResponderEvent) => e.preventDefault()} onPress={onSave}>
-            <Text style={[detailStyles.headerBtnText, { fontSize: 15 }]}>저장</Text>
+          <Pressable style={({ pressed }) => [{
+            borderWidth: 1,
+            borderColor: '#D8DCE6',
+            borderRadius: 6,
+            height: 36,
+            minWidth: 68,
+            paddingHorizontal: 16,
+            alignItems: 'center' as const,
+            justifyContent: 'center' as const,
+          }, pressed ? { opacity: 0.6 } : null]} onPress={onSave}>
+            <Text allowFontScaling={false} numberOfLines={1} style={{ color: '#18202E', fontSize: 15, lineHeight: 18, fontWeight: '600', textAlign: 'center' as const }}>저장</Text>
           </Pressable>
           <TouchableOpacity activeOpacity={0.6} onPress={() => { clearEditData(); closeRegisterPanel(); }}>
             <Text style={{ fontSize: 22, color: '#666', paddingHorizontal: 4 }}>✕</Text>
