@@ -86,8 +86,8 @@ export default function CustomerRegisterScreen({ embedded = false, initialData }
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={keyboardStyles.kavRoot}
-        // 필요 시 슬라이드 패널 헤더 높이만큼 조정 가능
-        keyboardVerticalOffset={0}>
+        // iOS 슬라이드 패널 헤더 높이 보정값
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}>
         <ScrollView
           style={[styles.page, embedded ? { flex: 1, width: '100%' } : { maxWidth: 480, alignSelf: 'center', width: '100%' }]}
           contentContainerStyle={[styles.scrollContent, keyboardStyles.scrollContentExtra]}
