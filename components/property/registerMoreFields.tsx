@@ -44,6 +44,7 @@ export function formatFloorInput(raw: string): string {
 
 const MEMO_LINE_HEIGHT = 24;
 const MEMO_BASE_HEIGHT = 80;
+const MEMO_FIXED_HEIGHT = 250;
 
 /** 줄바꿈(\\n) 개수 기준 멀티라인 메모 높이(네이티브) */
 function memoHeightFromNewlines(text: string): number {
@@ -59,6 +60,11 @@ const webMemoTextareaStyle = {
   width: '100%' as const,
   boxSizing: 'border-box' as const,
 };
+
+const localStyles = StyleSheet.create({
+  // 네이티브 메모 입력: 높이 고정 + 내부 스크롤 사용
+  memoNativeInput: { height: MEMO_FIXED_HEIGHT, maxHeight: MEMO_FIXED_HEIGHT, textAlignVertical: 'top' as const },
+});
 
 type MemoFieldProps = {
   value: string;
@@ -86,11 +92,12 @@ function RegisterMemoField({ value, onChangeText, placeholder, scrollEnabled, ma
   }
   return (
     <TextInput
-      style={[styles.input, { height: memoHeightFromNewlines(value), minHeight: MEMO_BASE_HEIGHT, textAlignVertical: 'top' }]}
+      style={[styles.input, localStyles.memoNativeInput]}
       value={value}
       onChangeText={onChangeText}
       multiline
-      scrollEnabled={scrollEnabled}
+      // props 값과 무관하게 항상 스크롤 가능하도록 고정
+      scrollEnabled
       maxLength={maxLength}
       placeholder={placeholder}
       placeholderTextColor="#9AA5B4"
