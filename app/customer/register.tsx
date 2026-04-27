@@ -5,7 +5,7 @@
  */
 import { useRouter } from 'expo-router';
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
-import { Alert, Keyboard, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, type GestureResponderEvent } from 'react-native';
+import { Alert, Keyboard, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, type GestureResponderEvent } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { detailStyles } from '@/components/property/detailStyles';
@@ -82,10 +82,16 @@ export default function CustomerRegisterScreen({ embedded = false, initialData }
           </TouchableOpacity>
         </View>
       </View>
-      <ScrollView
-        style={[styles.page, embedded ? { flex: 1, width: '100%' } : { maxWidth: 480, alignSelf: 'center', width: '100%' }]}
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled">
+      {/* 모바일: 키보드가 메모 입력란을 가리지 않도록 보정 */}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={keyboardStyles.kavRoot}
+        // 필요 시 슬라이드 패널 헤더 높이만큼 조정 가능
+        keyboardVerticalOffset={0}>
+        <ScrollView
+          style={[styles.page, embedded ? { flex: 1, width: '100%' } : { maxWidth: 480, alignSelf: 'center', width: '100%' }]}
+          contentContainerStyle={[styles.scrollContent, keyboardStyles.scrollContentExtra]}
+          keyboardShouldPersistTaps="handled">
       {!embedded && (
         <TouchableOpacity style={styles.backRow} onPress={() => router.back()}>
           <Text style={styles.backTxt}>← 뒤로</Text>
@@ -139,7 +145,8 @@ export default function CustomerRegisterScreen({ embedded = false, initialData }
           />
         )}
       </View>
-      </ScrollView>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -148,6 +155,12 @@ export default function CustomerRegisterScreen({ embedded = false, initialData }
 const safeAreaStyles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#F0F4FF' },
   headerBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 16, paddingHorizontal: 20, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#ddd', height: 64 },
+});
+
+const keyboardStyles = StyleSheet.create({
+  kavRoot: { flex: 1 },
+  // 메모박스 아래 여백 확보(키보드에 가려지는 것 방지)
+  scrollContentExtra: { paddingBottom: 200 },
 });
 
 const customerRegisterStyles = StyleSheet.create({
