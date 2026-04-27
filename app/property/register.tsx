@@ -139,10 +139,6 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
   };
   return (
     <SafeAreaView style={safeAreaStyles.root}>
-      {/* 키보드가 입력란을 가리지 않도록 플랫폼별 동작 */}
-      <FormWrapper
-        {...(Platform.OS === 'web' ? {} : { behavior: Platform.OS === 'ios' ? 'padding' : 'height' })}
-        style={safeAreaStyles.keyboardAvoiding}>
       <View style={{
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -173,10 +169,15 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
           </TouchableOpacity>
         </View>
       </View>
-      <ScrollView
-        style={[styles.page, embedded ? { flex: 1, width: '100%' } : { maxWidth: 480, alignSelf: 'center', width: '100%' }]}
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled">
+      {/* 키보드가 입력란을 가리지 않도록 플랫폼별 동작 */}
+      <FormWrapper
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
+        style={safeAreaStyles.keyboardAvoiding}>
+        <ScrollView
+          style={[styles.page, embedded ? { flex: 1, width: '100%' } : { maxWidth: 480, alignSelf: 'center', width: '100%' }]}
+          contentContainerStyle={[styles.scrollContent, { paddingBottom: 200 }]}
+          keyboardShouldPersistTaps="handled">
       {!embedded && (
         <TouchableOpacity style={styles.backRow} onPress={() => router.back()}>
           <Text style={styles.backTxt}>← 뒤로</Text>
@@ -225,7 +226,7 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
       <RegisterDealChips deal={deal} setDeal={setDeal} />
       <RegisterPropChips propType={propType} setPropType={setPropType} />
       <RegisterMoreFields deal={deal} salePrice={salePrice} setSalePrice={setSalePrice} jeonsePrice={jeonsePrice} setJeonsePrice={setJeonsePrice} deposit={deposit} setDeposit={setDeposit} monthly={monthly} setMonthly={setMonthly} areaSqm={areaSqm} setAreaSqm={setAreaSqm} floor={floor} setFloor={setFloor} totalFloors={totalFloors} setTotalFloors={setTotalFloors} direction={direction} setDirection={setDirection} moveInDate={moveInDate} setMoveInDate={setMoveInDate} parking={parking} setParking={setParking} heating={heating} setHeating={setHeating} builtYear={builtYear} setBuiltYear={setBuiltYear} extra1={extra1} setExtra1={setExtra1} ownerName={ownerName} setOwnerName={setOwnerName} relation={relation} setRelation={setRelation} ownerPhone={ownerPhone} onPhoneChange={onPhoneChange} ownerMemo={ownerMemo} setOwnerMemo={setOwnerMemo} memo={memo} setMemo={setMemo} />
-      </ScrollView>
+        </ScrollView>
       </FormWrapper>
     </SafeAreaView>
   );
