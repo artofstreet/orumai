@@ -85,6 +85,32 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
   const [ji, setJi] = useState<string>('');
   useEffect(() => () => { clearTimeout(blurTimerRef.current ?? undefined); }, []);
   const { results: suggestions, search: searchAddress, clear: clearSuggestions } = useKakaoAddress();
+  const fetchBuildingInfo = async (code: string, bunVal: string, jiVal: string) => {
+    const sigunguCd = code.slice(0, 5);
+    const bjdongCd = code.slice(5, 10);
+    try {
+      const res = await fetch(
+        (process.env.EXPO_PUBLIC_SUPABASE_URL ?? '') + '/functions/v1/building-info',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sigunguCd, bjdongCd, bun: bunVal, ji: jiVal }),
+        }
+      );
+      const json = await res.json();
+      const buildings = json.buildings ?? [];
+      if (buildings.length === 0) return;
+      const b = buildings.reduce((max: Record<string, unknown>, cur: Record<string, unknown>) =>
+        (Number(cur.grndFlrCnt) || 0) > (Number(max.grndFlrCnt) || 0) ? cur : max
+      , buildings[0] as Record<string, unknown>);
+      if (b.buildingName) setBuildingName(b.buildingName);
+      if (b.totalArea) setSupplyAreaSqm(String(Math.round(Number(b.totalArea))));
+      if (b.grndFlrCnt) setTotalFloors(String(b.grndFlrCnt));
+      if (b.useAprDay) setBuiltYear(b.useAprDay.slice(0, 4));
+    } catch {
+      // 국토부 API 실패 시 무시 (수동 입력 가능)
+    }
+  };
   const onPhoneChange = (t: string) => setOwnerPhone(formatPhoneHyphen(t));
   const onSave = async () => {
     const addrTrim = address.trim();
@@ -216,6 +242,7 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
                 setJi(s.ji);
                 setShowSuggest(false);
                 clearSuggestions();
+                fetchBuildingInfo(s.bCode, s.bun, s.ji);
               }}>
                 <Text style={styles.suggestTxt}>{s.addressName}</Text>
               </TouchableOpacity>
@@ -272,6 +299,7 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
                       setJi(s.ji);
                       setShowSuggest(false);
                       clearSuggestions();
+                      fetchBuildingInfo(s.bCode, s.bun, s.ji);
                     }}>
                       <Text style={styles.suggestTxt}>{s.addressName}</Text>
                     </TouchableOpacity>
