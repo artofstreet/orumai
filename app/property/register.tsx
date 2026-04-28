@@ -164,8 +164,11 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
           }, pressed ? { opacity: 0.6 } : null]} onPress={onSave}>
             <Text allowFontScaling={false} numberOfLines={1} style={{ color: '#18202E', fontSize: 15, lineHeight: 18, fontWeight: '600', textAlign: 'center' as const }}>저장</Text>
           </Pressable>
-          <TouchableOpacity activeOpacity={0.6} onPress={() => { clearEditData(); closeRegisterPanel(); }}>
-            <Text style={{ fontSize: 22, color: '#666', paddingHorizontal: 4 }}>✕</Text>
+          <TouchableOpacity
+            hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
+            activeOpacity={0.5}
+            onPress={() => { clearEditData(); closeRegisterPanel(); }}>
+            <Text style={{ fontSize: 22, color: '#666', paddingHorizontal: 12 }}>✕</Text>
           </TouchableOpacity>
         </View>
       </View>
