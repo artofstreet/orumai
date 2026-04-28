@@ -1,9 +1,8 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
-import { Alert, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
 const STORAGE_KEY = 'orumai_agent_profile';
 export type AgentProfile = {
   officeName: string;
@@ -163,9 +162,9 @@ export default function ProfileScreen({ embedded = false, onClose }: ScreenProps
             )}
             {/* embedded 패널: 오른쪽 닫기 — 부모 onClose로 슬라이드 패널 등 처리 */}
             {embedded === true && (
-              <Pressable onPress={handleClose} style={styles.closeBtn} accessibilityLabel="닫기">
+              <TouchableOpacity hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }} activeOpacity={0.5} onPress={handleClose} style={styles.closeBtn} accessibilityLabel="닫기">
                 <Text style={styles.closeBtnTxt}>✕</Text>
-              </Pressable>
+              </TouchableOpacity>
             )}
           </View>
       </View>
@@ -188,7 +187,7 @@ const styles = StyleSheet.create({
   safeAreaRoot: { flex: 1, backgroundColor: '#F0F4FF' }, page: { flex: 1, backgroundColor: '#F0F4FF' }, content: { padding: 24, gap: 16, maxWidth: 480, alignSelf: 'center', width: '100%' },
   headerBar: { paddingVertical: 16, paddingHorizontal: 20, borderBottomWidth: 1, borderBottomColor: '#ddd', backgroundColor: '#fff', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', height: 64 },
   title: { fontSize: 20, fontWeight: '800', color: '#0F172A', flex: 1, marginLeft: 4 }, headerRight: { flexDirection: 'row', alignItems: 'center', gap: 16 },
-  editBtn: { borderWidth: 1, borderColor: '#D8DCE6', borderRadius: 8, paddingHorizontal: 14, paddingVertical: 6 }, closeBtn: { minWidth: 36, alignItems: 'center', justifyContent: 'center' }, closeBtnTxt: { fontSize: 22, color: '#666', paddingHorizontal: 4 },
+  editBtn: { borderWidth: 1, borderColor: '#D8DCE6', borderRadius: 8, paddingHorizontal: 14, paddingVertical: 6 }, closeBtn: { minWidth: 36, alignItems: 'center', justifyContent: 'center' }, closeBtnTxt: { fontSize: 22, color: '#666', paddingHorizontal: 12 },
   editBtnTxt: { fontSize: 14, color: '#1E293B', fontWeight: '600' }, doneBtn: { backgroundColor: SILVER, borderRadius: 8, paddingHorizontal: 16, paddingVertical: 7 }, doneBtnTxt: { color: '#fff', fontWeight: '800', fontSize: 14 },
   idCard: { borderRadius: 16, padding: 28, gap: 20, borderWidth: 1.5, borderColor: '#E5E7EB' }, profileRow: { flexDirection: 'row', alignItems: 'center', gap: 20 },
   avatar: { width: 72, height: 72, borderRadius: 999, borderWidth: 2, borderColor: 'rgba(255,255,255,0.9)', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255,255,255,0.3)' }, avatarTxt: { color: '#fff', fontSize: 28, fontWeight: '800' },
