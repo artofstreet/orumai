@@ -9,7 +9,9 @@ import type { Customer, Property } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { FlatList, Platform, Pressable, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+
+const isWeb = Platform.OS === 'web';
 
 const safeTime = (value: string): number => {
   // 잘못된 날짜는 0으로 처리하여 안전 정렬
@@ -78,7 +80,7 @@ export default function ListScreen() {
         <View style={[styles.header, { paddingHorizontal: layoutPadding }]}>
           <View style={styles.titleRow}>
             <Pressable style={styles.backButton} onPress={() => router.replace('/')}>
-              <Ionicons name="arrow-back" size={22} color={primary} />
+              <Ionicons name="arrow-back" size={isWeb ? 26 : 22} color={primary} />
             </Pressable>
             <Text style={styles.titleText}>
               {tab === 'properties' ? `전체 매물 ${allProperties.length}건` : `전체 고객 ${allCustomers.length}건`}
@@ -162,20 +164,20 @@ const styles = StyleSheet.create({
   // 헤더(뒤로가기/제목/인쇄)를 좌우로 벌려 정렬
   titleRow:               { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
   backButton:             { paddingVertical: 4, paddingHorizontal: 2 },
-  titleText:              { fontSize: 16, fontWeight: '800', color: '#0F172A' },
+  titleText:              { fontSize: isWeb ? 19 : 16, fontWeight: '800', color: '#0F172A' },
   tabRow:                 { flexDirection: 'row', gap: 18, borderBottomWidth: 1, borderBottomColor: border },
-  tabButton:              { paddingVertical: 10, paddingHorizontal: 2, borderBottomWidth: 2, borderBottomColor: 'transparent' },
+  tabButton:              { paddingVertical: isWeb ? 14 : 10, paddingHorizontal: 2, borderBottomWidth: 2, borderBottomColor: 'transparent' },
   tabButtonActive:        { borderBottomColor: primary },
-  tabText:                { color: '#94A3B8', fontSize: 14, fontWeight: '500' },
+  tabText:                { color: '#94A3B8', fontSize: isWeb ? 17 : 14, fontWeight: '500' },
   tabTextActive:          { color: '#1D4ED8', fontWeight: '700' },
   listFlex:               { flex: 1 },
   listContent:            { alignSelf: 'center', width: '100%', paddingVertical: 16, paddingBottom: 8, gap: 8 },
   gridRow:                { gap: 8 },
-  emptyText:              { paddingTop: 24, textAlign: 'center', color: text2, fontSize: 14, fontWeight: '700' },
+  emptyText:              { paddingTop: 24, textAlign: 'center', color: text2, fontSize: isWeb ? 16 : 14, fontWeight: '700' },
   pagination:             { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 16, paddingVertical: 16 },
   pageButton:             { backgroundColor: primary, borderRadius: 8, paddingHorizontal: 20, paddingVertical: 8 },
   pageButtonDisabled:     { backgroundColor: '#E2E8F0' },
-  pageButtonText:         { color: '#FFFFFF', fontSize: 14, fontWeight: '700' },
+  pageButtonText:         { color: '#FFFFFF', fontSize: isWeb ? 16 : 14, fontWeight: '700' },
   pageButtonTextDisabled: { color: '#94A3B8' },
-  pageInfo:               { fontSize: 14, fontWeight: '600', color: '#475569', minWidth: 60, textAlign: 'center' },
+  pageInfo:               { fontSize: isWeb ? 16 : 14, fontWeight: '600', color: '#475569', minWidth: 60, textAlign: 'center' },
 });

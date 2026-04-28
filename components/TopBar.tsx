@@ -11,6 +11,8 @@ import { getHorizontalPadding } from '@/constants/theme';
 // TODO-AUTH: 로그인·역할에 따라 헤더 액션 노출 제어 시 이 컴포넌트에서 분기
 // TODO-STORAGE: 마지막 선택 탭 등 로컬 상태 연동 시 props 확장
 
+const isWeb = Platform.OS === 'web';
+
 export type TopBarProps = {
   onLogoPress?:         () => void;
   onRegisterPress?:     () => void;
@@ -39,7 +41,7 @@ export default function TopBar({
   const showPrint  = width >= 768;
   const compact    = width < 400;
   const showCenter = width >= 600;
-  const profileIconSize = width >= 768 ? 24 : 28;
+  const profileIconSize = isWeb ? 30 : (width >= 768 ? 24 : 28);
 
   const [isAddHovered,     setIsAddHovered]     = useState<boolean>(false);
   const [isPrintHovered,   setIsPrintHovered]   = useState<boolean>(false);
@@ -76,7 +78,7 @@ export default function TopBar({
         accessibilityRole="link"
         accessibilityLabel="홈으로">
         <View style={styles.logoBox}>
-          <Svg width={24} height={18} viewBox="0 0 24 18">
+          <Svg width={isWeb ? 28 : 24} height={isWeb ? 22 : 18} viewBox="0 0 24 18">
             <Polyline
               points="2,14 6,8 9,11 15,3 19,14"
               fill="none"
@@ -133,7 +135,7 @@ export default function TopBar({
             accessibilityLabel="전체 인쇄"
             onHoverIn={() => { if (Platform.OS === 'web') setIsPrintHovered(true); }}
             onHoverOut={() => { if (Platform.OS === 'web') setIsPrintHovered(false); }}>
-            <Ionicons name="print-outline" size={22} color="#FFFFFF" />
+            <Ionicons name="print-outline" size={isWeb ? 26 : 22} color="#FFFFFF" />
           </Pressable>
         )}
 
@@ -145,7 +147,7 @@ export default function TopBar({
           onHoverIn={() => { if (Platform.OS === 'web') setIsBellHovered(true); }}
           onHoverOut={() => { if (Platform.OS === 'web') setIsBellHovered(false); }}>
           <View style={styles.bellIconWrap}>
-            <Ionicons name="notifications" size={22} color="#FFC107" />
+            <Ionicons name="notifications" size={isWeb ? 26 : 22} color="#FFC107" />
             {notifCount > 0 && (
               <View style={styles.bellBadge}>
                 <Text style={styles.bellBadgeTxt}>{notifCount > 99 ? '99+' : notifCount}</Text>
@@ -169,22 +171,22 @@ export default function TopBar({
 }
 
 const styles = StyleSheet.create({
-  container:      { minHeight: 64, backgroundColor: Colors.topbar, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  container:      { minHeight: isWeb ? 76 : 64, backgroundColor: Colors.topbar, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   left:           { flexDirection: 'row', alignItems: 'center', flexShrink: 1, minWidth: 0 },
-  logoBox:        { width: 30, height: 30, borderRadius: 8, backgroundColor: Colors.logoBg, alignItems: 'center', justifyContent: 'center' },
-  logoText:       { color: '#FFFFFF', fontSize: 20, fontWeight: '800', marginLeft: 8, flexShrink: 0 },
+  logoBox:        { width: isWeb ? 36 : 30, height: isWeb ? 36 : 30, borderRadius: isWeb ? 10 : 8, backgroundColor: Colors.logoBg, alignItems: 'center', justifyContent: 'center' },
+  logoText:       { color: '#FFFFFF', fontSize: isWeb ? 23 : 20, fontWeight: '800', marginLeft: 8, flexShrink: 0 },
   center:         { flexDirection: 'row', alignItems: 'center', gap: 18, position: 'absolute', left: 0, right: 0, justifyContent: 'center', pointerEvents: 'none' },
   countBox:       { flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 4, paddingHorizontal: 8, borderRadius: 6 },
   countPressable: { pointerEvents: 'auto' },
-  countLabel:     { fontSize: 16, color: 'rgba(255,255,255,0.7)' },
-  countNum:       { fontSize: 19, fontWeight: '800', color: '#FFFFFF' },
+  countLabel:     { fontSize: isWeb ? 18 : 16, color: 'rgba(255,255,255,0.7)' },
+  countNum:       { fontSize: isWeb ? 22 : 19, fontWeight: '800', color: '#FFFFFF' },
   centerDivider:  { width: 1, height: 28, backgroundColor: 'rgba(255,255,255,0.15)' },
   right:          { flexDirection: 'row', alignItems: 'center', flexShrink: 0, gap: 8 },
   rightCompact:   { gap: 6 },
-  addButton:      { minHeight: 38, paddingHorizontal: 14, borderRadius: 10, backgroundColor: '#1E293B', borderWidth: 1, borderColor: '#334155', alignItems: 'center', justifyContent: 'center' },
-  addButtonText:  { color: '#FFFFFF', fontSize: 17, fontWeight: '800' },
-  iconButton:     { backgroundColor: '#1E293B', borderRadius: 21, width: 38, height: 38, alignItems: 'center', justifyContent: 'center' },
+  addButton:      { minHeight: isWeb ? 44 : 38, paddingHorizontal: isWeb ? 18 : 14, borderRadius: 10, backgroundColor: '#1E293B', borderWidth: 1, borderColor: '#334155', alignItems: 'center', justifyContent: 'center' },
+  addButtonText:  { color: '#FFFFFF', fontSize: isWeb ? 19 : 17, fontWeight: '800' },
+  iconButton:     { backgroundColor: '#1E293B', borderRadius: isWeb ? 22 : 21, width: isWeb ? 44 : 38, height: isWeb ? 44 : 38, alignItems: 'center', justifyContent: 'center' },
   bellIconWrap:   { position: 'relative', alignItems: 'center', justifyContent: 'center' },
   bellBadge:      { position: 'absolute', top: -5, right: -6, zIndex: 10, backgroundColor: '#EF4444', borderRadius: 9, minWidth: 18, height: 18, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4 },
-  bellBadgeTxt:   { color: '#fff', fontSize: 9, fontWeight: '800' },
+  bellBadgeTxt:   { color: '#fff', fontSize: isWeb ? 11 : 9, fontWeight: '800' },
 });
