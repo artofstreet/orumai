@@ -18,6 +18,8 @@ interface PropertyRow {
   area: string; area_m2: number | null; floor: string; floor_number: number | null; dir: string | null;
   move_in_date: string | null; total_floors: number | null; built_year: number | null;
   parking: string | null; heating: string | null;
+  supply_area: string | null;
+  supply_area_m2: number | null;
   owner_name: string | null; owner_memo: string | null; relation: string | null;
   status: string; phone: string; memo: string;
   photos: string[] | null; created_at: string;
@@ -48,6 +50,8 @@ function rowToProperty(row: PropertyRow): Property {
     builtYear: row.built_year ?? undefined,
     parking: row.parking ?? undefined,
     heating: row.heating ?? undefined,
+    supplyArea: row.supply_area ?? undefined,
+    supplyAreaM2: row.supply_area_m2 ?? undefined,
     ownerName: row.owner_name ?? undefined,
     ownerMemo: row.owner_memo ?? undefined,
     relation: row.relation ?? undefined,
@@ -81,6 +85,8 @@ function addInputToInsertRow(input: AddPropertyInput): PropertyInsert {
     built_year: input.builtYear ?? null,
     parking: input.parking ?? null,
     heating: input.heating ?? null,
+    supply_area: input.supplyArea ?? null,
+    supply_area_m2: input.supplyAreaM2 ?? null,
     owner_name: input.ownerName ?? null,
     owner_memo: input.ownerMemo ?? null,
     relation: input.relation ?? null,
@@ -113,6 +119,8 @@ function updatesToRowPatch(updates: UpdatePropertyInput): Partial<PropertyRow> {
   if (updates.builtYear !== undefined) patch.built_year = updates.builtYear ?? null;
   if (updates.parking !== undefined) patch.parking = updates.parking ?? null;
   if (updates.heating !== undefined) patch.heating = updates.heating ?? null;
+  if (updates.supplyArea !== undefined) patch.supply_area = updates.supplyArea ?? null;
+  if (updates.supplyAreaM2 !== undefined) patch.supply_area_m2 = updates.supplyAreaM2 ?? null;
   if (updates.ownerName !== undefined) patch.owner_name = updates.ownerName ?? null;
   if (updates.ownerMemo !== undefined) patch.owner_memo = updates.ownerMemo ?? null;
   if (updates.relation !== undefined) patch.relation = updates.relation ?? null;
