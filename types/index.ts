@@ -45,6 +45,10 @@ export type Property = {
   area: string;
   // 면적(㎡) 숫자값(선택) - 평수 계산용
   areaM2?: number;
+  // 공급면적(예: 112㎡)
+  supplyArea?: string;
+  // 공급면적(㎡) 숫자값(선택) - 평수 계산용
+  supplyAreaM2?: number;
   // 층수(예: 25층)
   floor: string;
   // 층수 숫자값(선택)
