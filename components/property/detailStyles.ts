@@ -8,6 +8,8 @@ const makeShadow = (h: number, r: number, o: number, elev: number) =>
     ? ({ boxShadow: `0 ${h}px ${r * 2}px rgba(0,0,0,${o})` } as object)
     : { shadowColor: '#000' as const, shadowOffset: { width: 0, height: h }, shadowOpacity: o, shadowRadius: r, elevation: elev };
 
+const isWeb = Platform.OS === 'web';
+
 /** 매물 상세 화면 StyleSheet — [id].tsx 전용 */
 export const detailStyles = StyleSheet.create({
   page:                  { flex: 1, backgroundColor: bg },
@@ -21,16 +23,16 @@ export const detailStyles = StyleSheet.create({
   backBtn:               { padding: 4, marginLeft: -4 },
   badgeRow:              { flexDirection: 'row', gap: 8 },
   badge:                 { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 999 },
-  badgeText:             { fontSize: 15, fontWeight: '700' },
+  badgeText:             { fontSize: isWeb ? 17 : 15, fontWeight: '700' },
   headerTitle:           { color: text, fontWeight: '800', marginTop: 4 },
-  headerAddr:            { color: '#374151', fontSize: 15, fontWeight: '500' },
+  headerAddr:            { color: '#374151', fontSize: isWeb ? 17 : 15, fontWeight: '500' },
   headerBottom:          { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 2, gap: 10 },
   headerBottomNarrow:    { flexDirection: 'column', alignItems: 'flex-start' },
-  headerPrice:           { fontSize: 20, fontWeight: '800', color: text },
+  headerPrice:           { fontSize: isWeb ? 23 : 20, fontWeight: '800', color: text },
   headerBtnGroup:        { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   headerBtnGroupNarrow:  { width: '100%', justifyContent: 'flex-start' },
   headerBtn:             { borderWidth: 1, borderColor: border, borderRadius: 6, paddingHorizontal: 9, paddingVertical: 5 },
-  headerBtnText:         { color: text, fontSize: 12, fontWeight: '600' },
+  headerBtnText:         { color: text, fontSize: isWeb ? 14 : 12, fontWeight: '600' },
   headerBtnDel:          { color: red },
   infoRow:               { flexDirection: 'column', alignItems: 'stretch', paddingVertical: 16, gap: 12 },
   infoRowWide:           { width: '100%' },
@@ -51,8 +53,8 @@ export const detailStyles = StyleSheet.create({
   specRowBottom:         { borderBottomWidth: 1, borderBottomColor: '#F1F5F9' },
   specCell:              { flex: 1, paddingTop: 12, paddingBottom: 12, paddingHorizontal: 6, justifyContent: 'flex-start', gap: 2, minWidth: 0 },
   specCellRight:         { borderRightWidth: 1, borderRightColor: '#F1F5F9' },
-  specLabel:             { fontSize: 11, color: '#94A3B8', fontWeight: '500', marginBottom: 8 },
-  specValue:             { fontSize: 12, fontWeight: '700', color: '#1E293B', flexWrap: 'wrap' },
+  specLabel:             { fontSize: isWeb ? 13 : 11, color: '#94A3B8', fontWeight: '500', marginBottom: 8 },
+  specValue:             { fontSize: isWeb ? 14 : 12, fontWeight: '700', color: '#1E293B', flexWrap: 'wrap' },
   memoBox: {
     minHeight: 60,
     backgroundColor: '#FFFFFF',
@@ -64,6 +66,6 @@ export const detailStyles = StyleSheet.create({
   memoBoxFlex:           { minWidth: 0 },
   memoBoxFull:           { width: '100%' },
   memoBody:              { paddingBottom: 8 },
-  memoLabel:             { fontSize: 11, color: '#94A3B8', fontWeight: '600', marginBottom: 8 },
-  memoText:              { fontSize: 14, color: '#334155', lineHeight: 22 },
+  memoLabel:             { fontSize: isWeb ? 13 : 11, color: '#94A3B8', fontWeight: '600', marginBottom: 8 },
+  memoText:              { fontSize: isWeb ? 16 : 14, color: '#334155', lineHeight: 22 },
 });

@@ -30,11 +30,12 @@ const getBadge = (key: string) =>
   key in BADGE_COLORS ? BADGE_COLORS[key as keyof typeof BADGE_COLORS] : BADGE_COLORS.기본;
 
 const DEAL_PRICE_COLOR: Record<string, string> = { 매매: '#1D4ED8', 전세: '#16A34A', 월세: '#DB2777' };
+const isWeb = Platform.OS === 'web';
 /** 매물 스펙 라벨·값 — detailStyles 위에 절대 크기·굵기 덮어씀 */
 const specFontStyles = StyleSheet.create({
   // 스펙 한 칸 안에서 "라벨 값"이 한 줄로 보이도록 조정
   specLabel: {
-    fontSize: 13,
+    fontSize: isWeb ? 15 : 13,
     lineHeight: 18,
     fontWeight: '500',
     color: '#64748B',
@@ -43,7 +44,7 @@ const specFontStyles = StyleSheet.create({
     includeFontPadding: false,
   }, // 면적·층수 등 라벨(값보다 작고 연한 톤)
   specValue: {
-    fontSize: 15,
+    fontSize: isWeb ? 17 : 15,
     fontWeight: '700',
     color: '#0F172A',
     lineHeight: 18,
@@ -205,6 +206,19 @@ export default function PropertyDetailScreen() {
     { label: '', value: '' },
   ];
 
+  const webSpecsRow1 = [
+    { label: '전용면적', value: specs[0]?.value ?? '—' },
+    specs[1],
+    specs[2],
+    specs[3],
+  ];
+  const webSpecsRow2 = [
+    { label: '공급면적', value: property.area ?? '—' },
+    specs2[0],
+    specs2[1],
+    specs2[2],
+  ];
+
   // 국토부 실거래가(rt.molit.go.kr) — 주소를 쿼리로 전달(사이트가 무시하면 메인으로 열림)
   const openMolitRealTrade = useCallback(async () => {
     const base = 'https://rt.molit.go.kr';
@@ -326,7 +340,7 @@ export default function PropertyDetailScreen() {
             </View>
           </View>
 
-          <Text style={[styles.headerTitle, { fontSize: headerTitleSize }]} numberOfLines={3}>{title}</Text>
+          <Text style={[styles.headerTitle, { fontSize: isWeb ? headerTitleSize + 3 : headerTitleSize }]} numberOfLines={3}>{title}</Text>
           <Text style={[styles.headerAddr, { color: '#374151', fontSize: 16, fontWeight: '500', marginTop: 2 }]}>{property.addr}</Text>
           {/* 지도/주소 복사 버튼 */}
           <View style={[styles.addrBtnRow, { marginTop: 2 }]}>
@@ -403,7 +417,7 @@ export default function PropertyDetailScreen() {
               isUltraWide ? (
                 <>
                   <View style={[styles.specRow, styles.specRowBottom, specLayoutStyles.specRow]}>
-                    {specs.map((spec, idx) => (
+                    {webSpecsRow1.map((spec, idx) => (
                       <View key={spec.label} style={[styles.specCellUltra2col, specLayoutStyles.specItem, idx < specs.length - 1 && styles.specCellRight]}>
                         <Text style={[styles.specLabel, specFontStyles.specLabel, specLayoutStyles.specTextVertical]} numberOfLines={1} ellipsizeMode="tail">{spec.label}</Text>
                         <Text style={[styles.specValue, specFontStyles.specValue, specLayoutStyles.specTextVertical]} numberOfLines={1} ellipsizeMode="tail">{spec.value}</Text>
@@ -411,7 +425,7 @@ export default function PropertyDetailScreen() {
                     ))}
                   </View>
                   <View style={[styles.specRow, styles.specRowBottom, specLayoutStyles.specRow]}>
-                    {specs2.map((spec, idx) => (
+                    {webSpecsRow2.map((spec, idx) => (
                       <View key={`s2-${idx}`} style={[styles.specCellUltra2col, specLayoutStyles.specItem, idx < specs2.length - 1 && styles.specCellRight]}>
                         <Text style={[styles.specLabel, specFontStyles.specLabel, specLayoutStyles.specTextVertical]} numberOfLines={1} ellipsizeMode="tail">{spec.label}</Text>
                         <Text style={[styles.specValue, specFontStyles.specValue, specLayoutStyles.specTextVertical]} numberOfLines={1} ellipsizeMode="tail">{spec.value}</Text>
@@ -420,20 +434,24 @@ export default function PropertyDetailScreen() {
                   </View>
                 </>
               ) : (
-                <View style={[styles.specRow, specLayoutStyles.specRow]}>
-                  {specs.map((spec, idx) => (
-                    <View key={spec.label} style={[styles.specCell, specLayoutStyles.specItem, idx < specs.length - 1 && styles.specCellRight]}>
-                      <Text style={[styles.specLabel, specFontStyles.specLabel]} numberOfLines={1} ellipsizeMode="tail">{spec.label}</Text>
-                      <Text style={[styles.specValue, specFontStyles.specValue]} numberOfLines={1} ellipsizeMode="tail">{spec.value}</Text>
-                    </View>
-                  ))}
-                  {specs2.map((spec, idx) => (
-                    <View key={`s2-${idx}`} style={[styles.specCell, specLayoutStyles.specItem, idx < specs2.length - 1 && styles.specCellRight]}>
-                      <Text style={[styles.specLabel, specFontStyles.specLabel]} numberOfLines={1} ellipsizeMode="tail">{spec.label}</Text>
-                      <Text style={[styles.specValue, specFontStyles.specValue]} numberOfLines={1} ellipsizeMode="tail">{spec.value}</Text>
-                    </View>
-                  ))}
-                </View>
+                <>
+                  <View style={[styles.specRow, styles.specRowBottom, specLayoutStyles.specRow]}>
+                    {webSpecsRow1.map((spec, idx) => (
+                      <View key={spec.label} style={[styles.specCell, specLayoutStyles.specItem, idx < webSpecsRow1.length - 1 && styles.specCellRight]}>
+                        <Text style={[styles.specLabel, specFontStyles.specLabel]} numberOfLines={1} ellipsizeMode="tail">{spec.label}</Text>
+                        <Text style={[styles.specValue, specFontStyles.specValue]} numberOfLines={1} ellipsizeMode="tail">{spec.value}</Text>
+                      </View>
+                    ))}
+                  </View>
+                  <View style={[styles.specRow, specLayoutStyles.specRow]}>
+                    {webSpecsRow2.map((spec, idx) => (
+                      <View key={`w2-${idx}`} style={[styles.specCell, specLayoutStyles.specItem, idx < webSpecsRow2.length - 1 && styles.specCellRight]}>
+                        <Text style={[styles.specLabel, specFontStyles.specLabel]} numberOfLines={1} ellipsizeMode="tail">{spec.label}</Text>
+                        <Text style={[styles.specValue, specFontStyles.specValue]} numberOfLines={1} ellipsizeMode="tail">{spec.value}</Text>
+                      </View>
+                    ))}
+                  </View>
+                </>
               )
             ) : (
               <>
