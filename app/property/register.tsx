@@ -1,5 +1,6 @@
 /** 매물 등록/편집 화면 — 저장: useProperties(Supabase `properties`) */
 import { useRouter } from 'expo-router';
+import type { Dispatch, SetStateAction } from 'react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { Alert, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -15,6 +16,12 @@ import { DEAL_TYPES, PROPERTY_TYPES, type Property } from '@/types';
 import { clearEditData, closeRegisterPanel } from '@/utils/registerEvents';
 type ScreenProps = { embedded?: boolean; initialData?: Record<string, unknown> | null };
 const str = (v: unknown): string => { if (v === null || v === undefined) return ''; return String(v); };
+const RegisterMoreFieldsCompat = RegisterMoreFields as unknown as ((
+  props: React.ComponentProps<typeof RegisterMoreFields> & {
+    supplyAreaSqm: string;
+    setSupplyAreaSqm: Dispatch<SetStateAction<string>>;
+  }
+) => React.ReactElement | null);
 export default function PropertyRegisterScreen({ embedded = false, initialData }: ScreenProps) {
   const router = useRouter();
   const { addProperty, updateProperty, loading } = usePropertiesContext();
@@ -58,6 +65,7 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
     return str(d?.monthly);
   });
   const [areaSqm, setAreaSqm] = useState<string>(() => stripUnit(d?.area));
+  const [supplyAreaSqm, setSupplyAreaSqm] = useState<string>(() => stripUnit(d?.supplyArea));
   const [floor, setFloor] = useState<string>(() => str(d?.floor));
   const [totalFloors, setTotalFloors] = useState<string>(() => str(d?.totalFloors));
   const [direction, setDirection] = useState<string>(() => str(d?.dir));
@@ -65,7 +73,6 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
   const [parking, setParking] = useState<string>(() => str(d?.parking));
   const [heating, setHeating] = useState<string>(() => str(d?.heating));
   const [builtYear, setBuiltYear] = useState<string>(() => str(d?.builtYear));
-  const [extra1, setExtra1] = useState<string>('');
   const [ownerName, setOwnerName] = useState<string>(() => str(d?.ownerName));
   const [relation, setRelation] = useState<RelationKind | undefined>(() => str(d?.relation) as RelationKind || undefined);
   const [ownerPhone, setOwnerPhone] = useState<string>(() => formatPhoneHyphen(str(d?.phone ?? d?.ownerPhone)));
@@ -123,6 +130,7 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
       ...(parking.trim() ? { parking: parking.trim() } : {}),
       ...(heating.trim() ? { heating: heating.trim() } : {}),
       ...(builtYear.trim() ? { builtYear: Number(builtYear.trim()) || undefined } : {}),
+      ...(supplyAreaSqm.trim() ? { supplyArea: `${supplyAreaSqm.trim().replace(/㎡/g, '')}㎡` } : {}),
       ...(relation ? { relation } : {}),
     };
     try {
@@ -225,7 +233,7 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
       </View>
       <RegisterDealChips deal={deal} setDeal={setDeal} />
       <RegisterPropChips propType={propType} setPropType={setPropType} />
-      <RegisterMoreFields deal={deal} salePrice={salePrice} setSalePrice={setSalePrice} jeonsePrice={jeonsePrice} setJeonsePrice={setJeonsePrice} deposit={deposit} setDeposit={setDeposit} monthly={monthly} setMonthly={setMonthly} areaSqm={areaSqm} setAreaSqm={setAreaSqm} floor={floor} setFloor={setFloor} totalFloors={totalFloors} setTotalFloors={setTotalFloors} direction={direction} setDirection={setDirection} moveInDate={moveInDate} setMoveInDate={setMoveInDate} parking={parking} setParking={setParking} heating={heating} setHeating={setHeating} builtYear={builtYear} setBuiltYear={setBuiltYear} extra1={extra1} setExtra1={setExtra1} ownerName={ownerName} setOwnerName={setOwnerName} relation={relation} setRelation={setRelation} ownerPhone={ownerPhone} onPhoneChange={onPhoneChange} ownerMemo={ownerMemo} setOwnerMemo={setOwnerMemo} memo={memo} setMemo={setMemo} />
+      <RegisterMoreFieldsCompat deal={deal} salePrice={salePrice} setSalePrice={setSalePrice} jeonsePrice={jeonsePrice} setJeonsePrice={setJeonsePrice} deposit={deposit} setDeposit={setDeposit} monthly={monthly} setMonthly={setMonthly} areaSqm={areaSqm} setAreaSqm={setAreaSqm} supplyAreaSqm={supplyAreaSqm} setSupplyAreaSqm={setSupplyAreaSqm} floor={floor} setFloor={setFloor} totalFloors={totalFloors} setTotalFloors={setTotalFloors} direction={direction} setDirection={setDirection} moveInDate={moveInDate} setMoveInDate={setMoveInDate} parking={parking} setParking={setParking} heating={heating} setHeating={setHeating} builtYear={builtYear} setBuiltYear={setBuiltYear} ownerName={ownerName} setOwnerName={setOwnerName} relation={relation} setRelation={setRelation} ownerPhone={ownerPhone} onPhoneChange={onPhoneChange} ownerMemo={ownerMemo} setOwnerMemo={setOwnerMemo} memo={memo} setMemo={setMemo} />
           </ScrollView>
         ) : (
           <KeyboardAwareScrollView
@@ -280,7 +288,7 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
             </View>
             <RegisterDealChips deal={deal} setDeal={setDeal} />
             <RegisterPropChips propType={propType} setPropType={setPropType} />
-            <RegisterMoreFields deal={deal} salePrice={salePrice} setSalePrice={setSalePrice} jeonsePrice={jeonsePrice} setJeonsePrice={setJeonsePrice} deposit={deposit} setDeposit={setDeposit} monthly={monthly} setMonthly={setMonthly} areaSqm={areaSqm} setAreaSqm={setAreaSqm} floor={floor} setFloor={setFloor} totalFloors={totalFloors} setTotalFloors={setTotalFloors} direction={direction} setDirection={setDirection} moveInDate={moveInDate} setMoveInDate={setMoveInDate} parking={parking} setParking={setParking} heating={heating} setHeating={setHeating} builtYear={builtYear} setBuiltYear={setBuiltYear} extra1={extra1} setExtra1={setExtra1} ownerName={ownerName} setOwnerName={setOwnerName} relation={relation} setRelation={setRelation} ownerPhone={ownerPhone} onPhoneChange={onPhoneChange} ownerMemo={ownerMemo} setOwnerMemo={setOwnerMemo} memo={memo} setMemo={setMemo} />
+            <RegisterMoreFieldsCompat deal={deal} salePrice={salePrice} setSalePrice={setSalePrice} jeonsePrice={jeonsePrice} setJeonsePrice={setJeonsePrice} deposit={deposit} setDeposit={setDeposit} monthly={monthly} setMonthly={setMonthly} areaSqm={areaSqm} setAreaSqm={setAreaSqm} supplyAreaSqm={supplyAreaSqm} setSupplyAreaSqm={setSupplyAreaSqm} floor={floor} setFloor={setFloor} totalFloors={totalFloors} setTotalFloors={setTotalFloors} direction={direction} setDirection={setDirection} moveInDate={moveInDate} setMoveInDate={setMoveInDate} parking={parking} setParking={setParking} heating={heating} setHeating={setHeating} builtYear={builtYear} setBuiltYear={setBuiltYear} ownerName={ownerName} setOwnerName={setOwnerName} relation={relation} setRelation={setRelation} ownerPhone={ownerPhone} onPhoneChange={onPhoneChange} ownerMemo={ownerMemo} setOwnerMemo={setOwnerMemo} memo={memo} setMemo={setMemo} />
           </KeyboardAwareScrollView>
         )}
       </View>

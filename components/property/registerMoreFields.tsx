@@ -12,6 +12,7 @@ type Props = {
   deposit: string; setDeposit: (v: string) => void;
   monthly: string; setMonthly: (v: string) => void;
   areaSqm: string; setAreaSqm: (v: string) => void;
+  supplyAreaSqm: string; setSupplyAreaSqm: (v: string) => void;
   floor: string; setFloor: (v: string) => void;
   totalFloors: string; setTotalFloors: (v: string) => void;
   direction: string; setDirection: (v: string) => void;
@@ -19,7 +20,6 @@ type Props = {
   parking: string; setParking: (v: string) => void;       // 주차
   heating: string; setHeating: (v: string) => void;       // 난방방식
   builtYear: string; setBuiltYear: (v: string) => void;   // 건축년도
-  extra1: string; setExtra1: (v: string) => void;         // 예비 필드
   ownerName: string; setOwnerName: (v: string) => void;
   relation: RelationKind | undefined; setRelation: (v: RelationKind) => void; // 미선택 시 undefined
   ownerPhone: string; onPhoneChange: (v: string) => void;
@@ -132,21 +132,16 @@ export function RegisterMoreFields(p: Props) {
         )}
       </View>
       <View style={styles.section}>
-        <Text style={styles.sectionLabel}>면적·층·방향·입주</Text>
-        <TextInput style={styles.input} value={p.areaSqm} onChangeText={(t: string) => p.setAreaSqm(formatAreaSqmInput(t))} keyboardType="number-pad" placeholder="면적(㎡)" placeholderTextColor="#9AA5B4" maxLength={6} />
+        <Text style={styles.sectionLabel}>매물 상세</Text>
+        <TextInput style={styles.input} value={p.areaSqm} onChangeText={(t: string) => p.setAreaSqm(formatAreaSqmInput(t))} keyboardType="number-pad" placeholder="전용면적(㎡)" placeholderTextColor="#9AA5B4" maxLength={6} />
+        <TextInput style={styles.input} value={p.supplyAreaSqm} onChangeText={(t: string) => p.setSupplyAreaSqm(formatAreaSqmInput(t))} keyboardType="number-pad" placeholder="공급면적(㎡)" placeholderTextColor="#9AA5B4" maxLength={6} />
         <TextInput style={styles.input} value={p.floor} onChangeText={(t: string) => p.setFloor(formatFloorInput(t))} keyboardType="number-pad" placeholder="해당 층" placeholderTextColor="#9AA5B4" maxLength={4} />
         <TextInput style={styles.input} value={p.totalFloors} onChangeText={(t: string) => p.setTotalFloors(formatFloorInput(t))} keyboardType="number-pad" placeholder="총 층수" placeholderTextColor="#9AA5B4" maxLength={4} />
         <TextInput style={styles.input} value={p.direction} onChangeText={p.setDirection} placeholder="방향 (예: 남향)" placeholderTextColor="#9AA5B4" />
         <TextInput style={styles.input} value={p.moveInDate} onChangeText={(t) => p.setMoveInDate(t)} placeholder="예: 2026-06-01 또는 즉시입주" placeholderTextColor="#9AA5B4" />
-      </View>
-
-      {/* 주차·난방·건축년·예비 */}
-      <View style={styles.section}>
-        <Text style={styles.sectionLabel}>주차·난방·건축년</Text>
         <TextInput style={styles.input} value={p.parking} onChangeText={p.setParking} placeholder="주차 (예: 1대)" placeholderTextColor="#9AA5B4" />
         <TextInput style={styles.input} value={p.heating} onChangeText={p.setHeating} placeholder="난방 (예: 지역난방)" placeholderTextColor="#9AA5B4" />
-        <TextInput style={styles.input} value={p.builtYear} onChangeText={p.setBuiltYear} keyboardType="number-pad" placeholder="건축년도 (예: 2015)" placeholderTextColor="#9AA5B4" />
-        <TextInput style={styles.input} value={p.extra1} onChangeText={p.setExtra1} placeholder="(예비)" placeholderTextColor="#9AA5B4" />
+        <TextInput style={styles.input} value={p.builtYear} onChangeText={p.setBuiltYear} keyboardType="number-pad" placeholder="준공일 (예: 2015)" placeholderTextColor="#9AA5B4" />
       </View>
       <View style={styles.section}>
         <Text style={styles.sectionLabel}>집주인</Text>
