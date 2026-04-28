@@ -115,6 +115,8 @@ export default function PropertyCard({ property, width, onPress }: PropertyCardP
   );
 }
 
+const isWeb = Platform.OS === 'web';
+
 const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
@@ -133,9 +135,9 @@ const styles = StyleSheet.create({
   photoBadge:     { position: 'absolute', bottom: 4, left: 4, backgroundColor: 'rgba(0,0,0,0.5)', borderRadius: 4, paddingHorizontal: 5, paddingVertical: 2 },
   photoBadgeText: { color: '#FFFFFF', fontSize: 10, fontWeight: '700' },
   info:           { flex: 1, paddingLeft: 12, gap: 4 },
-  title:          { fontSize: 15, fontWeight: '700', color: '#0F172A' },
+  title:          { fontSize: isWeb ? 20 : 15, fontWeight: '700', color: '#0F172A' },
   addr:           { fontSize: 11, color: '#64748B' },
-  price:          { fontSize: 16, fontWeight: '800' },
+  price:          { fontSize: isWeb ? 21 : 16, fontWeight: '800' },
   chipRow:        { flexDirection: 'row', flexWrap: 'wrap', gap: 4, marginTop: 2 },
   chip:           { backgroundColor: '#F1F5F9', borderRadius: 5, paddingHorizontal: 7, paddingVertical: 2 },
   chipText:       { fontSize: 11, color: '#475569', fontWeight: '600' },

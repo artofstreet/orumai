@@ -12,6 +12,8 @@ const makeShadow = (h: number, r: number, o: number, elev: number) =>
     ? ({ boxShadow: `0 ${h}px ${r * 2}px rgba(0,0,0,${o})` } as object)
     : { shadowColor: '#000' as const, shadowOffset: { width: 0, height: h }, shadowOpacity: o, shadowRadius: r, elevation: elev };
 
+const isWeb = Platform.OS === 'web';
+
 // 고객 아바타 배경색(첫 글자 charCode 기반 선택)
 const 아바타배경색배열 = [
   '#1A56DB', '#0E7A4F', '#7E22CE', '#C2610C',
@@ -93,8 +95,8 @@ const styles = StyleSheet.create({
   avatar:     { width: 44, height: 44, borderRadius: 999, alignItems: 'center', justifyContent: 'center' },
   avatarText: { color: '#FFFFFF', fontSize: 16, fontWeight: '800' },
   textArea:   { flex: 1 },
-  name:       { fontSize: 15, fontWeight: '600', color: '#0F172A' },
-  phone:      { fontSize: 13, fontWeight: '700', color: '#64748B', marginTop: 2 },
-  memo:       { fontSize: 13, fontWeight: '600', color: text2 },
-  date:       { fontSize: 12, fontWeight: '600', color: '#64748B' },
+  name:       { fontSize: isWeb ? 18 : 15, fontWeight: '600', color: '#0F172A' },
+  phone:      { fontSize: isWeb ? 15 : 13, fontWeight: '700', color: '#64748B', marginTop: 2 },
+  memo:       { fontSize: isWeb ? 15 : 13, fontWeight: '600', color: text2 },
+  date:       { fontSize: isWeb ? 14 : 12, fontWeight: '600', color: '#64748B' },
 });
