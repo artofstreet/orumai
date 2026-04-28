@@ -133,15 +133,59 @@ export function RegisterMoreFields(p: Props) {
       </View>
       <View style={styles.section}>
         <Text style={styles.sectionLabel}>매물 상세</Text>
-        <TextInput style={styles.input} value={p.areaSqm} onChangeText={(t: string) => p.setAreaSqm(formatAreaSqmInput(t))} keyboardType="number-pad" placeholder="전용면적(㎡)" placeholderTextColor="#9AA5B4" maxLength={6} />
-        <TextInput style={styles.input} value={p.supplyAreaSqm} onChangeText={(t: string) => p.setSupplyAreaSqm(formatAreaSqmInput(t))} keyboardType="number-pad" placeholder="공급면적(㎡)" placeholderTextColor="#9AA5B4" maxLength={6} />
-        <TextInput style={styles.input} value={p.floor} onChangeText={(t: string) => p.setFloor(formatFloorInput(t))} keyboardType="number-pad" placeholder="해당 층" placeholderTextColor="#9AA5B4" maxLength={4} />
-        <TextInput style={styles.input} value={p.totalFloors} onChangeText={(t: string) => p.setTotalFloors(formatFloorInput(t))} keyboardType="number-pad" placeholder="총 층수" placeholderTextColor="#9AA5B4" maxLength={4} />
-        <TextInput style={styles.input} value={p.direction} onChangeText={p.setDirection} placeholder="방향 (예: 남향)" placeholderTextColor="#9AA5B4" />
-        <TextInput style={styles.input} value={p.moveInDate} onChangeText={(t) => p.setMoveInDate(t)} placeholder="예: 2026-06-01 또는 즉시입주" placeholderTextColor="#9AA5B4" />
-        <TextInput style={styles.input} value={p.parking} onChangeText={p.setParking} placeholder="주차 (예: 1대)" placeholderTextColor="#9AA5B4" />
-        <TextInput style={styles.input} value={p.heating} onChangeText={p.setHeating} placeholder="난방 (예: 지역난방)" placeholderTextColor="#9AA5B4" />
-        <TextInput style={styles.input} value={p.builtYear} onChangeText={p.setBuiltYear} keyboardType="number-pad" placeholder="준공일 (예: 2015)" placeholderTextColor="#9AA5B4" />
+        {Platform.OS === 'web' ? (
+          <>
+            <View style={{ flexDirection: 'row', gap: 8 }}>
+              <View style={{ flex: 1 }}>
+                <TextInput style={styles.input} value={p.areaSqm} onChangeText={(t: string) => p.setAreaSqm(formatAreaSqmInput(t))} keyboardType="number-pad" placeholder="전용면적(㎡)" placeholderTextColor="#9AA5B4" maxLength={6} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <TextInput style={styles.input} value={p.supplyAreaSqm} onChangeText={(t: string) => p.setSupplyAreaSqm(formatAreaSqmInput(t))} keyboardType="number-pad" placeholder="공급면적(㎡)" placeholderTextColor="#9AA5B4" maxLength={6} />
+              </View>
+            </View>
+            <View style={{ flexDirection: 'row', gap: 8 }}>
+              <View style={{ flex: 1, flexDirection: 'row', gap: 4 }}>
+                <View style={{ flex: 1 }}>
+                  <TextInput style={[styles.input, { flex: 1 }]} value={p.floor} onChangeText={(t: string) => p.setFloor(formatFloorInput(t))} keyboardType="number-pad" placeholder="해당 층" placeholderTextColor="#9AA5B4" maxLength={4} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <TextInput style={[styles.input, { flex: 1 }]} value={p.totalFloors} onChangeText={(t: string) => p.setTotalFloors(formatFloorInput(t))} keyboardType="number-pad" placeholder="총 층수" placeholderTextColor="#9AA5B4" maxLength={4} />
+                </View>
+              </View>
+              <View style={{ flex: 1 }}>
+                <TextInput style={styles.input} value={p.parking} onChangeText={p.setParking} placeholder="주차 (예: 1대)" placeholderTextColor="#9AA5B4" />
+              </View>
+            </View>
+            <View style={{ flexDirection: 'row', gap: 8 }}>
+              <View style={{ flex: 1 }}>
+                <TextInput style={styles.input} value={p.direction} onChangeText={p.setDirection} placeholder="방향 (예: 남향)" placeholderTextColor="#9AA5B4" />
+              </View>
+              <View style={{ flex: 1 }}>
+                <TextInput style={styles.input} value={p.heating} onChangeText={p.setHeating} placeholder="난방 (예: 지역난방)" placeholderTextColor="#9AA5B4" />
+              </View>
+            </View>
+            <View style={{ flexDirection: 'row', gap: 8 }}>
+              <View style={{ flex: 1 }}>
+                <TextInput style={styles.input} value={p.moveInDate} onChangeText={(t) => p.setMoveInDate(t)} placeholder="예: 2026-06-01 또는 즉시입주" placeholderTextColor="#9AA5B4" />
+              </View>
+              <View style={{ flex: 1 }}>
+                <TextInput style={styles.input} value={p.builtYear} onChangeText={p.setBuiltYear} keyboardType="number-pad" placeholder="준공일 (예: 2015)" placeholderTextColor="#9AA5B4" />
+              </View>
+            </View>
+          </>
+        ) : (
+          <>
+            <TextInput style={styles.input} value={p.areaSqm} onChangeText={(t: string) => p.setAreaSqm(formatAreaSqmInput(t))} keyboardType="number-pad" placeholder="전용면적(㎡)" placeholderTextColor="#9AA5B4" maxLength={6} />
+            <TextInput style={styles.input} value={p.supplyAreaSqm} onChangeText={(t: string) => p.setSupplyAreaSqm(formatAreaSqmInput(t))} keyboardType="number-pad" placeholder="공급면적(㎡)" placeholderTextColor="#9AA5B4" maxLength={6} />
+            <TextInput style={styles.input} value={p.floor} onChangeText={(t: string) => p.setFloor(formatFloorInput(t))} keyboardType="number-pad" placeholder="해당 층" placeholderTextColor="#9AA5B4" maxLength={4} />
+            <TextInput style={styles.input} value={p.totalFloors} onChangeText={(t: string) => p.setTotalFloors(formatFloorInput(t))} keyboardType="number-pad" placeholder="총 층수" placeholderTextColor="#9AA5B4" maxLength={4} />
+            <TextInput style={styles.input} value={p.direction} onChangeText={p.setDirection} placeholder="방향 (예: 남향)" placeholderTextColor="#9AA5B4" />
+            <TextInput style={styles.input} value={p.moveInDate} onChangeText={(t) => p.setMoveInDate(t)} placeholder="예: 2026-06-01 또는 즉시입주" placeholderTextColor="#9AA5B4" />
+            <TextInput style={styles.input} value={p.parking} onChangeText={p.setParking} placeholder="주차 (예: 1대)" placeholderTextColor="#9AA5B4" />
+            <TextInput style={styles.input} value={p.heating} onChangeText={p.setHeating} placeholder="난방 (예: 지역난방)" placeholderTextColor="#9AA5B4" />
+            <TextInput style={styles.input} value={p.builtYear} onChangeText={p.setBuiltYear} keyboardType="number-pad" placeholder="준공일 (예: 2015)" placeholderTextColor="#9AA5B4" />
+          </>
+        )}
       </View>
       <View style={styles.section}>
         <Text style={styles.sectionLabel}>집주인</Text>
