@@ -198,12 +198,17 @@ export default function PropertyDetailScreen() {
     { label: '입주일', value: property.moveInDate ?? '—' },
   ];
 
-  // 스펙 2번째 줄: 주차, 난방, 건축년, 빈칸
+  // 스펙 2번째 줄: 공급면적, 주차, 난방, 준공일
   const specs2 = [
-    { label: '주차', value: property.parking ?? '—' },
-    { label: '난방', value: property.heating ?? '—' },
-    { label: '건축년', value: property.builtYear ? `${property.builtYear}년` : '—' },
-    { label: '', value: '' },
+    { label: '공급면적', value: (() => {
+      const num = parseFloat((property.supplyArea ?? '').replace(/[^0-9.]/g, ''));
+      if (!num || isNaN(num)) return property.supplyArea ?? '-';
+      const pyeong = Math.round(num * 0.3025 * 10) / 10;
+      return `${num}㎡/${pyeong}평`;
+    })() },
+    { label: '주차', value: property.parking ?? '-' },
+    { label: '난방', value: property.heating ?? '-' },
+    { label: '준공일', value: property.builtYear ? `${property.builtYear}년` : '-' },
   ];
 
   const webSpecsRow1 = [
@@ -213,10 +218,10 @@ export default function PropertyDetailScreen() {
     specs[3],
   ];
   const webSpecsRow2 = [
-    { label: '공급면적', value: property.area ?? '—' },
     specs2[0],
     specs2[1],
     specs2[2],
+    specs2[3],
   ];
 
   // 국토부 실거래가(rt.molit.go.kr) — 주소를 쿼리로 전달(사이트가 무시하면 메인으로 열림)
@@ -412,7 +417,7 @@ export default function PropertyDetailScreen() {
         </View>
 
         <View style={[styles.infoRow]}>
-          <View style={[styles.specGrid, narrow && styles.specGridFull, isUltraWide && styles.specGridUltra, !narrow && styles.specGridFlex]}>
+          <View style={[styles.specGrid, narrow && styles.specGridFull, isUltraWide && styles.specGridUltra, !narrow && styles.specGridFlex, Platform.OS === 'web' && !isUltraWide && { flexDirection: 'column' }]}>
             {Platform.OS === 'web' ? (
               isUltraWide ? (
                 <>
