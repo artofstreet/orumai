@@ -1,15 +1,16 @@
 /** 매물 등록/편집 화면 — 저장: useProperties(Supabase `properties`) */
 import { useRouter } from 'expo-router';
 import type { Dispatch, SetStateAction } from 'react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { Alert, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { RegisterDealChips, RegisterPropChips } from '@/components/property/registerChipBlocks';
-import { MOCK_ADDRESS_ROWS, formatPhoneHyphen } from '@/components/property/registerMocks';
+import { formatPhoneHyphen } from '@/components/property/registerMocks';
 import { RegisterMoreFields, formatAreaSqmInput, formatFloorInput } from '@/components/property/registerMoreFields';
 import { registerStyles as styles } from '@/components/property/registerStyles';
 import { PROP_OPTIONS, type DealKind, type PropKind, type RelationKind } from '@/components/property/registerTypes';
+import { useKakaoAddress } from '@/hooks/useKakaoAddress';
 import { type AddPropertyInput } from '@/hooks/useProperties';
 import { usePropertiesContext } from '@/contexts/PropertiesContext';
 import { DEAL_TYPES, PROPERTY_TYPES, type Property } from '@/types';
@@ -79,11 +80,11 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
   const [ownerMemo, setOwnerMemo] = useState<string>(() => str(d?.ownerMemo));
   const [memo, setMemo] = useState<string>(() => str(d?.memo));
   const [showSuggest, setShowSuggest] = useState<boolean>(false);
+  const [bCode, setBCode] = useState<string>('');
+  const [bun, setBun] = useState<string>('');
+  const [ji, setJi] = useState<string>('');
   useEffect(() => () => { clearTimeout(blurTimerRef.current ?? undefined); }, []);
-  const suggestions = useMemo(() => {
-    const q = address.trim();
-    return q.length < 1 ? [] : MOCK_ADDRESS_ROWS.filter((r) => r.label.includes(q)).slice(0, 3);
-  }, [address]);
+  const { results: suggestions, search: searchAddress, clear: clearSuggestions } = useKakaoAddress();
   const onPhoneChange = (t: string) => setOwnerPhone(formatPhoneHyphen(t));
   const onSave = async () => {
     const addrTrim = address.trim();
@@ -196,7 +197,7 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
         <TextInput
           style={styles.input}
           value={address}
-          onChangeText={(t) => { setAddress(t); setShowSuggest(true); }}
+          onChangeText={(t) => { setAddress(t); setShowSuggest(true); searchAddress(t); }}
           onFocus={() => setShowSuggest(true)}
           onBlur={() => {
             if (blurTimerRef.current) clearTimeout(blurTimerRef.current);
@@ -207,15 +208,16 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
         />
         {showSuggest && suggestions.length > 0 && (
           <View style={styles.suggestBox}>
-            {suggestions.map((s) => (
-              <TouchableOpacity key={s.id} style={styles.suggestRow} onPress={() => {
-                setAddress(s.label);
-                setAreaSqm(formatAreaSqmInput(s.areaSqm));
-                setFloor(formatFloorInput(s.floor));
-                setTotalFloors(formatFloorInput(s.totalFloors));
+            {suggestions.map((s, idx) => (
+              <TouchableOpacity key={s.bCode + String(idx)} style={styles.suggestRow} onPress={() => {
+                setAddress(s.addressName);
+                setBCode(s.bCode);
+                setBun(s.bun);
+                setJi(s.ji);
                 setShowSuggest(false);
+                clearSuggestions();
               }}>
-                <Text style={styles.suggestTxt}>{s.label}</Text>
+                <Text style={styles.suggestTxt}>{s.addressName}</Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -251,7 +253,7 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
               <TextInput
                 style={styles.input}
                 value={address}
-                onChangeText={(t) => { setAddress(t); setShowSuggest(true); }}
+                onChangeText={(t) => { setAddress(t); setShowSuggest(true); searchAddress(t); }}
                 onFocus={() => setShowSuggest(true)}
                 onBlur={() => {
                   if (blurTimerRef.current) clearTimeout(blurTimerRef.current);
@@ -262,15 +264,16 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
               />
               {showSuggest && suggestions.length > 0 && (
                 <View style={styles.suggestBox}>
-                  {suggestions.map((s) => (
-                    <TouchableOpacity key={s.id} style={styles.suggestRow} onPress={() => {
-                      setAddress(s.label);
-                      setAreaSqm(formatAreaSqmInput(s.areaSqm));
-                      setFloor(formatFloorInput(s.floor));
-                      setTotalFloors(formatFloorInput(s.totalFloors));
+                  {suggestions.map((s, idx) => (
+                    <TouchableOpacity key={s.bCode + String(idx)} style={styles.suggestRow} onPress={() => {
+                      setAddress(s.addressName);
+                      setBCode(s.bCode);
+                      setBun(s.bun);
+                      setJi(s.ji);
                       setShowSuggest(false);
+                      clearSuggestions();
                     }}>
-                      <Text style={styles.suggestTxt}>{s.label}</Text>
+                      <Text style={styles.suggestTxt}>{s.addressName}</Text>
                     </TouchableOpacity>
                   ))}
                 </View>
