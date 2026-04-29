@@ -53,7 +53,7 @@ export interface UseCustomersReturn {
   customers: Customer[];
   loading: boolean;
   error: string | null;
-  addCustomer: (input: AddCustomerInput) => Promise<void>;
+  addCustomer: (input: AddCustomerInput) => Promise<string | null>;
   updateCustomer: (id: string, updates: UpdateCustomerInput) => Promise<void>;
   deleteCustomer: (id: string) => Promise<void>;
   getCustomerById: (id: string) => Customer | undefined;
@@ -89,7 +89,7 @@ export function useCustomers(): UseCustomersReturn {
     };
   }, []);
 
-  const addCustomer = useCallback(async (input: AddCustomerInput) => {
+  const addCustomer = useCallback(async (input: AddCustomerInput): Promise<string | null> => {
     setLoading(true);
     setError(null);
     const { data, error: insertError } = await supabase
@@ -100,11 +100,13 @@ export function useCustomers(): UseCustomersReturn {
     setLoading(false);
     if (insertError) {
       setError(insertError.message);
-      return;
+      return null;
     }
     if (data) {
       setCustomers((prev) => [rowToCustomer(data as CustomerRow), ...prev]);
+      return String((data as CustomerRow).id);
     }
+    return null;
   }, []);
 
   const updateCustomer = useCallback(async (id: string, updates: UpdateCustomerInput) => {

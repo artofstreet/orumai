@@ -152,7 +152,7 @@ export interface UsePropertiesReturn {
   properties: Property[];
   loading: boolean;
   error: string | null;
-  addProperty: (input: AddPropertyInput) => Promise<void>;
+  addProperty: (input: AddPropertyInput) => Promise<string | null>;
   updateProperty: (id: string, updates: UpdatePropertyInput) => Promise<void>;
   deleteProperty: (id: string) => Promise<void>;
   getPropertyById: (id: string) => Property | undefined;
@@ -188,7 +188,7 @@ export function useProperties(): UsePropertiesReturn {
     };
   }, []);
 
-  const addProperty = useCallback(async (input: AddPropertyInput) => {
+  const addProperty = useCallback(async (input: AddPropertyInput): Promise<string | null> => {
     setLoading(true);
     setError(null);
     const { data, error: insertError } = await supabase
@@ -199,11 +199,13 @@ export function useProperties(): UsePropertiesReturn {
     setLoading(false);
     if (insertError) {
       setError(insertError.message);
-      return;
+      return null;
     }
     if (data) {
       setProperties((prev) => [rowToProperty(data as PropertyRow), ...prev]);
+      return String((data as PropertyRow).id);
     }
+    return null;
   }, []);
 
   const updateProperty = useCallback(async (id: string, updates: UpdatePropertyInput) => {

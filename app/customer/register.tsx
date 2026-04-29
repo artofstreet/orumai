@@ -35,6 +35,7 @@ export default function CustomerRegisterScreen({ embedded = false, initialData }
 
   /** 저장 요청 직후 훅의 loading/error로 성공·실패 판별 */
   const pendingSaveRef = useRef(false);
+  const navigateCustomerIdRef = useRef<string | null>(null);
 
   const onPhoneChange = (t: string) => setPhone(formatPhoneHyphen(t));
 
@@ -47,6 +48,11 @@ export default function CustomerRegisterScreen({ embedded = false, initialData }
     }
     clearEditData();
     closeRegisterPanel();
+    const newId = navigateCustomerIdRef.current;
+    if (newId) {
+      navigateCustomerIdRef.current = null;
+      router.push(`/customer/${newId}`);
+    }
   }, [loading, error]);
 
   const onSave = async () => {
@@ -65,7 +71,8 @@ export default function CustomerRegisterScreen({ embedded = false, initialData }
     if (isEdit) {
       await updateCustomer(str(d?.id), { name: trimmedName, phone: trimmedPhone, memo });
     } else {
-      await addCustomer({ name: trimmedName, phone: trimmedPhone, memo });
+      const newId = await addCustomer({ name: trimmedName, phone: trimmedPhone, memo });
+      navigateCustomerIdRef.current = newId;
     }
   };
 

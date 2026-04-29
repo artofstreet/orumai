@@ -179,7 +179,13 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
       if (isEdit) {
         await updateProperty(str(d?.id), { ...payload, status: str(d?.status) === 'active' ? 'active' : 'draft' });
       } else {
-        await addProperty(payload);
+        const newId = await addProperty(payload);
+        if (newId) {
+          clearEditData();
+          closeRegisterPanel();
+          router.push(`/property/${newId}`);
+          return;
+        }
       }
       clearEditData();
       closeRegisterPanel();
