@@ -20,6 +20,10 @@ type Props = {
   parking: string; setParking: (v: string) => void;       // 주차
   heating: string; setHeating: (v: string) => void;       // 난방방식
   builtYear: string; setBuiltYear: (v: string) => void;   // 건축년도
+  hhldCnt: string; setHhldCnt: (v: string) => void;
+  vlRat: string; setVlRat: (v: string) => void;
+  totArea: string; setTotArea: (v: string) => void;
+  totPkngCnt: string; setTotPkngCnt: (v: string) => void;
   ownerName: string; setOwnerName: (v: string) => void;
   relation: RelationKind | undefined; setRelation: (v: RelationKind) => void; // 미선택 시 undefined
   ownerPhone: string; onPhoneChange: (v: string) => void;
@@ -172,6 +176,22 @@ export function RegisterMoreFields(p: Props) {
                 <TextInput style={styles.input} value={p.builtYear} onChangeText={p.setBuiltYear} keyboardType="number-pad" placeholder="준공일 (예: 2015)" placeholderTextColor="#9AA5B4" />
               </View>
             </View>
+            <View style={{ flexDirection: 'row', gap: 8 }}>
+              <View style={{ flex: 1 }}>
+                <TextInput style={styles.input} value={p.hhldCnt} onChangeText={p.setHhldCnt} keyboardType="number-pad" placeholder="세대수" placeholderTextColor="#9AA5B4" />
+              </View>
+              <View style={{ flex: 1 }}>
+                <TextInput style={styles.input} value={p.vlRat} onChangeText={p.setVlRat} keyboardType="number-pad" placeholder="용적률(%)" placeholderTextColor="#9AA5B4" />
+              </View>
+            </View>
+            <View style={{ flexDirection: 'row', gap: 8 }}>
+              <View style={{ flex: 1 }}>
+                <TextInput style={styles.input} value={p.totArea} onChangeText={p.setTotArea} keyboardType="number-pad" placeholder="연면적(㎡)" placeholderTextColor="#9AA5B4" />
+              </View>
+              <View style={{ flex: 1 }}>
+                <TextInput style={styles.input} value={p.totPkngCnt} onChangeText={p.setTotPkngCnt} keyboardType="number-pad" placeholder="총주차수" placeholderTextColor="#9AA5B4" />
+              </View>
+            </View>
           </>
         ) : (
           <>
@@ -184,6 +204,10 @@ export function RegisterMoreFields(p: Props) {
             <TextInput style={styles.input} value={p.parking} onChangeText={p.setParking} placeholder="주차 (예: 1대)" placeholderTextColor="#9AA5B4" />
             <TextInput style={styles.input} value={p.heating} onChangeText={p.setHeating} placeholder="난방 (예: 지역난방)" placeholderTextColor="#9AA5B4" />
             <TextInput style={styles.input} value={p.builtYear} onChangeText={p.setBuiltYear} keyboardType="number-pad" placeholder="준공일 (예: 2015)" placeholderTextColor="#9AA5B4" />
+            <TextInput style={styles.input} value={p.hhldCnt} onChangeText={p.setHhldCnt} keyboardType="number-pad" placeholder="세대수" placeholderTextColor="#9AA5B4" />
+            <TextInput style={styles.input} value={p.vlRat} onChangeText={p.setVlRat} keyboardType="number-pad" placeholder="용적률(%)" placeholderTextColor="#9AA5B4" />
+            <TextInput style={styles.input} value={p.totArea} onChangeText={p.setTotArea} keyboardType="number-pad" placeholder="연면적(㎡)" placeholderTextColor="#9AA5B4" />
+            <TextInput style={styles.input} value={p.totPkngCnt} onChangeText={p.setTotPkngCnt} keyboardType="number-pad" placeholder="총주차수" placeholderTextColor="#9AA5B4" />
           </>
         )}
       </View>

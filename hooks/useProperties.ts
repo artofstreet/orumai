@@ -23,6 +23,10 @@ interface PropertyRow {
   owner_name: string | null; owner_memo: string | null; relation: string | null;
   status: string; phone: string; memo: string;
   photos: string[] | null; created_at: string;
+  hhld_cnt?: number | null;
+  vl_rat?: number | null;
+  tot_area?: number | null;
+  tot_pkng_cnt?: number | null;
 }
 
 type PropertyInsert = Omit<PropertyRow, 'id' | 'created_at'>;
@@ -55,6 +59,10 @@ function rowToProperty(row: PropertyRow): Property {
     ownerName: row.owner_name ?? undefined,
     ownerMemo: row.owner_memo ?? undefined,
     relation: row.relation ?? undefined,
+    hhldCnt: row.hhld_cnt ?? undefined,
+    vlRat: row.vl_rat ?? undefined,
+    totArea: row.tot_area ?? undefined,
+    totPkngCnt: row.tot_pkng_cnt ?? undefined,
     status: row.status as Property['status'],
     phone: row.phone,
     memo: row.memo,
@@ -94,6 +102,10 @@ function addInputToInsertRow(input: AddPropertyInput): PropertyInsert {
     phone: input.phone,
     memo: input.memo,
     photos: input.photos ?? null,
+    hhld_cnt: input.hhldCnt ?? null,
+    vl_rat: input.vlRat ?? null,
+    tot_area: input.totArea ?? null,
+    tot_pkng_cnt: input.totPkngCnt ?? null,
   };
 }
 
@@ -128,6 +140,10 @@ function updatesToRowPatch(updates: UpdatePropertyInput): Partial<PropertyRow> {
   if (updates.phone !== undefined) patch.phone = updates.phone;
   if (updates.memo !== undefined) patch.memo = updates.memo;
   if (updates.photos !== undefined) patch.photos = updates.photos ?? null;
+  if (updates.hhldCnt !== undefined) patch.hhld_cnt = updates.hhldCnt ?? null;
+  if (updates.vlRat !== undefined) patch.vl_rat = updates.vlRat ?? null;
+  if (updates.totArea !== undefined) patch.tot_area = updates.totArea ?? null;
+  if (updates.totPkngCnt !== undefined) patch.tot_pkng_cnt = updates.totPkngCnt ?? null;
   return patch;
 }
 

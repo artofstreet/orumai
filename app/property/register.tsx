@@ -83,6 +83,10 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
   const [bCode, setBCode] = useState<string>('');
   const [bun, setBun] = useState<string>('');
   const [ji, setJi] = useState<string>('');
+  const [hhldCnt, setHhldCnt] = useState<string>('');
+  const [vlRat, setVlRat] = useState<string>('');
+  const [totArea, setTotArea] = useState<string>('');
+  const [totPkngCnt, setTotPkngCnt] = useState<string>('');
   useEffect(() => () => { clearTimeout(blurTimerRef.current ?? undefined); }, []);
   const { results: suggestions, search: searchAddress, clear: clearSuggestions } = useKakaoAddress();
   const fetchBuildingInfo = async (code: string, bunVal: string, jiVal: string) => {
@@ -107,6 +111,13 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
       if (b.totalArea) setSupplyAreaSqm(String(Math.round(Number(b.totalArea))));
       if (b.grndFlrCnt) setTotalFloors(String(b.grndFlrCnt));
       if (b.useAprDay) setBuiltYear(b.useAprDay.slice(0, 4));
+      const recap = json.recap;
+      if (recap) {
+        if (recap.hhldCnt) setHhldCnt(String(recap.hhldCnt));
+        if (recap.vlRat) setVlRat(String(recap.vlRat));
+        if (recap.totArea) setTotArea(String(Math.round(recap.totArea)));
+        if (recap.totPkngCnt) setTotPkngCnt(String(recap.totPkngCnt));
+      }
     } catch {
       // 국토부 API 실패 시 무시 (수동 입력 가능)
     }
@@ -159,6 +170,10 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
       ...(builtYear.trim() ? { builtYear: Number(builtYear.trim()) || undefined } : {}),
       ...(supplyAreaSqm.trim() ? { supplyArea: `${supplyAreaSqm.trim().replace(/㎡/g, '')}㎡` } : {}),
       ...(relation ? { relation } : {}),
+      ...(hhldCnt.trim() ? { hhldCnt: Number(hhldCnt.trim()) || undefined } : {}),
+      ...(vlRat.trim() ? { vlRat: Number(vlRat.trim()) || undefined } : {}),
+      ...(totArea.trim() ? { totArea: Number(totArea.trim()) || undefined } : {}),
+      ...(totPkngCnt.trim() ? { totPkngCnt: Number(totPkngCnt.trim()) || undefined } : {}),
     };
     try {
       if (isEdit) {
@@ -262,7 +277,7 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
       </View>
       <RegisterDealChips deal={deal} setDeal={setDeal} />
       <RegisterPropChips propType={propType} setPropType={setPropType} />
-      <RegisterMoreFieldsCompat deal={deal} salePrice={salePrice} setSalePrice={setSalePrice} jeonsePrice={jeonsePrice} setJeonsePrice={setJeonsePrice} deposit={deposit} setDeposit={setDeposit} monthly={monthly} setMonthly={setMonthly} areaSqm={areaSqm} setAreaSqm={setAreaSqm} supplyAreaSqm={supplyAreaSqm} setSupplyAreaSqm={setSupplyAreaSqm} floor={floor} setFloor={setFloor} totalFloors={totalFloors} setTotalFloors={setTotalFloors} direction={direction} setDirection={setDirection} moveInDate={moveInDate} setMoveInDate={setMoveInDate} parking={parking} setParking={setParking} heating={heating} setHeating={setHeating} builtYear={builtYear} setBuiltYear={setBuiltYear} ownerName={ownerName} setOwnerName={setOwnerName} relation={relation} setRelation={setRelation} ownerPhone={ownerPhone} onPhoneChange={onPhoneChange} ownerMemo={ownerMemo} setOwnerMemo={setOwnerMemo} memo={memo} setMemo={setMemo} />
+      <RegisterMoreFieldsCompat deal={deal} salePrice={salePrice} setSalePrice={setSalePrice} jeonsePrice={jeonsePrice} setJeonsePrice={setJeonsePrice} deposit={deposit} setDeposit={setDeposit} monthly={monthly} setMonthly={setMonthly} areaSqm={areaSqm} setAreaSqm={setAreaSqm} supplyAreaSqm={supplyAreaSqm} setSupplyAreaSqm={setSupplyAreaSqm} floor={floor} setFloor={setFloor} totalFloors={totalFloors} setTotalFloors={setTotalFloors} direction={direction} setDirection={setDirection} moveInDate={moveInDate} setMoveInDate={setMoveInDate} parking={parking} setParking={setParking} heating={heating} setHeating={setHeating} builtYear={builtYear} setBuiltYear={setBuiltYear} hhldCnt={hhldCnt} setHhldCnt={setHhldCnt} vlRat={vlRat} setVlRat={setVlRat} totArea={totArea} setTotArea={setTotArea} totPkngCnt={totPkngCnt} setTotPkngCnt={setTotPkngCnt} ownerName={ownerName} setOwnerName={setOwnerName} relation={relation} setRelation={setRelation} ownerPhone={ownerPhone} onPhoneChange={onPhoneChange} ownerMemo={ownerMemo} setOwnerMemo={setOwnerMemo} memo={memo} setMemo={setMemo} />
           </ScrollView>
         ) : (
           <KeyboardAwareScrollView
@@ -319,7 +334,7 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
             </View>
             <RegisterDealChips deal={deal} setDeal={setDeal} />
             <RegisterPropChips propType={propType} setPropType={setPropType} />
-            <RegisterMoreFieldsCompat deal={deal} salePrice={salePrice} setSalePrice={setSalePrice} jeonsePrice={jeonsePrice} setJeonsePrice={setJeonsePrice} deposit={deposit} setDeposit={setDeposit} monthly={monthly} setMonthly={setMonthly} areaSqm={areaSqm} setAreaSqm={setAreaSqm} supplyAreaSqm={supplyAreaSqm} setSupplyAreaSqm={setSupplyAreaSqm} floor={floor} setFloor={setFloor} totalFloors={totalFloors} setTotalFloors={setTotalFloors} direction={direction} setDirection={setDirection} moveInDate={moveInDate} setMoveInDate={setMoveInDate} parking={parking} setParking={setParking} heating={heating} setHeating={setHeating} builtYear={builtYear} setBuiltYear={setBuiltYear} ownerName={ownerName} setOwnerName={setOwnerName} relation={relation} setRelation={setRelation} ownerPhone={ownerPhone} onPhoneChange={onPhoneChange} ownerMemo={ownerMemo} setOwnerMemo={setOwnerMemo} memo={memo} setMemo={setMemo} />
+            <RegisterMoreFieldsCompat deal={deal} salePrice={salePrice} setSalePrice={setSalePrice} jeonsePrice={jeonsePrice} setJeonsePrice={setJeonsePrice} deposit={deposit} setDeposit={setDeposit} monthly={monthly} setMonthly={setMonthly} areaSqm={areaSqm} setAreaSqm={setAreaSqm} supplyAreaSqm={supplyAreaSqm} setSupplyAreaSqm={setSupplyAreaSqm} floor={floor} setFloor={setFloor} totalFloors={totalFloors} setTotalFloors={setTotalFloors} direction={direction} setDirection={setDirection} moveInDate={moveInDate} setMoveInDate={setMoveInDate} parking={parking} setParking={setParking} heating={heating} setHeating={setHeating} builtYear={builtYear} setBuiltYear={setBuiltYear} hhldCnt={hhldCnt} setHhldCnt={setHhldCnt} vlRat={vlRat} setVlRat={setVlRat} totArea={totArea} setTotArea={setTotArea} totPkngCnt={totPkngCnt} setTotPkngCnt={setTotPkngCnt} ownerName={ownerName} setOwnerName={setOwnerName} relation={relation} setRelation={setRelation} ownerPhone={ownerPhone} onPhoneChange={onPhoneChange} ownerMemo={ownerMemo} setOwnerMemo={setOwnerMemo} memo={memo} setMemo={setMemo} />
           </KeyboardAwareScrollView>
         )}
       </View>

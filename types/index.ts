@@ -65,6 +65,14 @@ export type Property = {
   parking?: string;
   // 난방방식(선택, 예: 지역난방)
   heating?: string;
+  // 세대수(선택, 총괄표제부)
+  hhldCnt?: number;
+  // 용적률(선택, 총괄표제부)
+  vlRat?: number;
+  // 연면적(선택, 총괄표제부)
+  totArea?: number;
+  // 총주차수(선택, 총괄표제부)
+  totPkngCnt?: number;
   // 집주인명(선택)
   ownerName?: string;
   // 집주인메모(선택)

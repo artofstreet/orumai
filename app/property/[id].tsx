@@ -211,6 +211,14 @@ export default function PropertyDetailScreen() {
     { label: '준공일', value: property.builtYear ? `${property.builtYear}년` : '-' },
   ];
 
+  // 스펙 3번째 줄: 세대수, 용적률, 연면적, 총주차수 (총괄표제부)
+  const specs3 = [
+    { label: '세대수', value: property.hhldCnt ? `${property.hhldCnt}세대` : '-' },
+    { label: '용적률', value: property.vlRat ? `${property.vlRat}%` : '-' },
+    { label: '연면적', value: property.totArea ? `${property.totArea}㎡` : '-' },
+    { label: '총주차', value: property.totPkngCnt ? `${property.totPkngCnt}대` : '-' },
+  ];
+
   const webSpecsRow1 = [
     { label: '전용면적', value: specs[0]?.value ?? '—' },
     specs[1],
@@ -222,6 +230,12 @@ export default function PropertyDetailScreen() {
     specs2[1],
     specs2[2],
     specs2[3],
+  ];
+  const webSpecsRow3 = [
+    specs3[0],
+    specs3[1],
+    specs3[2],
+    specs3[3],
   ];
 
   // 국토부 실거래가(rt.molit.go.kr) — 주소를 쿼리로 전달(사이트가 무시하면 메인으로 열림)
@@ -437,6 +451,14 @@ export default function PropertyDetailScreen() {
                       </View>
                     ))}
                   </View>
+                  <View style={[styles.specRow, styles.specRowBottom, specLayoutStyles.specRow]}>
+                    {webSpecsRow3.map((spec, idx) => (
+                      <View key={`s3-${idx}`} style={[styles.specCellUltra2col, specLayoutStyles.specItem, idx < specs3.length - 1 && styles.specCellRight]}>
+                        <Text style={[styles.specLabel, specFontStyles.specLabel, specLayoutStyles.specTextVertical]} numberOfLines={1} ellipsizeMode="tail">{spec.label}</Text>
+                        <Text style={[styles.specValue, specFontStyles.specValue, specLayoutStyles.specTextVertical]} numberOfLines={1} ellipsizeMode="tail">{spec.value}</Text>
+                      </View>
+                    ))}
+                  </View>
                 </>
               ) : (
                 <>
@@ -451,6 +473,14 @@ export default function PropertyDetailScreen() {
                   <View style={[styles.specRow, specLayoutStyles.specRow]}>
                     {webSpecsRow2.map((spec, idx) => (
                       <View key={`w2-${idx}`} style={[styles.specCell, specLayoutStyles.specItem, idx < webSpecsRow2.length - 1 && styles.specCellRight]}>
+                        <Text style={[styles.specLabel, specFontStyles.specLabel]} numberOfLines={1} ellipsizeMode="tail">{spec.label}</Text>
+                        <Text style={[styles.specValue, specFontStyles.specValue]} numberOfLines={1} ellipsizeMode="tail">{spec.value}</Text>
+                      </View>
+                    ))}
+                  </View>
+                  <View style={[styles.specRow, specLayoutStyles.specRow]}>
+                    {webSpecsRow3.map((spec, idx) => (
+                      <View key={`w3-${idx}`} style={[styles.specCell, specLayoutStyles.specItem, idx < webSpecsRow3.length - 1 && styles.specCellRight]}>
                         <Text style={[styles.specLabel, specFontStyles.specLabel]} numberOfLines={1} ellipsizeMode="tail">{spec.label}</Text>
                         <Text style={[styles.specValue, specFontStyles.specValue]} numberOfLines={1} ellipsizeMode="tail">{spec.value}</Text>
                       </View>
@@ -476,6 +506,17 @@ export default function PropertyDetailScreen() {
                     <View
                       key={`s2-${idx}`}
                       style={[specMobileStyles.specCellMobile, idx < specs2.length - 1 && specMobileStyles.specCellMobileRight]}
+                    >
+                      <Text style={specMobileStyles.specLabelMobile}>{spec.label}</Text>
+                      <Text style={specMobileStyles.specValueMobile}>{spec.value}</Text>
+                    </View>
+                  ))}
+                </View>
+                <View style={specMobileStyles.specRowMobile}>
+                  {specs3.map((spec, idx) => (
+                    <View
+                      key={`s3-${idx}`}
+                      style={[specMobileStyles.specCellMobile, idx < specs3.length - 1 && specMobileStyles.specCellMobileRight]}
                     >
                       <Text style={specMobileStyles.specLabelMobile}>{spec.label}</Text>
                       <Text style={specMobileStyles.specValueMobile}>{spec.value}</Text>

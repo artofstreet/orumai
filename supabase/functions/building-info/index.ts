@@ -33,12 +33,36 @@ serve(async (req: Request) => {
       );
     }
 
-    // 국토부 건축물대장 표제부 API 호출
-    const url =
+    const toNumber = (value: unknown, fallback = 0): number => {
+      if (typeof value === "number") return Number.isFinite(value) ? value : fallback;
+      if (typeof value === "string") {
+        const n = Number(value);
+        return Number.isFinite(n) ? n : fallback;
+      }
+      return fallback;
+    };
+
+    // 국토부 건축물대장 표제부 API 호출 (기존 유지)
+    const titleUrl =
       `http://apis.data.go.kr/1613000/BldRgstHubService/getBrTitleInfo?serviceKey=${serviceKey}&sigunguCd=${sigunguCd}&bjdongCd=${bjdongCd}&bun=${bun || "0000"}&ji=${ji || "0000"}&_type=json&numOfRows=100`;
 
-    const response = await fetch(url);
-    const data = await response.json();
+    // 국토부 건축물대장 총괄표제부 API 호출 (추가)
+    const recapUrl =
+      `http://apis.data.go.kr/1613000/BldRgstHubService/getBrRecapTitleInfo?serviceKey=${serviceKey}&sigunguCd=${sigunguCd}&bjdongCd=${bjdongCd}&bun=${bun || "0000"}&ji=${ji || "0000"}&_type=json&numOfRows=100`;
+
+    // 두 API를 동시에 호출하여 속도 최적화
+    const titlePromise = fetch(titleUrl).then((res) => res.json());
+    const recapPromise = (async () => {
+      try {
+        const res = await fetch(recapUrl);
+        return await res.json();
+      } catch {
+        // 총괄표제부 실패해도 표제부는 정상 반환되어야 함
+        return null;
+      }
+    })();
+
+    const [data, recapData] = await Promise.all([titlePromise, recapPromise]);
 
     // 응답에서 건물 정보 추출
     const items = data?.response?.body?.items?.item;
@@ -64,8 +88,28 @@ serve(async (req: Request) => {
       dongNm: item.dongNm ?? "", // 동명칭
     }));
 
+    const recap = (() => {
+      if (!recapData) return null;
+
+      const responseObj = (recapData as Record<string, unknown>).response as
+        | Record<string, unknown>
+        | undefined;
+      const body = responseObj?.body as Record<string, unknown> | undefined;
+      const itemsObj = body?.items as Record<string, unknown> | undefined;
+      const item = itemsObj?.item as unknown;
+      if (!item) return null;
+
+      const recapItem = (Array.isArray(item) ? item[0] : item) as Record<string, unknown>;
+      return {
+        totPkngCnt: toNumber(recapItem.totPkngCnt), // 총주차수
+        hhldCnt: toNumber(recapItem.hhldCnt), // 세대수
+        totArea: toNumber(recapItem.totArea), // 연면적
+        vlRat: toNumber(recapItem.vlRat), // 용적률
+      };
+    })();
+
     return new Response(
-      JSON.stringify({ buildings: results }),
+      JSON.stringify({ buildings: results, recap }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   } catch (error: unknown) {
