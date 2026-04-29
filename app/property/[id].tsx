@@ -92,12 +92,12 @@ const specMobileStyles = StyleSheet.create({
     borderRightColor: '#F1F5F9',
   },
   specLabelMobile: {
-    fontSize: 13,
+    fontSize: 14,
     color: '#94A3B8',
     fontWeight: '500',
   },
   specValueMobile: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: '700',
     color: '#1E293B',
     alignSelf: 'stretch',
@@ -152,7 +152,7 @@ export default function PropertyDetailScreen() {
   const layoutWidth   = useMemo(() => getContentMaxWidth(windowWidth), [windowWidth]);
   const narrow        = windowWidth < 768;
   const isUltraWide   = windowWidth >= 1920;
-  const headerTitleSize = windowWidth < 400 ? 18 : windowWidth < 768 ? 20 : 22;
+  const headerTitleSize = windowWidth < 400 ? 20 : windowWidth < 768 ? 22 : 22;
 
   const { getPropertyById, deleteProperty, properties } = usePropertiesContext();
 

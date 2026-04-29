@@ -28,7 +28,7 @@ export const detailStyles = StyleSheet.create({
   headerAddr:            { color: '#374151', fontSize: isWeb ? 17 : 15, fontWeight: '500' },
   headerBottom:          { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 2, gap: 10 },
   headerBottomNarrow:    { flexDirection: 'column', alignItems: 'flex-start' },
-  headerPrice:           { fontSize: isWeb ? 23 : 20, fontWeight: '800', color: text },
+  headerPrice:           { fontSize: isWeb ? 23 : 22, fontWeight: '800', color: text },
   headerBtnGroup:        { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   headerBtnGroupNarrow:  { width: '100%', justifyContent: 'flex-start' },
   headerBtn:             { borderWidth: 1, borderColor: border, borderRadius: 6, paddingHorizontal: 9, paddingVertical: 5 },
