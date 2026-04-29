@@ -76,10 +76,10 @@ const specMobileStyles = StyleSheet.create({
   specRowMobile: {
     flexDirection: 'row',
     alignItems: 'stretch',
-    flex: 1,
+    width: '100%',
   },
   specCellMobile: {
-    flex: 1,
+    width: '50%',
     minWidth: 0,
     paddingVertical: 12,
     paddingHorizontal: 6,
@@ -92,12 +92,12 @@ const specMobileStyles = StyleSheet.create({
     borderRightColor: '#F1F5F9',
   },
   specLabelMobile: {
-    fontSize: 11,
+    fontSize: 13,
     color: '#94A3B8',
     fontWeight: '500',
   },
   specValueMobile: {
-    fontSize: 12,
+    fontSize: 15,
     fontWeight: '700',
     color: '#1E293B',
     alignSelf: 'stretch',
@@ -431,7 +431,7 @@ export default function PropertyDetailScreen() {
         </View>
 
         <View style={[styles.infoRow]}>
-          <View style={[styles.specGrid, narrow && styles.specGridFull, isUltraWide && styles.specGridUltra, !narrow && styles.specGridFlex, Platform.OS === 'web' && !isUltraWide && { flexDirection: 'column' }]}>
+          <View style={[styles.specGrid, narrow && styles.specGridFull, isUltraWide && styles.specGridUltra, !narrow && styles.specGridFlex, Platform.OS === 'web' && !isUltraWide && { flexDirection: 'column' }, Platform.OS !== 'web' && { flexDirection: 'column' }]}>
             {Platform.OS === 'web' ? (
               isUltraWide ? (
                 <>
@@ -490,39 +490,25 @@ export default function PropertyDetailScreen() {
               )
             ) : (
               <>
-                <View style={specMobileStyles.specRowMobile}>
-                  {specs.map((spec, idx) => (
-                    <View
-                      key={spec.label}
-                      style={[specMobileStyles.specCellMobile, idx < specs.length - 1 && specMobileStyles.specCellMobileRight]}
-                    >
-                      <Text style={specMobileStyles.specLabelMobile}>{spec.label}</Text>
-                      <Text style={specMobileStyles.specValueMobile}>{spec.value}</Text>
+                {[
+                  [specs[0], specs[1]],
+                  [specs[2], specs[3]],
+                  [specs2[0], specs2[1]],
+                  [specs2[2], specs2[3]],
+                  [specs3[0], specs3[1]],
+                  [specs3[2], specs3[3]],
+                ].map((row, rowIdx) => (
+                  <View key={`mrow-${rowIdx}`} style={specMobileStyles.specRowMobile}>
+                    <View style={[specMobileStyles.specCellMobile, specMobileStyles.specCellMobileRight]}>
+                      <Text style={specMobileStyles.specLabelMobile}>{row[0].label}</Text>
+                      <Text style={specMobileStyles.specValueMobile}>{row[0].value}</Text>
                     </View>
-                  ))}
-                </View>
-                <View style={specMobileStyles.specRowMobile}>
-                  {specs2.map((spec, idx) => (
-                    <View
-                      key={`s2-${idx}`}
-                      style={[specMobileStyles.specCellMobile, idx < specs2.length - 1 && specMobileStyles.specCellMobileRight]}
-                    >
-                      <Text style={specMobileStyles.specLabelMobile}>{spec.label}</Text>
-                      <Text style={specMobileStyles.specValueMobile}>{spec.value}</Text>
+                    <View style={specMobileStyles.specCellMobile}>
+                      <Text style={specMobileStyles.specLabelMobile}>{row[1].label}</Text>
+                      <Text style={specMobileStyles.specValueMobile}>{row[1].value}</Text>
                     </View>
-                  ))}
-                </View>
-                <View style={specMobileStyles.specRowMobile}>
-                  {specs3.map((spec, idx) => (
-                    <View
-                      key={`s3-${idx}`}
-                      style={[specMobileStyles.specCellMobile, idx < specs3.length - 1 && specMobileStyles.specCellMobileRight]}
-                    >
-                      <Text style={specMobileStyles.specLabelMobile}>{spec.label}</Text>
-                      <Text style={specMobileStyles.specValueMobile}>{spec.value}</Text>
-                    </View>
-                  ))}
-                </View>
+                  </View>
+                ))}
               </>
             )}
           </View>
