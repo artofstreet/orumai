@@ -83,10 +83,10 @@ export default function PropertyRegisterScreen({ embedded = false, initialData }
   const [bCode, setBCode] = useState<string>('');
   const [bun, setBun] = useState<string>('');
   const [ji, setJi] = useState<string>('');
-  const [hhldCnt, setHhldCnt] = useState<string>('');
-  const [vlRat, setVlRat] = useState<string>('');
-  const [totArea, setTotArea] = useState<string>('');
-  const [totPkngCnt, setTotPkngCnt] = useState<string>('');
+  const [hhldCnt, setHhldCnt] = useState<string>(() => str(d?.hhldCnt));
+  const [vlRat, setVlRat] = useState<string>(() => str(d?.vlRat));
+  const [totArea, setTotArea] = useState<string>(() => str(d?.totArea));
+  const [totPkngCnt, setTotPkngCnt] = useState<string>(() => str(d?.totPkngCnt));
   useEffect(() => () => { clearTimeout(blurTimerRef.current ?? undefined); }, []);
   const { results: suggestions, search: searchAddress, clear: clearSuggestions } = useKakaoAddress();
   const fetchBuildingInfo = async (code: string, bunVal: string, jiVal: string) => {
