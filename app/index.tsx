@@ -79,6 +79,6 @@ const styles = StyleSheet.create({
   main:     { flex: 1, justifyContent: 'flex-start', alignItems: 'center', gap: 14 },
   logo:     { fontWeight: '800' },
   logoO:    { color: text },
-  logoAI:   { color: primary },
+  logoAI:   { color: '#E8833A' },
   subtitle: { color: text2, fontSize: 16, fontWeight: '600' },
 });

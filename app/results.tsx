@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
   searchRow:      { flexDirection: 'row', alignItems: 'center', width: '100%', maxWidth: 680, alignSelf: 'center', gap: 16 },
   logoLine:       { fontWeight: '800' },
   logoO:          { color: text, fontSize: 20 },
-  logoAI:         { color: primary, fontSize: 20 },
+  logoAI:         { color: '#E8833A', fontSize: 20 },
   searchBarSlot:  { flex: 1, minWidth: 0 },
   summaryText:    { fontSize: 12, color: '#64748B', fontWeight: '400' },
   summaryCount:   { fontSize: 12, color: '#0F172A', fontWeight: '700' },
