@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import * as Clipboard from 'expo-clipboard';
 import AdCopyModal from '@/components/AdCopyModal';
-import { detailStyles } from '@/components/property/detailStyles';
+import { detailStyles, specFontStyles, specLayoutStyles, specMobileStyles, addrBtnStyles } from '@/components/property/detailStyles';
 import PropertyCarousel from '@/components/PropertyCarousel';
 import { BADGE_COLORS, text } from '@/constants/colors';
 import { getContentMaxWidth, getHorizontalPadding } from '@/constants/theme';
@@ -31,121 +31,6 @@ const getBadge = (key: string) =>
 
 const DEAL_PRICE_COLOR: Record<string, string> = { 매매: '#1D4ED8', 전세: '#16A34A', 월세: '#DB2777' };
 const isWeb = Platform.OS === 'web';
-/** 매물 스펙 라벨·값 — detailStyles 위에 절대 크기·굵기 덮어씀 */
-const specFontStyles = StyleSheet.create({
-  // 스펙 한 칸 안에서 "라벨 값"이 한 줄로 보이도록 조정
-  specLabel: {
-    fontSize: isWeb ? 15 : 13,
-    lineHeight: 18,
-    fontWeight: '500',
-    color: '#64748B',
-    marginRight: 6,
-    flexShrink: 0,
-    includeFontPadding: false,
-  }, // 면적·층수 등 라벨(값보다 작고 연한 톤)
-  specValue: {
-    fontSize: isWeb ? 17 : 15,
-    fontWeight: '700',
-    color: '#0F172A',
-    lineHeight: 18,
-    flex: 1,
-    flexShrink: 1,
-    includeFontPadding: false,
-  }, // 값은 굵게, 남은 공간을 쓰되 줄어듦
-});
-/** 스펙 행·칸 정렬 (detailStyles.specRow/specCell 위에만 적용) */
-const specLayoutStyles = StyleSheet.create({
-  specRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-start',
-  },
-  specItem: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    justifyContent: 'flex-start',
-    gap: 6,
-    overflow: 'hidden',
-  },
-  specTextVertical: { textAlignVertical: 'center' },
-});
-
-/** 모바일 전용: 스펙 4칸 — 라벨 위·값 아래(줄바꿈·말줄임 없음) */
-const specMobileStyles = StyleSheet.create({
-  specRowMobile: {
-    flexDirection: 'row',
-    alignItems: 'stretch',
-    width: '100%',
-  },
-  specCellMobile: {
-    width: '50%',
-    minWidth: 0,
-    paddingVertical: 12,
-    paddingHorizontal: 6,
-    flexDirection: 'column',
-    gap: 8,
-    justifyContent: 'flex-start',
-  },
-  specCellMobileRight: {
-    borderRightWidth: 1,
-    borderRightColor: '#F1F5F9',
-  },
-  specLabelMobile: {
-    fontSize: 14,
-    color: '#94A3B8',
-    fontWeight: '500',
-  },
-  specValueMobile: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#1E293B',
-    alignSelf: 'stretch',
-  },
-});
-
-// 지도/주소 복사 버튼 스타일 (detailStyles.ts가 아닌 이 파일 내부에서만 추가)
-const localStyles = StyleSheet.create({
-  addrBtnRow: {
-    flexDirection: 'row',
-    gap: 8,
-    marginTop: 0,
-  },
-  addrBtnMap: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 9,
-    paddingVertical: 5,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: '#FDBA74',
-    backgroundColor: '#FFF7ED',
-  },
-  addrBtnMapText: {
-    fontSize: 12,
-    color: '#C2410C',
-    fontWeight: '600',
-  },
-  addrBtnCopy: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 9,
-    paddingVertical: 5,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: '#CBD5E1',
-    backgroundColor: 'transparent',
-  },
-  addrBtnCopyText: {
-    fontSize: 12,
-    color: '#334155',
-    fontWeight: '500',
-  },
-});
-
-const styles = { ...detailStyles, ...localStyles };
 export default function PropertyDetailScreen() {
   const { width: windowWidth } = useWindowDimensions();
   const layoutPadding = useMemo(() => getHorizontalPadding(windowWidth), [windowWidth]);
@@ -172,11 +57,11 @@ export default function PropertyDetailScreen() {
 
   if (!property) {
     return (
-      <View style={styles.notFound}>
+      <View style={detailStyles.notFound}>
         <TouchableOpacity onPress={() => router.back()}>
-          <Text style={styles.notFoundBack}>← 뒤로</Text>
+          <Text style={detailStyles.notFoundBack}>← 뒤로</Text>
         </TouchableOpacity>
-        <Text style={styles.notFoundText}>매물을 찾을 수 없어요.</Text>
+        <Text style={detailStyles.notFoundText}>매물을 찾을 수 없어요.</Text>
       </View>
     );
   }
@@ -342,62 +227,62 @@ export default function PropertyDetailScreen() {
   }, [property.addr]);
 
   return (
-    <ScrollView style={styles.page} contentContainerStyle={styles.pageScrollContent} keyboardShouldPersistTaps="handled" nestedScrollEnabled={true}>
-      <View style={[styles.container, { paddingHorizontal: layoutPadding, maxWidth: layoutWidth }]}>
-        <View style={[styles.header, { paddingVertical: layoutPadding }]}>
-          <View style={styles.headerTopRow}>
-            <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
+    <ScrollView style={detailStyles.page} contentContainerStyle={detailStyles.pageScrollContent} keyboardShouldPersistTaps="handled" nestedScrollEnabled={true}>
+      <View style={[detailStyles.container, { paddingHorizontal: layoutPadding, maxWidth: layoutWidth }]}>
+        <View style={[detailStyles.header, { paddingVertical: layoutPadding }]}>
+          <View style={detailStyles.headerTopRow}>
+            <TouchableOpacity onPress={() => router.back()} style={detailStyles.backBtn}>
               <Ionicons name="arrow-back" size={24} color={text} />
             </TouchableOpacity>
-            <View style={styles.badgeRow}>
-              <View style={[styles.badge, { backgroundColor: typeBadge.bg }]}>
-                <Text style={[styles.badgeText, { color: typeBadge.text }]}>{property.type}</Text>
+            <View style={detailStyles.badgeRow}>
+              <View style={[detailStyles.badge, { backgroundColor: typeBadge.bg }]}>
+                <Text style={[detailStyles.badgeText, { color: typeBadge.text }]}>{property.type}</Text>
               </View>
-              <View style={[styles.badge, { backgroundColor: dealBadge.bg }]}>
-                <Text style={[styles.badgeText, { color: dealBadge.text }]}>{property.deal}</Text>
+              <View style={[detailStyles.badge, { backgroundColor: dealBadge.bg }]}>
+                <Text style={[detailStyles.badgeText, { color: dealBadge.text }]}>{property.deal}</Text>
               </View>
             </View>
           </View>
 
-          <Text style={[styles.headerTitle, { fontSize: isWeb ? headerTitleSize + 3 : headerTitleSize }]} numberOfLines={3}>{title}</Text>
-          <Text style={[styles.headerAddr, { color: '#374151', fontSize: 16, fontWeight: '500', marginTop: 2 }]}>{property.addr}</Text>
+          <Text style={[detailStyles.headerTitle, { fontSize: isWeb ? headerTitleSize + 3 : headerTitleSize }]} numberOfLines={3}>{title}</Text>
+          <Text style={[detailStyles.headerAddr, { color: '#374151', fontSize: 16, fontWeight: '500', marginTop: 2 }]}>{property.addr}</Text>
           {/* 지도/주소 복사 버튼 */}
-          <View style={[styles.addrBtnRow, { marginTop: 2 }]}>
-            <TouchableOpacity style={styles.addrBtnMap} onPress={openMapOptions}>
+          <View style={[addrBtnStyles.addrBtnRow, { marginTop: 2 }]}>
+            <TouchableOpacity style={addrBtnStyles.addrBtnMap} onPress={openMapOptions}>
               <Ionicons name="navigate-outline" size={13} color="#C2410C" />
-              <Text style={styles.addrBtnMapText}>지도/길찾기</Text>
+              <Text style={addrBtnStyles.addrBtnMapText}>지도/길찾기</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.addrBtnCopy} onPress={copyAddress}>
+            <TouchableOpacity style={addrBtnStyles.addrBtnCopy} onPress={copyAddress}>
               <Ionicons name="copy-outline" size={13} color="#64748B" />
-              <Text style={styles.addrBtnCopyText}>주소 복사</Text>
+              <Text style={addrBtnStyles.addrBtnCopyText}>주소 복사</Text>
             </TouchableOpacity>
           </View>
 
-          <View style={[styles.headerBottom, narrow && styles.headerBottomNarrow]}>
-            <Text style={[styles.headerPrice, { color: priceColor }]}>{property.deal} {property.price}</Text>
-            <View style={[styles.headerBtnGroup, narrow && styles.headerBtnGroupNarrow]}>
-              <TouchableOpacity style={styles.headerBtn} onPress={openMolitRealTrade}>
-                <Text style={styles.headerBtnText}>시세조회</Text>
+          <View style={[detailStyles.headerBottom, narrow && detailStyles.headerBottomNarrow]}>
+            <Text style={[detailStyles.headerPrice, { color: priceColor }]}>{property.deal} {property.price}</Text>
+            <View style={[detailStyles.headerBtnGroup, narrow && detailStyles.headerBtnGroupNarrow]}>
+              <TouchableOpacity style={detailStyles.headerBtn} onPress={openMolitRealTrade}>
+                <Text style={detailStyles.headerBtnText}>시세조회</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.headerBtn} onPress={() => setAdCopyVisible(true)}>
-                <Text style={styles.headerBtnText}>광고문구</Text>
+              <TouchableOpacity style={detailStyles.headerBtn} onPress={() => setAdCopyVisible(true)}>
+                <Text style={detailStyles.headerBtnText}>광고문구</Text>
               </TouchableOpacity>
               {Platform.OS === 'web' && (
                 <>
                   {/* 웹: 게시용인쇄 / 상담용인쇄 A4 템플릿 */}
-                  <TouchableOpacity style={styles.headerBtn} onPress={() => printPropertyPost(property)}>
-                    <Text style={styles.headerBtnText}>게시용인쇄</Text>
+                  <TouchableOpacity style={detailStyles.headerBtn} onPress={() => printPropertyPost(property)}>
+                    <Text style={detailStyles.headerBtnText}>게시용인쇄</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.headerBtn} onPress={() => printPropertyConsult(property)}>
-                    <Text style={styles.headerBtnText}>상담용인쇄</Text>
+                  <TouchableOpacity style={detailStyles.headerBtn} onPress={() => printPropertyConsult(property)}>
+                    <Text style={detailStyles.headerBtnText}>상담용인쇄</Text>
                   </TouchableOpacity>
                 </>
               )}
-              <TouchableOpacity style={styles.headerBtn} onPress={() => openRegisterPanel('property', property.id, property as Record<string, unknown>)}>
-                <Text style={styles.headerBtnText}>편집</Text>
+              <TouchableOpacity style={detailStyles.headerBtn} onPress={() => openRegisterPanel('property', property.id, property as Record<string, unknown>)}>
+                <Text style={detailStyles.headerBtnText}>편집</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={styles.headerBtn}
+                style={detailStyles.headerBtn}
                 onPress={() => {
                   if (Platform.OS === 'web') {
                     if (window.confirm('정말로 삭제하시겠습니까?')) {
@@ -410,7 +295,7 @@ export default function PropertyDetailScreen() {
                     ]);
                   }
                 }}>
-                <Text style={[styles.headerBtnText, styles.headerBtnDel]}>삭제</Text>
+                <Text style={[detailStyles.headerBtnText, detailStyles.headerBtnDel]}>삭제</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -418,7 +303,7 @@ export default function PropertyDetailScreen() {
 
         <View onStartShouldSetResponder={() => true}>
           {isUltraWide ? (
-            <View style={styles.carouselUltraWide}>
+            <View style={detailStyles.carouselUltraWide}>
               <PropertyCarousel photos={photos} />
             </View>
           ) : carouselMidDesktopClip ? (
@@ -430,59 +315,59 @@ export default function PropertyDetailScreen() {
           )}
         </View>
 
-        <View style={[styles.infoRow]}>
-          <View style={[styles.specGrid, narrow && styles.specGridFull, isUltraWide && styles.specGridUltra, !narrow && styles.specGridFlex, Platform.OS === 'web' && !isUltraWide && { flexDirection: 'column' }, Platform.OS !== 'web' && { flexDirection: 'column' }]}>
+        <View style={[detailStyles.infoRow]}>
+          <View style={[detailStyles.specGrid, narrow && detailStyles.specGridFull, isUltraWide && detailStyles.specGridUltra, !narrow && detailStyles.specGridFlex, Platform.OS === 'web' && !isUltraWide && { flexDirection: 'column' }, Platform.OS !== 'web' && { flexDirection: 'column' }]}>
             {Platform.OS === 'web' ? (
               isUltraWide ? (
                 <>
-                  <View style={[styles.specRow, styles.specRowBottom, specLayoutStyles.specRow]}>
+                  <View style={[detailStyles.specRow, detailStyles.specRowBottom, specLayoutStyles.specRow]}>
                     {webSpecsRow1.map((spec, idx) => (
-                      <View key={spec.label} style={[styles.specCellUltra2col, specLayoutStyles.specItem, idx < specs.length - 1 && styles.specCellRight]}>
-                        <Text style={[styles.specLabel, specFontStyles.specLabel, specLayoutStyles.specTextVertical]} numberOfLines={1} ellipsizeMode="tail">{spec.label}</Text>
-                        <Text style={[styles.specValue, specFontStyles.specValue, specLayoutStyles.specTextVertical]} numberOfLines={1} ellipsizeMode="tail">{spec.value}</Text>
+                      <View key={spec.label} style={[detailStyles.specCellUltra2col, specLayoutStyles.specItem, idx < specs.length - 1 && detailStyles.specCellRight]}>
+                        <Text style={[detailStyles.specLabel, specFontStyles.specLabel, specLayoutStyles.specTextVertical]} numberOfLines={1} ellipsizeMode="tail">{spec.label}</Text>
+                        <Text style={[detailStyles.specValue, specFontStyles.specValue, specLayoutStyles.specTextVertical]} numberOfLines={1} ellipsizeMode="tail">{spec.value}</Text>
                       </View>
                     ))}
                   </View>
-                  <View style={[styles.specRow, styles.specRowBottom, specLayoutStyles.specRow]}>
+                  <View style={[detailStyles.specRow, detailStyles.specRowBottom, specLayoutStyles.specRow]}>
                     {webSpecsRow2.map((spec, idx) => (
-                      <View key={`s2-${idx}`} style={[styles.specCellUltra2col, specLayoutStyles.specItem, idx < specs2.length - 1 && styles.specCellRight]}>
-                        <Text style={[styles.specLabel, specFontStyles.specLabel, specLayoutStyles.specTextVertical]} numberOfLines={1} ellipsizeMode="tail">{spec.label}</Text>
-                        <Text style={[styles.specValue, specFontStyles.specValue, specLayoutStyles.specTextVertical]} numberOfLines={1} ellipsizeMode="tail">{spec.value}</Text>
+                      <View key={`s2-${idx}`} style={[detailStyles.specCellUltra2col, specLayoutStyles.specItem, idx < specs2.length - 1 && detailStyles.specCellRight]}>
+                        <Text style={[detailStyles.specLabel, specFontStyles.specLabel, specLayoutStyles.specTextVertical]} numberOfLines={1} ellipsizeMode="tail">{spec.label}</Text>
+                        <Text style={[detailStyles.specValue, specFontStyles.specValue, specLayoutStyles.specTextVertical]} numberOfLines={1} ellipsizeMode="tail">{spec.value}</Text>
                       </View>
                     ))}
                   </View>
-                  <View style={[styles.specRow, styles.specRowBottom, specLayoutStyles.specRow]}>
+                  <View style={[detailStyles.specRow, detailStyles.specRowBottom, specLayoutStyles.specRow]}>
                     {webSpecsRow3.map((spec, idx) => (
-                      <View key={`s3-${idx}`} style={[styles.specCellUltra2col, specLayoutStyles.specItem, idx < specs3.length - 1 && styles.specCellRight]}>
-                        <Text style={[styles.specLabel, specFontStyles.specLabel, specLayoutStyles.specTextVertical]} numberOfLines={1} ellipsizeMode="tail">{spec.label}</Text>
-                        <Text style={[styles.specValue, specFontStyles.specValue, specLayoutStyles.specTextVertical]} numberOfLines={1} ellipsizeMode="tail">{spec.value}</Text>
+                      <View key={`s3-${idx}`} style={[detailStyles.specCellUltra2col, specLayoutStyles.specItem, idx < specs3.length - 1 && detailStyles.specCellRight]}>
+                        <Text style={[detailStyles.specLabel, specFontStyles.specLabel, specLayoutStyles.specTextVertical]} numberOfLines={1} ellipsizeMode="tail">{spec.label}</Text>
+                        <Text style={[detailStyles.specValue, specFontStyles.specValue, specLayoutStyles.specTextVertical]} numberOfLines={1} ellipsizeMode="tail">{spec.value}</Text>
                       </View>
                     ))}
                   </View>
                 </>
               ) : (
                 <>
-                  <View style={[styles.specRow, styles.specRowBottom, specLayoutStyles.specRow]}>
+                  <View style={[detailStyles.specRow, detailStyles.specRowBottom, specLayoutStyles.specRow]}>
                     {webSpecsRow1.map((spec, idx) => (
-                      <View key={spec.label} style={[styles.specCell, specLayoutStyles.specItem, idx < webSpecsRow1.length - 1 && styles.specCellRight]}>
-                        <Text style={[styles.specLabel, specFontStyles.specLabel]} numberOfLines={1} ellipsizeMode="tail">{spec.label}</Text>
-                        <Text style={[styles.specValue, specFontStyles.specValue]} numberOfLines={1} ellipsizeMode="tail">{spec.value}</Text>
+                      <View key={spec.label} style={[detailStyles.specCell, specLayoutStyles.specItem, idx < webSpecsRow1.length - 1 && detailStyles.specCellRight]}>
+                        <Text style={[detailStyles.specLabel, specFontStyles.specLabel]} numberOfLines={1} ellipsizeMode="tail">{spec.label}</Text>
+                        <Text style={[detailStyles.specValue, specFontStyles.specValue]} numberOfLines={1} ellipsizeMode="tail">{spec.value}</Text>
                       </View>
                     ))}
                   </View>
-                  <View style={[styles.specRow, specLayoutStyles.specRow]}>
+                  <View style={[detailStyles.specRow, specLayoutStyles.specRow]}>
                     {webSpecsRow2.map((spec, idx) => (
-                      <View key={`w2-${idx}`} style={[styles.specCell, specLayoutStyles.specItem, idx < webSpecsRow2.length - 1 && styles.specCellRight]}>
-                        <Text style={[styles.specLabel, specFontStyles.specLabel]} numberOfLines={1} ellipsizeMode="tail">{spec.label}</Text>
-                        <Text style={[styles.specValue, specFontStyles.specValue]} numberOfLines={1} ellipsizeMode="tail">{spec.value}</Text>
+                      <View key={`w2-${idx}`} style={[detailStyles.specCell, specLayoutStyles.specItem, idx < webSpecsRow2.length - 1 && detailStyles.specCellRight]}>
+                        <Text style={[detailStyles.specLabel, specFontStyles.specLabel]} numberOfLines={1} ellipsizeMode="tail">{spec.label}</Text>
+                        <Text style={[detailStyles.specValue, specFontStyles.specValue]} numberOfLines={1} ellipsizeMode="tail">{spec.value}</Text>
                       </View>
                     ))}
                   </View>
-                  <View style={[styles.specRow, specLayoutStyles.specRow]}>
+                  <View style={[detailStyles.specRow, specLayoutStyles.specRow]}>
                     {webSpecsRow3.map((spec, idx) => (
-                      <View key={`w3-${idx}`} style={[styles.specCell, specLayoutStyles.specItem, idx < webSpecsRow3.length - 1 && styles.specCellRight]}>
-                        <Text style={[styles.specLabel, specFontStyles.specLabel]} numberOfLines={1} ellipsizeMode="tail">{spec.label}</Text>
-                        <Text style={[styles.specValue, specFontStyles.specValue]} numberOfLines={1} ellipsizeMode="tail">{spec.value}</Text>
+                      <View key={`w3-${idx}`} style={[detailStyles.specCell, specLayoutStyles.specItem, idx < webSpecsRow3.length - 1 && detailStyles.specCellRight]}>
+                        <Text style={[detailStyles.specLabel, specFontStyles.specLabel]} numberOfLines={1} ellipsizeMode="tail">{spec.label}</Text>
+                        <Text style={[detailStyles.specValue, specFontStyles.specValue]} numberOfLines={1} ellipsizeMode="tail">{spec.value}</Text>
                       </View>
                     ))}
                   </View>
@@ -513,17 +398,17 @@ export default function PropertyDetailScreen() {
             )}
           </View>
 
-          <View style={[styles.memoBox, narrow && styles.memoBoxFull, isUltraWide && styles.memoBoxUltra, !narrow && styles.memoBoxFlex, { padding: layoutPadding }]}>
-            <Text style={styles.memoLabel}>메모</Text>
-            <View style={styles.memoBody}>
+          <View style={[detailStyles.memoBox, narrow && detailStyles.memoBoxFull, isUltraWide && detailStyles.memoBoxUltra, !narrow && detailStyles.memoBoxFlex, { padding: layoutPadding }]}>
+            <Text style={detailStyles.memoLabel}>메모</Text>
+            <View style={detailStyles.memoBody}>
               {property.ownerName && (
-                <Text style={styles.memoText}>집주인: {property.ownerName}</Text>
+                <Text style={detailStyles.memoText}>집주인: {property.ownerName}</Text>
               )}
               {property.phone && (
-                <Text style={styles.memoText}>연락처: {property.phone}</Text>
+                <Text style={detailStyles.memoText}>연락처: {property.phone}</Text>
               )}
               {/* 집주인메모 제거: 일반 메모란에 통합 */}
-              <Text style={styles.memoText}>{property.memo || '—'}</Text>
+              <Text style={detailStyles.memoText}>{property.memo || '—'}</Text>
             </View>
           </View>
         </View>

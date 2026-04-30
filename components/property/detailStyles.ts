@@ -69,3 +69,113 @@ export const detailStyles = StyleSheet.create({
   memoLabel:             { fontSize: isWeb ? 13 : 11, color: '#94A3B8', fontWeight: '600', marginBottom: 8 },
   memoText:              { fontSize: isWeb ? 16 : 14, color: '#334155', lineHeight: 22 },
 });
+
+export const specFontStyles = StyleSheet.create({
+  specLabel: {
+    fontSize: isWeb ? 15 : 13,
+    lineHeight: 18,
+    fontWeight: '500',
+    color: '#64748B',
+    marginRight: 6,
+    flexShrink: 0,
+    includeFontPadding: false,
+  },
+  specValue: {
+    fontSize: isWeb ? 17 : 15,
+    fontWeight: '700',
+    color: '#0F172A',
+    lineHeight: 18,
+    flex: 1,
+    flexShrink: 1,
+    includeFontPadding: false,
+  },
+});
+
+export const specLayoutStyles = StyleSheet.create({
+  specRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+  },
+  specItem: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    justifyContent: 'flex-start',
+    gap: 6,
+    overflow: 'hidden',
+  },
+  specTextVertical: { textAlignVertical: 'center' },
+});
+
+export const specMobileStyles = StyleSheet.create({
+  specRowMobile: {
+    flexDirection: 'row',
+    alignItems: 'stretch',
+    width: '100%',
+  },
+  specCellMobile: {
+    width: '50%',
+    minWidth: 0,
+    paddingVertical: 12,
+    paddingHorizontal: 6,
+    flexDirection: 'column',
+    gap: 8,
+    justifyContent: 'flex-start',
+  },
+  specCellMobileRight: {
+    borderRightWidth: 1,
+    borderRightColor: '#F1F5F9',
+  },
+  specLabelMobile: {
+    fontSize: 14,
+    color: '#94A3B8',
+    fontWeight: '500',
+  },
+  specValueMobile: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#1E293B',
+    alignSelf: 'stretch',
+  },
+});
+
+export const addrBtnStyles = StyleSheet.create({
+  addrBtnRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 0,
+  },
+  addrBtnMap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 9,
+    paddingVertical: 5,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#FDBA74',
+    backgroundColor: '#FFF7ED',
+  },
+  addrBtnMapText: {
+    fontSize: 12,
+    color: '#C2410C',
+    fontWeight: '600',
+  },
+  addrBtnCopy: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 9,
+    paddingVertical: 5,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#CBD5E1',
+    backgroundColor: 'transparent',
+  },
+  addrBtnCopyText: {
+    fontSize: 12,
+    color: '#334155',
+    fontWeight: '500',
+  },
+});
