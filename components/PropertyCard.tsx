@@ -11,13 +11,6 @@ import {
 import { PRICE_COLOR } from '@/constants/colors';
 import type { Property } from '@/types';
 
-// TODO-STYLE: 여러 파일 중복 — 나중에 constants/theme.ts로 통합 예정
-// 플랫폼별 그림자 유틸
-const makeShadow = (h: number, r: number, o: number, elev: number) =>
-  Platform.OS === 'web'
-    ? ({ boxShadow: `0 ${h}px ${r * 2}px rgba(0,0,0,${o})` } as object)
-    : { shadowColor: '#000' as const, shadowOffset: { width: 0, height: h }, shadowOpacity: o, shadowRadius: r, elevation: elev };
-
 // 거래유형별 가격 색상
 const DEAL_PRICE_COLOR: Record<string, string> = {
   매매: '#1D4ED8',
@@ -58,8 +51,8 @@ export default function PropertyCard({ property, width, onPress }: PropertyCardP
   const hoverStyle = useMemo(() => {
     if (Platform.OS !== 'web') return null;
     return isHovered
-      ? ({ boxShadow: '0 4px 12px rgba(0,0,0,0.14)', transform: [{ translateY: -2 }], transition: 'all 0.2s ease' } as unknown as object)
-      : ({ boxShadow: '0 2px 8px rgba(0,0,0,0.08)', transition: 'all 0.2s ease' } as unknown as object);
+      ? ({ transform: [{ translateY: -2 }], transition: 'all 0.2s ease' } as unknown as object)
+      : ({ transition: 'all 0.2s ease' } as unknown as object);
   }, [isHovered]);
 
   const hasPhoto = photoCount > 0 && Boolean(property.photos?.[0]);
@@ -121,12 +114,11 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F8FAFF',
+    backgroundColor: '#FFFFFF',
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: '#D0D0D0',
     padding: 12,
-    ...makeShadow(2, 8, 0.06, 2),
   },
   photo:          { width: '33.3%', aspectRatio: 1, borderRadius: 8, overflow: 'hidden', backgroundColor: '#F1F5F9', position: 'relative' },
   photoImg:       { width: '100%', height: '100%' },
