@@ -140,8 +140,8 @@ export default function PropertyDetailScreen() {
           <View style={[detailStyles.headerBottom, narrow && detailStyles.headerBottomNarrow]}>
             <Text style={[detailStyles.headerPrice, { color: priceColor }]}>{property.deal} {property.price}</Text>
             <View style={[detailStyles.headerBtnGroup, narrow && detailStyles.headerBtnGroupNarrow]}>
-              <TouchableOpacity style={detailStyles.headerBtn} onPress={() => setAdCopyVisible(true)}>
-                <Text style={detailStyles.headerBtnText}>광고문구</Text>
+              <TouchableOpacity style={[detailStyles.headerBtn, narrow && { paddingHorizontal: 14, paddingVertical: 8 }]} onPress={() => setAdCopyVisible(true)}>
+                <Text style={[detailStyles.headerBtnText, narrow && { fontSize: 14, fontWeight: '700' }]}>광고문구</Text>
               </TouchableOpacity>
               {Platform.OS === 'web' && (
                 <>
@@ -154,11 +154,11 @@ export default function PropertyDetailScreen() {
                   </TouchableOpacity>
                 </>
               )}
-              <TouchableOpacity style={detailStyles.headerBtn} onPress={() => openRegisterPanel('property', property.id, property as Record<string, unknown>)}>
-                <Text style={detailStyles.headerBtnText}>편집</Text>
+              <TouchableOpacity style={[detailStyles.headerBtn, narrow && { paddingHorizontal: 14, paddingVertical: 8 }]} onPress={() => openRegisterPanel('property', property.id, property as Record<string, unknown>)}>
+                <Text style={[detailStyles.headerBtnText, narrow && { fontSize: 14, fontWeight: '700' }]}>편집</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={detailStyles.headerBtn}
+                style={[detailStyles.headerBtn, narrow && { paddingHorizontal: 14, paddingVertical: 8 }]}
                 onPress={() => {
                   if (Platform.OS === 'web') {
                     if (window.confirm('정말로 삭제하시겠습니까?')) {
@@ -171,7 +171,7 @@ export default function PropertyDetailScreen() {
                     ]);
                   }
                 }}>
-                <Text style={[detailStyles.headerBtnText, detailStyles.headerBtnDel]}>삭제</Text>
+                <Text style={[detailStyles.headerBtnText, narrow && { fontSize: 14, fontWeight: '700' }, detailStyles.headerBtnDel]}>삭제</Text>
               </TouchableOpacity>
             </View>
           </View>
