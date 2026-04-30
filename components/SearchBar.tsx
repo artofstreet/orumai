@@ -22,7 +22,9 @@ const SearchBar = forwardRef<TextInputType, SearchBarProps>(
   ({ value, onChangeText, onSubmit }, ref) => {
     return (
       <View style={styles.root}>
-        <View style={styles.inputShell}>
+        <Pressable
+          style={styles.inputShell}
+          onPress={() => { if (ref && typeof ref !== 'function' && ref.current) ref.current.focus(); }}>
           <TextInput
             ref={ref}
             accessibilityLabel="검색어 입력"
@@ -37,7 +39,7 @@ const SearchBar = forwardRef<TextInputType, SearchBarProps>(
           <Pressable onPress={onSubmit} accessibilityLabel="검색 실행">
             <Ionicons name="search" size={28} color={'#E8857A'} />
           </Pressable>
-        </View>
+        </Pressable>
       </View>
     );
   }
