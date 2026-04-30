@@ -2,15 +2,8 @@ import { useRouter } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { card as cardColor, text2 } from '@/constants/colors';
+import { text2 } from '@/constants/colors';
 import type { Customer } from '@/types';
-
-// TODO-STYLE: 여러 파일 중복 — 나중에 constants/theme.ts로 통합 예정
-// 플랫폼별 그림자 유틸
-const makeShadow = (h: number, r: number, o: number, elev: number) =>
-  Platform.OS === 'web'
-    ? ({ boxShadow: `0 ${h}px ${r * 2}px rgba(0,0,0,${o})` } as object)
-    : { shadowColor: '#000' as const, shadowOffset: { width: 0, height: h }, shadowOpacity: o, shadowRadius: r, elevation: elev };
 
 const isWeb = Platform.OS === 'web';
 
@@ -52,8 +45,8 @@ export default function CustomerCard({ item, width }: CustomerCardProps) {
   const hoverStyle = useMemo(() => {
     if (Platform.OS !== 'web') return null;
     return isHovered
-      ? ({ boxShadow: '0 4px 12px rgba(0,0,0,0.14)', transform: [{ translateY: -2 }], transition: 'all 0.2s ease' } as unknown as object)
-      : ({ boxShadow: '0 2px 8px rgba(0,0,0,0.08)', transition: 'all 0.2s ease' } as unknown as object);
+      ? ({ transform: [{ translateY: -2 }], transition: 'all 0.2s ease' } as unknown as object)
+      : ({ transition: 'all 0.2s ease' } as unknown as object);
   }, [isHovered]);
 
   return (
@@ -83,13 +76,12 @@ export default function CustomerCard({ item, width }: CustomerCardProps) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: cardColor,
+    backgroundColor: '#FFFFFF',
     borderRadius: 16,
     padding: 12,
     gap: 10,
     borderWidth: 1,
-    borderColor: '#EEF0F5',
-    ...makeShadow(2, 8, 0.06, 2),
+    borderColor: '#D0D0D0',
   },
   leftRow:    { flexDirection: 'row', alignItems: 'center', gap: 10 },
   avatar:     { width: 44, height: 44, borderRadius: 999, alignItems: 'center', justifyContent: 'center' },
