@@ -14,8 +14,8 @@ export const text = '#18202E'; // 본문
 export const text2 = '#6B7585'; // 보조 텍스트
 export const text3 = '#9AA5B4'; // 힌트, 플레이스홀더
 export const border = '#D8DCE6'; // 구분선, 테두리
-export const bg = '#F0F4FF'; // 화면 배경
-export const card = '#F8FAFF'; // 카드 배경
+export const bg = '#FFFFFF'; // 메인 배경 (웜톤 — 흰색)
+export const card = '#FFFFFF'; // 카드 배경 (웜톤 — 흰색)
 export const topbar = '#111827'; // 상단 바 — TopBar.tsx Colors.topbar로 참조 중
 export const logoBg = '#1D4ED8'; // 로고 박스 배경색
 

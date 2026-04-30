@@ -5,6 +5,7 @@ import { Alert, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View }
 import { detailStyles } from '@/components/property/detailStyles';
 import { useCustomersContext } from '@/contexts/CustomersContext';
 import { openRegisterPanel } from '@/utils/registerEvents';
+import { bg, card } from '../../constants/colors';
 
 // 날짜 포맷 유틸 (ISO 문자열 → YYYY-MM-DD)
 const formatDateShort = (v?: string): string => {
@@ -115,7 +116,7 @@ export default function CustomerDetailScreen() {
 }
 
 const styles = StyleSheet.create({
-  page:        { flex: 1, backgroundColor: '#F0F4FF' },
+  page:        { flex: 1, backgroundColor: bg },
   content:     { padding: 32, gap: 20, maxWidth: 1200, width: '100%', alignSelf: 'center' },
   errorWrap:   { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 12 },
   errorTxt:    { fontSize: 16, color: '#888' },
@@ -128,7 +129,7 @@ const styles = StyleSheet.create({
   name:        { fontSize: 22, fontWeight: '800', color: '#111827' },
   phone:       { fontSize: 16, fontWeight: '600', color: '#64748B' },
   date:        { fontSize: 12, color: '#aaa' },
-  memoBox:     { backgroundColor: '#F8FAFF', borderRadius: 12, padding: 16, gap: 8, minHeight: 200, ...makeShadow(2, 8, 0.06, 2) },
+  memoBox:     { backgroundColor: card, borderRadius: 12, padding: 16, gap: 8, minHeight: 200, ...makeShadow(2, 8, 0.06, 2) },
   memoLabel:   { fontSize: 13, fontWeight: '700', color: '#888' },
   memoTxt:     { fontSize: 15, color: '#222', lineHeight: 24 },
 });
