@@ -3,7 +3,7 @@ import { useRouter } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
 import type { ViewStyle } from 'react-native';
 import { Platform, Pressable, StyleSheet, Text, TouchableOpacity, useWindowDimensions, View } from 'react-native';
-import Svg, { Polyline } from 'react-native-svg';
+import Svg, { Line, Path, Rect } from 'react-native-svg';
 
 import * as Colors from '@/constants/colors';
 import { getHorizontalPadding } from '@/constants/theme';
@@ -70,7 +70,7 @@ export default function TopBar({
   return (
     <View style={[styles.container, { paddingHorizontal: pad }]}>
 
-      {/* 왼쪽 로고 */}
+      {/* 왼쪽 로고 — B안 둥근 캡슐형 태양 */}
       <TouchableOpacity
         style={styles.left}
         activeOpacity={0.85}
@@ -78,15 +78,15 @@ export default function TopBar({
         accessibilityRole="link"
         accessibilityLabel="홈으로">
         <View style={styles.logoBox}>
-          <Svg width={isWeb ? 28 : 24} height={isWeb ? 22 : 18} viewBox="0 0 24 18">
-            <Polyline
-              points="2,14 6,8 9,11 15,3 19,14"
-              fill="none"
-              stroke="white"
-              strokeWidth={1.8}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
+          <Svg width={isWeb ? 36 : 30} height={isWeb ? 36 : 30} viewBox="0 0 160 160">
+            <Rect x="0" y="0" width="160" height="160" rx="32" fill="#E8833A" />
+            <Line x1="32" y1="92" x2="128" y2="92" stroke="white" strokeWidth={3} strokeLinecap="round" />
+            <Path d="M59 92 A21 21 0 0 1 101 92" fill="white" />
+            <Rect x="76" y="50" width="8" height="18" rx="4" fill="white" />
+            <Rect x="94" y="55" width="7" height="15" rx="3.5" fill="white" transform="rotate(40, 97.5, 62.5)" />
+            <Rect x="59" y="55" width="7" height="15" rx="3.5" fill="white" transform="rotate(-40, 62.5, 62.5)" />
+            <Rect x="106" y="72" width="7" height="13" rx="3.5" fill="white" transform="rotate(75, 109.5, 78.5)" />
+            <Rect x="47" y="72" width="7" height="13" rx="3.5" fill="white" transform="rotate(-75, 50.5, 78.5)" />
           </Svg>
         </View>
         <Text style={styles.logoText}>오름AI</Text>
@@ -173,7 +173,7 @@ export default function TopBar({
 const styles = StyleSheet.create({
   container:      { minHeight: isWeb ? 76 : 64, backgroundColor: Colors.topbar, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   left:           { flexDirection: 'row', alignItems: 'center', flexShrink: 1, minWidth: 0 },
-  logoBox:        { width: isWeb ? 36 : 30, height: isWeb ? 36 : 30, borderRadius: isWeb ? 10 : 8, backgroundColor: Colors.logoBg, alignItems: 'center', justifyContent: 'center' },
+  logoBox:        { width: isWeb ? 36 : 30, height: isWeb ? 36 : 30, borderRadius: isWeb ? 10 : 8, alignItems: 'center', justifyContent: 'center' },
   logoText:       { color: '#FFFFFF', fontSize: isWeb ? 23 : 20, fontWeight: '800', marginLeft: 8, flexShrink: 0 },
   center:         { flexDirection: 'row', alignItems: 'center', gap: 18, position: 'absolute', left: 0, right: 0, justifyContent: 'center', pointerEvents: 'none' },
   countBox:       { flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 4, paddingHorizontal: 8, borderRadius: 6 },
