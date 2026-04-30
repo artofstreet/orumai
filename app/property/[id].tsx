@@ -3,7 +3,6 @@ import { router, useLocalSearchParams } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
 import {
   Alert,
-  Linking,
   Platform,
   ScrollView,
   StyleSheet,
@@ -104,19 +103,6 @@ export default function PropertyDetailScreen() {
     { label: '총주차', value: property.totPkngCnt ? `${property.totPkngCnt}대` : '-' },
   ];
 
-  // 국토부 실거래가(rt.molit.go.kr) — 주소를 쿼리로 전달(사이트가 무시하면 메인으로 열림)
-  const openMolitRealTrade = useCallback(async () => {
-    const base = 'https://rt.molit.go.kr';
-    const addr = property.addr.trim();
-    const url = `${base}/?${new URLSearchParams({ addr }).toString()}`;
-    try {
-      if (await Linking.canOpenURL(url)) await Linking.openURL(url);
-      else if (await Linking.canOpenURL(base)) await Linking.openURL(base);
-    } catch {
-      Alert.alert('오류', '링크를 열 수 없습니다.');
-    }
-  }, [property.addr]);
-
   // 주소 복사
   const copyAddress = useCallback(async (): Promise<void> => {
     await Clipboard.setStringAsync(property.addr);
@@ -154,9 +140,6 @@ export default function PropertyDetailScreen() {
           <View style={[detailStyles.headerBottom, narrow && detailStyles.headerBottomNarrow]}>
             <Text style={[detailStyles.headerPrice, { color: priceColor }]}>{property.deal} {property.price}</Text>
             <View style={[detailStyles.headerBtnGroup, narrow && detailStyles.headerBtnGroupNarrow]}>
-              <TouchableOpacity style={detailStyles.headerBtn} onPress={openMolitRealTrade}>
-                <Text style={detailStyles.headerBtnText}>시세조회</Text>
-              </TouchableOpacity>
               <TouchableOpacity style={detailStyles.headerBtn} onPress={() => setAdCopyVisible(true)}>
                 <Text style={detailStyles.headerBtnText}>광고문구</Text>
               </TouchableOpacity>
