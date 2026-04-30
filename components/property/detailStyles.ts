@@ -2,12 +2,6 @@ import { Platform, StyleSheet } from 'react-native';
 
 import { bg, border, red, text } from '@/constants/colors';
 
-// 플랫폼별 그림자 유틸
-const makeShadow = (h: number, r: number, o: number, elev: number) =>
-  Platform.OS === 'web'
-    ? ({ boxShadow: `0 ${h}px ${r * 2}px rgba(0,0,0,${o})` } as object)
-    : { shadowColor: '#000' as const, shadowOffset: { width: 0, height: h }, shadowOpacity: o, shadowRadius: r, elevation: elev };
-
 const isWeb = Platform.OS === 'web';
 
 /** 매물 상세 화면 StyleSheet — [id].tsx 전용 */
@@ -43,7 +37,8 @@ export const detailStyles = StyleSheet.create({
     justifyContent: 'flex-start',
     backgroundColor: '#FFFFFF',
     borderRadius: 12,
-    ...makeShadow(2, 8, 0.06, 2),
+    borderWidth: 1,
+    borderColor: '#D0D0D0',
   },
   specGridFull:          { width: '100%' },
   specGridFlex:          { minWidth: 0, flex: 1 },
@@ -59,7 +54,8 @@ export const detailStyles = StyleSheet.create({
     minHeight: 60,
     backgroundColor: '#FFFFFF',
     borderRadius: 12,
-    ...makeShadow(2, 8, 0.06, 2),
+    borderWidth: 1,
+    borderColor: '#D0D0D0',
     flexDirection: 'column',
   },
   memoBoxUltra:          { minWidth: 0 },
