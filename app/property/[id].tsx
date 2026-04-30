@@ -16,6 +16,7 @@ import {
 import * as Clipboard from 'expo-clipboard';
 import AdCopyModal from '@/components/AdCopyModal';
 import { detailStyles, specFontStyles, specLayoutStyles, specMobileStyles, addrBtnStyles } from '@/components/property/detailStyles';
+import PropertySpecGrid from '@/components/property/PropertySpecGrid';
 import PropertyCarousel from '@/components/PropertyCarousel';
 import { BADGE_COLORS, text } from '@/constants/colors';
 import { getContentMaxWidth, getHorizontalPadding } from '@/constants/theme';
@@ -102,25 +103,6 @@ export default function PropertyDetailScreen() {
     { label: '용적률', value: property.vlRat ? `${property.vlRat}%` : '-' },
     { label: '연면적', value: property.totArea ? `${property.totArea}㎡` : '-' },
     { label: '총주차', value: property.totPkngCnt ? `${property.totPkngCnt}대` : '-' },
-  ];
-
-  const webSpecsRow1 = [
-    { label: '전용면적', value: specs[0]?.value ?? '—' },
-    specs[1],
-    specs[2],
-    specs[3],
-  ];
-  const webSpecsRow2 = [
-    specs2[0],
-    specs2[1],
-    specs2[2],
-    specs2[3],
-  ];
-  const webSpecsRow3 = [
-    specs3[0],
-    specs3[1],
-    specs3[2],
-    specs3[3],
   ];
 
   // 국토부 실거래가(rt.molit.go.kr) — 주소를 쿼리로 전달(사이트가 무시하면 메인으로 열림)
@@ -316,87 +298,7 @@ export default function PropertyDetailScreen() {
         </View>
 
         <View style={[detailStyles.infoRow]}>
-          <View style={[detailStyles.specGrid, narrow && detailStyles.specGridFull, isUltraWide && detailStyles.specGridUltra, !narrow && detailStyles.specGridFlex, Platform.OS === 'web' && !isUltraWide && { flexDirection: 'column' }, Platform.OS !== 'web' && { flexDirection: 'column' }]}>
-            {Platform.OS === 'web' ? (
-              isUltraWide ? (
-                <>
-                  <View style={[detailStyles.specRow, detailStyles.specRowBottom, specLayoutStyles.specRow]}>
-                    {webSpecsRow1.map((spec, idx) => (
-                      <View key={spec.label} style={[detailStyles.specCellUltra2col, specLayoutStyles.specItem, idx < specs.length - 1 && detailStyles.specCellRight]}>
-                        <Text style={[detailStyles.specLabel, specFontStyles.specLabel, specLayoutStyles.specTextVertical]} numberOfLines={1} ellipsizeMode="tail">{spec.label}</Text>
-                        <Text style={[detailStyles.specValue, specFontStyles.specValue, specLayoutStyles.specTextVertical]} numberOfLines={1} ellipsizeMode="tail">{spec.value}</Text>
-                      </View>
-                    ))}
-                  </View>
-                  <View style={[detailStyles.specRow, detailStyles.specRowBottom, specLayoutStyles.specRow]}>
-                    {webSpecsRow2.map((spec, idx) => (
-                      <View key={`s2-${idx}`} style={[detailStyles.specCellUltra2col, specLayoutStyles.specItem, idx < specs2.length - 1 && detailStyles.specCellRight]}>
-                        <Text style={[detailStyles.specLabel, specFontStyles.specLabel, specLayoutStyles.specTextVertical]} numberOfLines={1} ellipsizeMode="tail">{spec.label}</Text>
-                        <Text style={[detailStyles.specValue, specFontStyles.specValue, specLayoutStyles.specTextVertical]} numberOfLines={1} ellipsizeMode="tail">{spec.value}</Text>
-                      </View>
-                    ))}
-                  </View>
-                  <View style={[detailStyles.specRow, detailStyles.specRowBottom, specLayoutStyles.specRow]}>
-                    {webSpecsRow3.map((spec, idx) => (
-                      <View key={`s3-${idx}`} style={[detailStyles.specCellUltra2col, specLayoutStyles.specItem, idx < specs3.length - 1 && detailStyles.specCellRight]}>
-                        <Text style={[detailStyles.specLabel, specFontStyles.specLabel, specLayoutStyles.specTextVertical]} numberOfLines={1} ellipsizeMode="tail">{spec.label}</Text>
-                        <Text style={[detailStyles.specValue, specFontStyles.specValue, specLayoutStyles.specTextVertical]} numberOfLines={1} ellipsizeMode="tail">{spec.value}</Text>
-                      </View>
-                    ))}
-                  </View>
-                </>
-              ) : (
-                <>
-                  <View style={[detailStyles.specRow, detailStyles.specRowBottom, specLayoutStyles.specRow]}>
-                    {webSpecsRow1.map((spec, idx) => (
-                      <View key={spec.label} style={[detailStyles.specCell, specLayoutStyles.specItem, idx < webSpecsRow1.length - 1 && detailStyles.specCellRight]}>
-                        <Text style={[detailStyles.specLabel, specFontStyles.specLabel]} numberOfLines={1} ellipsizeMode="tail">{spec.label}</Text>
-                        <Text style={[detailStyles.specValue, specFontStyles.specValue]} numberOfLines={1} ellipsizeMode="tail">{spec.value}</Text>
-                      </View>
-                    ))}
-                  </View>
-                  <View style={[detailStyles.specRow, specLayoutStyles.specRow]}>
-                    {webSpecsRow2.map((spec, idx) => (
-                      <View key={`w2-${idx}`} style={[detailStyles.specCell, specLayoutStyles.specItem, idx < webSpecsRow2.length - 1 && detailStyles.specCellRight]}>
-                        <Text style={[detailStyles.specLabel, specFontStyles.specLabel]} numberOfLines={1} ellipsizeMode="tail">{spec.label}</Text>
-                        <Text style={[detailStyles.specValue, specFontStyles.specValue]} numberOfLines={1} ellipsizeMode="tail">{spec.value}</Text>
-                      </View>
-                    ))}
-                  </View>
-                  <View style={[detailStyles.specRow, specLayoutStyles.specRow]}>
-                    {webSpecsRow3.map((spec, idx) => (
-                      <View key={`w3-${idx}`} style={[detailStyles.specCell, specLayoutStyles.specItem, idx < webSpecsRow3.length - 1 && detailStyles.specCellRight]}>
-                        <Text style={[detailStyles.specLabel, specFontStyles.specLabel]} numberOfLines={1} ellipsizeMode="tail">{spec.label}</Text>
-                        <Text style={[detailStyles.specValue, specFontStyles.specValue]} numberOfLines={1} ellipsizeMode="tail">{spec.value}</Text>
-                      </View>
-                    ))}
-                  </View>
-                </>
-              )
-            ) : (
-              <>
-                {[
-                  [specs[0], specs[1]],
-                  [specs[2], specs[3]],
-                  [specs2[0], specs2[1]],
-                  [specs2[2], specs2[3]],
-                  [specs3[0], specs3[1]],
-                  [specs3[2], specs3[3]],
-                ].map((row, rowIdx) => (
-                  <View key={`mrow-${rowIdx}`} style={specMobileStyles.specRowMobile}>
-                    <View style={[specMobileStyles.specCellMobile, specMobileStyles.specCellMobileRight]}>
-                      <Text style={specMobileStyles.specLabelMobile}>{row[0].label}</Text>
-                      <Text style={specMobileStyles.specValueMobile}>{row[0].value}</Text>
-                    </View>
-                    <View style={specMobileStyles.specCellMobile}>
-                      <Text style={specMobileStyles.specLabelMobile}>{row[1].label}</Text>
-                      <Text style={specMobileStyles.specValueMobile}>{row[1].value}</Text>
-                    </View>
-                  </View>
-                ))}
-              </>
-            )}
-          </View>
+          <PropertySpecGrid specs={specs} specs2={specs2} specs3={specs3} narrow={narrow} isUltraWide={isUltraWide} />
 
           <View style={[detailStyles.memoBox, narrow && detailStyles.memoBoxFull, isUltraWide && detailStyles.memoBoxUltra, !narrow && detailStyles.memoBoxFlex, { padding: layoutPadding }]}>
             <Text style={detailStyles.memoLabel}>메모</Text>
