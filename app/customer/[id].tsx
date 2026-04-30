@@ -19,13 +19,6 @@ const formatDateShort = (v?: string): string => {
   return `${y}-${m}-${day}`;
 };
 
-// TODO-STYLE: _layout.tsx와 중복 — 나중에 constants/theme.ts로 통합 예정
-// 플랫폼별 그림자 유틸
-const makeShadow = (h: number, r: number, o: number, elev: number) =>
-  Platform.OS === 'web'
-    ? ({ boxShadow: `0 ${h}px ${r * 2}px rgba(0,0,0,${o})` } as object)
-    : { shadowColor: '#000' as const, shadowOffset: { width: 0, height: h }, shadowOpacity: o, shadowRadius: r, elevation: elev };
-
 const 아바타배경색배열: string[] = [
   '#5B8DEF', '#52B788', '#9B72CF', '#F4845F',
   '#F06595', '#4DABF7', '#63C9A8', '#FFB347',
@@ -129,7 +122,7 @@ const styles = StyleSheet.create({
   name:        { fontSize: 22, fontWeight: '800', color: '#111827' },
   phone:       { fontSize: 16, fontWeight: '600', color: '#64748B' },
   date:        { fontSize: 12, color: '#aaa' },
-  memoBox:     { backgroundColor: card, borderRadius: 12, padding: 16, gap: 8, minHeight: 200, ...makeShadow(2, 8, 0.06, 2) },
+  memoBox:     { backgroundColor: card, borderRadius: 12, padding: 16, gap: 8, minHeight: 200, borderWidth: 1, borderColor: '#D0D0D0' },
   memoLabel:   { fontSize: 13, fontWeight: '700', color: '#888' },
   memoTxt:     { fontSize: 15, color: '#222', lineHeight: 24 },
 });
