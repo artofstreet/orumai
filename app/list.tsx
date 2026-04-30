@@ -80,7 +80,7 @@ export default function ListScreen() {
         <View style={[styles.header, { paddingHorizontal: layoutPadding }]}>
           <View style={styles.titleRow}>
             <Pressable style={styles.backButton} onPress={() => router.replace('/')}>
-              <Ionicons name="arrow-back" size={isWeb ? 26 : 22} color={primary} />
+              <Ionicons name="arrow-back" size={isWeb ? 26 : 22} color={'#111827'} />
             </Pressable>
             <Text style={styles.titleText}>
               {tab === 'properties' ? `전체 매물 ${allProperties.length}건` : `전체 고객 ${allCustomers.length}건`}
@@ -164,12 +164,12 @@ const styles = StyleSheet.create({
   // 헤더(뒤로가기/제목/인쇄)를 좌우로 벌려 정렬
   titleRow:               { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
   backButton:             { paddingVertical: 4, paddingHorizontal: 2 },
-  titleText:              { fontSize: isWeb ? 19 : 16, fontWeight: '800', color: '#0F172A' },
+  titleText:              { fontSize: isWeb ? 19 : 16, fontWeight: '800', color: '#E8833A' },
   tabRow:                 { flexDirection: 'row', gap: 18, borderBottomWidth: 1, borderBottomColor: border },
   tabButton:              { paddingVertical: isWeb ? 14 : 10, paddingHorizontal: 2, borderBottomWidth: 2, borderBottomColor: 'transparent' },
-  tabButtonActive:        { borderBottomColor: primary },
+  tabButtonActive:        { borderBottomColor: '#E8833A' },
   tabText:                { color: '#94A3B8', fontSize: isWeb ? 17 : 14, fontWeight: '500' },
-  tabTextActive:          { color: '#1D4ED8', fontWeight: '700' },
+  tabTextActive:          { color: '#E8833A', fontWeight: '700' },
   listFlex:               { flex: 1 },
   listContent:            { alignSelf: 'center', width: '100%', paddingVertical: 16, paddingBottom: 8, gap: 8 },
   gridRow:                { gap: 8 },
