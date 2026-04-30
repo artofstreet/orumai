@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { forwardRef } from 'react';
 import type { TextInput as TextInputType, TextStyle } from 'react-native';
-import { Platform, StyleSheet, TextInput, View } from 'react-native';
+import { Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 import { card, text, text3 } from '@/constants/colors';
 
@@ -34,7 +34,9 @@ const SearchBar = forwardRef<TextInputType, SearchBarProps>(
             onSubmitEditing={onSubmit}
             style={[styles.input, { outlineWidth: 0 } as TextStyle]}
           />
-          <Ionicons name="search" size={28} color={'#E8857A'} />
+          <Pressable onPress={onSubmit} accessibilityLabel="검색 실행">
+            <Ionicons name="search" size={28} color={'#E8857A'} />
+          </Pressable>
         </View>
       </View>
     );
