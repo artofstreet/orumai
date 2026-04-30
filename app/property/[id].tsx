@@ -2,7 +2,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useCallback, useMemo, useState } from 'react';
 import {
-  ActionSheetIOS,
   Alert,
   Linking,
   Platform,
@@ -118,90 +117,6 @@ export default function PropertyDetailScreen() {
     }
   }, [property.addr]);
 
-  // 지도 앱/웹 선택 후 길찾기 열기
-  const openMapOptions = useCallback(async (): Promise<void> => {
-    const addr = property.addr.trim();
-    const encodedAddr = encodeURIComponent(addr);
-    if (!addr) {
-      Alert.alert('오류', '주소가 없습니다.');
-      return;
-    }
-
-    // 웹: 네이버 지도 검색 탭 열기
-    if (Platform.OS === 'web') {
-      window.open(`https://map.naver.com/v5/search/${encodedAddr}`, '_blank');
-      return;
-    }
-
-    const openKakao = async (): Promise<void> => {
-      const canKakao = await Linking.canOpenURL('kakaomap://');
-      const url = canKakao ? `kakaomap://search?q=${addr}` : `https://map.kakao.com/?q=${encodedAddr}`;
-      await Linking.openURL(url);
-    };
-
-    const openNaver = async (): Promise<void> => {
-      const canNaver = await Linking.canOpenURL('nmap://');
-      const url = canNaver
-        ? `nmap://search?query=${encodedAddr}&appname=com.orumai`
-        : `https://map.naver.com/v5/search/${encodedAddr}`;
-      await Linking.openURL(url);
-    };
-
-    const openGoogle = async (): Promise<void> => {
-      await Linking.openURL(`https://www.google.com/maps/search/${encodedAddr}`);
-    };
-
-    if (Platform.OS === 'ios') {
-      ActionSheetIOS.showActionSheetWithOptions(
-        {
-          options: ['취소', '카카오맵', '네이버지도', '구글맵'],
-          cancelButtonIndex: 0,
-        },
-        (buttonIndex) => {
-          void (async () => {
-            try {
-              if (buttonIndex === 1) await openKakao();
-              if (buttonIndex === 2) await openNaver();
-              if (buttonIndex === 3) await openGoogle();
-            } catch {
-              Alert.alert('오류', '링크를 열 수 없습니다.');
-            }
-          })();
-        }
-      );
-      return;
-    }
-
-    // Android: Alert로 선택지 노출
-    Alert.alert('지도/길찾기', '어떤 지도로 여시겠어요?', [
-      { text: '취소', style: 'cancel' },
-      {
-        text: '카카오맵',
-        onPress: () => {
-          void (async () => {
-            try { await openKakao(); } catch { Alert.alert('오류', '링크를 열 수 없습니다.'); }
-          })();
-        },
-      },
-      {
-        text: '네이버지도',
-        onPress: () => {
-          void (async () => {
-            try { await openNaver(); } catch { Alert.alert('오류', '링크를 열 수 없습니다.'); }
-          })();
-        },
-      },
-      {
-        text: '구글맵',
-        onPress: () => {
-          void (async () => {
-            try { await openGoogle(); } catch { Alert.alert('오류', '링크를 열 수 없습니다.'); }
-          })();
-        },
-      },
-    ]);
-  }, [property.addr]);
-
   // 주소 복사
   const copyAddress = useCallback(async (): Promise<void> => {
     await Clipboard.setStringAsync(property.addr);
@@ -230,10 +145,6 @@ export default function PropertyDetailScreen() {
           <Text style={[detailStyles.headerAddr, { color: '#374151', fontSize: 16, fontWeight: '500', marginTop: 2 }]}>{property.addr}</Text>
           {/* 지도/주소 복사 버튼 */}
           <View style={[addrBtnStyles.addrBtnRow, { marginTop: 2 }]}>
-            <TouchableOpacity style={addrBtnStyles.addrBtnMap} onPress={openMapOptions}>
-              <Ionicons name="navigate-outline" size={13} color="#C2410C" />
-              <Text style={addrBtnStyles.addrBtnMapText}>지도/길찾기</Text>
-            </TouchableOpacity>
             <TouchableOpacity style={addrBtnStyles.addrBtnCopy} onPress={copyAddress}>
               <Ionicons name="copy-outline" size={13} color="#64748B" />
               <Text style={addrBtnStyles.addrBtnCopyText}>주소 복사</Text>
