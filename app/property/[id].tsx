@@ -127,7 +127,7 @@ export default function PropertyDetailScreen() {
             </View>
           </View>
 
-          <Text style={[detailStyles.headerTitle, { fontSize: isWeb ? headerTitleSize + 3 : headerTitleSize }]} numberOfLines={3}>{title}</Text>
+          <Text style={[detailStyles.headerTitle, { fontSize: isWeb ? headerTitleSize + 3 : headerTitleSize }, !isWeb && { fontSize: headerTitleSize + 4 }]} numberOfLines={3}>{title}</Text>
           <Text style={[detailStyles.headerAddr, { color: '#374151', fontSize: 16, fontWeight: '500', marginTop: 2 }]}>{property.addr}</Text>
           {/* 지도/주소 복사 버튼 */}
           <View style={[addrBtnStyles.addrBtnRow, { marginTop: 2 }]}>
@@ -138,7 +138,7 @@ export default function PropertyDetailScreen() {
           </View>
 
           <View style={[detailStyles.headerBottom, narrow && detailStyles.headerBottomNarrow]}>
-            <Text style={[detailStyles.headerPrice, { color: priceColor }]}>{property.deal} {property.price}</Text>
+            <Text style={[detailStyles.headerPrice, { color: priceColor }, !isWeb && { fontSize: 26 }]}>{property.deal} {property.price}</Text>
             <View style={[detailStyles.headerBtnGroup, narrow && detailStyles.headerBtnGroupNarrow]}>
               <TouchableOpacity style={[detailStyles.headerBtn, narrow && { paddingHorizontal: 14, paddingVertical: 8 }]} onPress={() => setAdCopyVisible(true)}>
                 <Text style={[detailStyles.headerBtnText, narrow && { fontSize: 14, fontWeight: '700' }]}>광고문구</Text>
