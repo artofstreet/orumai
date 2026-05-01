@@ -46,7 +46,7 @@ export default function PropertySpecGrid({ specs, specs2, specs3, narrow, isUltr
         ) : (
           <>
             {[webSpecsRow1, webSpecsRow2, webSpecsRow3].map((row, ri) => (
-              <View key={`wr-${ri}`} style={[detailStyles.specRow, ri === 0 && detailStyles.specRowBottom, specLayoutStyles.specRow]}>
+              <View key={`wr-${ri}`} style={[detailStyles.specRow, ri < 2 && detailStyles.specRowBottom, specLayoutStyles.specRow]}>
                 {row.map((spec, idx) => (
                   <View key={`w-${ri}-${idx}`} style={[detailStyles.specCell, specLayoutStyles.specItem, idx < row.length - 1 && detailStyles.specCellRight]}>
                     <Text style={[detailStyles.specLabel, specFontStyles.specLabel]} numberOfLines={1} ellipsizeMode="tail">{spec.label}</Text>
