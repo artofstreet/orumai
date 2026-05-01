@@ -50,17 +50,9 @@ export default function PropertyCarousel({ photos = [] }: { photos: string[] }) 
               key={`empty-${startIdx}-${slotIdx}`}
               style={[
                 styles.thumb,
-                slotIdx === THUMB_COUNT - 1 ? styles.mapSlot : styles.emptySlot,
+                styles.emptySlot,
               ]}>
-              {slotIdx === THUMB_COUNT - 1 ? (
-                <>
-                  <Text style={styles.mapIcon}>🗺</Text>
-                  <Text style={styles.mapTxt}>지도 미리보기</Text>
-                  <Text style={styles.mapSubTxt}>준비중</Text>
-                </>
-              ) : (
-                <Text style={styles.emptyTxt}>📷 사진 없음</Text>
-              )}
+              <Text style={styles.emptyTxt}>📷 사진 없음</Text>
             </View>
           );
         })}
@@ -105,10 +97,6 @@ const styles = StyleSheet.create({
   wrap:          { width: '100%', position: 'relative' },
   emptySlot:     { backgroundColor: '#E5E7EB', borderRadius: 8, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 2 },
   emptyTxt:      { fontSize: 10, color: '#94A3B8', fontWeight: '500', textAlign: 'center' },
-  mapSlot:       { backgroundColor: '#F0F4FF', borderRadius: 8, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 2, borderWidth: 1, borderColor: '#CBD5E1', borderStyle: 'dashed' },
-  mapIcon:       { fontSize: 24, marginBottom: 4 },
-  mapTxt:        { fontSize: 11, color: '#475569', fontWeight: '600', textAlign: 'center' },
-  mapSubTxt:     { fontSize: 10, color: '#94A3B8', marginTop: 2 },
   row:           { flexDirection: 'row', width: '100%' },
   thumb:         { width: '25%', aspectRatio: 3/4, position: 'relative' }, // 사진 셀 높이 축소 (9:16 → 3:4)
   img:           { width: '100%', height: '100%' },
