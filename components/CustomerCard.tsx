@@ -81,6 +81,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#D0D0D0',
     height: 160,
+    justifyContent: 'center',
   },
   leftRow:    { flexDirection: 'row', alignItems: 'center', gap: 10 },
   avatar:     { width: 44, height: 44, borderRadius: 999, alignItems: 'center', justifyContent: 'center' },
@@ -88,5 +89,5 @@ const styles = StyleSheet.create({
   textArea:   { flex: 1 },
   name:       { fontSize: isWeb ? 18 : 15, fontWeight: '600', color: '#0F172A' },
   phone:      { fontSize: isWeb ? 15 : 13, fontWeight: '700', color: '#64748B', marginTop: 2 },
-  date:       { fontSize: isWeb ? 14 : 12, fontWeight: '600', color: '#64748B' },
+  date:       { fontSize: isWeb ? 14 : 12, fontWeight: '600', color: '#64748B', position: 'absolute', bottom: 12, right: 12 },
 });
