@@ -32,7 +32,17 @@ const TYPE_CHIP: Record<string, { bg: string; text: string }> = {
 
 const getTypeChip = (type: string) => TYPE_CHIP[type] ?? { bg: '#F1F5F9', text: '#475569' }; // 매물종류 칩 색상 조회(없으면 기본값)
 
-const formatDate = (iso: string): string => (iso ? iso.slice(0, 10) : ''); // ISO 날짜 → YYYY-MM-DD
+// 날짜 포맷 유틸 (ISO 문자열 → YYYY-MM-DD) — CustomerCard.tsx와 동일
+const formatDateShort = (v?: string): string => {
+  if (!v) return '';
+  const d = new Date(v);
+  if (isNaN(d.getTime())) return v.slice(0, 10);
+  // 로컬 날짜 기준 (UTC 변환 방지)
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+};
 
 export interface PropertyCardProps {
   property: Property;   // 매물 데이터
@@ -44,7 +54,7 @@ export default function PropertyCard({ property, width, onPress }: PropertyCardP
   const priceColor  = useMemo(() => DEAL_PRICE_COLOR[property.deal] ?? PRICE_COLOR, [property.deal]); // 거래유형별 가격 색상
   const typeChip    = useMemo(() => getTypeChip(property.type), [property.type]);
   const title       = property.buildingName ?? property.name ?? '이름 없음'; // 건물명 우선
-  const createdDate = useMemo(() => formatDate(property.createdAt), [property.createdAt]);
+  const createdDate = useMemo(() => formatDateShort(property.createdAt), [property.createdAt]);
   const photoCount  = property.photos?.length ?? 0; // 사진 장수
 
   const [isHovered, setIsHovered] = useState<boolean>(false);
