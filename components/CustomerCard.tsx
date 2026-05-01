@@ -23,9 +23,16 @@ const getAvatarBackgroundColor = (name: string): string => {
   return 아바타배경색배열[code % 아바타배경색배열.length]; // charCode 기반 색상 순환 선택
 };
 
-const formatCreatedAt = (createdAt: string): string => {
-  if (!createdAt) return '';
-  return createdAt.slice(0, 10);
+// 날짜 포맷 유틸 (ISO 문자열 → YYYY-MM-DD) — customer/[id].tsx와 동일
+const formatDateShort = (v?: string): string => {
+  if (!v) return '';
+  const d = new Date(v);
+  if (isNaN(d.getTime())) return v.slice(0, 10);
+  // 로컬 날짜 기준 (UTC 변환 방지)
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
 };
 
 export type CustomerCardProps = {
@@ -38,7 +45,7 @@ export default function CustomerCard({ item, width }: CustomerCardProps) {
 
   const initial         = useMemo(() => getInitialChar(item.name), [item.name]);
   const avatarBg        = useMemo(() => getAvatarBackgroundColor(item.name), [item.name]);
-  const createdDateText = useMemo(() => formatCreatedAt(item.createdAt), [item.createdAt]);
+  const createdDateText = useMemo(() => formatDateShort(item.createdAt), [item.createdAt]);
 
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const hoverStyle = useMemo(() => {
