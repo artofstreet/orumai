@@ -130,40 +130,49 @@ export default function TopBar({
         {showPrint && (
           <Pressable
             hitSlop={6}
-            style={[styles.iconButton, webShadowStyle, getWebHoverShadow(isPrintHovered)]}
+            style={styles.iconStackPressable}
             onPress={() => onPrintPress?.()}
             accessibilityLabel="전체 인쇄"
             onHoverIn={() => { if (Platform.OS === 'web') setIsPrintHovered(true); }}
             onHoverOut={() => { if (Platform.OS === 'web') setIsPrintHovered(false); }}>
-            <Ionicons name="print-outline" size={isWeb ? 26 : 22} color="#FFFFFF" />
+            <View style={[styles.iconButton, webShadowStyle, getWebHoverShadow(isPrintHovered)]}>
+              <Ionicons name="print-outline" size={isWeb ? 26 : 22} color="#FFFFFF" />
+            </View>
+            {isWeb && <Text style={styles.iconLabel}>인쇄</Text>}
           </Pressable>
         )}
 
         <Pressable
           hitSlop={6}
-          style={[styles.iconButton, webShadowStyle, getWebHoverShadow(isBellHovered)]}
+          style={styles.iconStackPressable}
           onPress={() => onNotificationPress?.()}
           accessibilityLabel="알림 패널 열기"
           onHoverIn={() => { if (Platform.OS === 'web') setIsBellHovered(true); }}
           onHoverOut={() => { if (Platform.OS === 'web') setIsBellHovered(false); }}>
-          <View style={styles.bellIconWrap}>
-            <Ionicons name="notifications" size={isWeb ? 26 : 22} color="#FFC107" />
-            {notifCount > 0 && (
-              <View style={styles.bellBadge}>
-                <Text style={styles.bellBadgeTxt}>{notifCount > 99 ? '99+' : notifCount}</Text>
-              </View>
-            )}
+          <View style={[styles.iconButton, webShadowStyle, getWebHoverShadow(isBellHovered)]}>
+            <View style={styles.bellIconWrap}>
+              <Ionicons name="notifications" size={isWeb ? 26 : 22} color="#FFC107" />
+              {notifCount > 0 && (
+                <View style={styles.bellBadge}>
+                  <Text style={styles.bellBadgeTxt}>{notifCount > 99 ? '99+' : notifCount}</Text>
+                </View>
+              )}
+            </View>
           </View>
+          {isWeb && <Text style={styles.iconLabel}>알림</Text>}
         </Pressable>
 
         <Pressable
           hitSlop={6}
-          style={[styles.iconButton, webShadowStyle, getWebHoverShadow(isProfileHovered)]}
+          style={styles.iconStackPressable}
           onPress={() => onProfilePress?.()}
           accessibilityLabel="프로필 보기"
           onHoverIn={() => { if (Platform.OS === 'web') setIsProfileHovered(true); }}
           onHoverOut={() => { if (Platform.OS === 'web') setIsProfileHovered(false); }}>
-          <Ionicons name="person-circle-outline" size={profileIconSize} color="#FFFFFF" />
+          <View style={[styles.iconButton, webShadowStyle, getWebHoverShadow(isProfileHovered)]}>
+            <Ionicons name="person-circle-outline" size={profileIconSize} color="#FFFFFF" />
+          </View>
+          {isWeb && <Text style={styles.iconLabel}>내정보</Text>}
         </Pressable>
       </View>
     </View>
@@ -171,7 +180,7 @@ export default function TopBar({
 }
 
 const styles = StyleSheet.create({
-  container:      { minHeight: isWeb ? 76 : 64, backgroundColor: Colors.topbar, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  container:      { minHeight: isWeb ? 90 : 64, backgroundColor: Colors.topbar, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   left:           { flexDirection: 'row', alignItems: 'center', flexShrink: 1, minWidth: 0 },
   logoBox:        { width: isWeb ? 36 : 30, height: isWeb ? 36 : 30, borderRadius: isWeb ? 10 : 8, alignItems: 'center', justifyContent: 'center' },
   logoText:       { color: '#FFFFFF', fontSize: isWeb ? 23 : 20, fontWeight: '800', marginLeft: 8, flexShrink: 0 },
@@ -185,6 +194,8 @@ const styles = StyleSheet.create({
   rightCompact:   { gap: 6 },
   addButton:      { minHeight: isWeb ? 44 : 38, paddingHorizontal: isWeb ? 18 : 14, borderRadius: 10, backgroundColor: '#1E293B', borderWidth: 1, borderColor: '#334155', alignItems: 'center', justifyContent: 'center' },
   addButtonText:  { color: '#FFFFFF', fontSize: isWeb ? 19 : 17, fontWeight: '800' },
+  iconStackPressable: { flexDirection: 'column', alignItems: 'center' },
+  iconLabel:     { fontSize: 10, color: '#FFFFFF', marginTop: 4, fontWeight: '600' },
   iconButton:     { backgroundColor: '#1E293B', borderRadius: isWeb ? 22 : 21, width: isWeb ? 44 : 38, height: isWeb ? 44 : 38, alignItems: 'center', justifyContent: 'center' },
   bellIconWrap:   { position: 'relative', alignItems: 'center', justifyContent: 'center' },
   bellBadge:      { position: 'absolute', top: -5, right: -6, zIndex: 10, backgroundColor: '#EF4444', borderRadius: 9, minWidth: 18, height: 18, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 4 },
