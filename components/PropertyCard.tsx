@@ -119,6 +119,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#D0D0D0',
     padding: 12,
+    height: 160,
   },
   photo:          { width: '33.3%', aspectRatio: 1, borderRadius: 8, overflow: 'hidden', backgroundColor: '#FAFAFA', position: 'relative' },
   photoImg:       { width: '100%', height: '100%' },

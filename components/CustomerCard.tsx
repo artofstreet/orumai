@@ -2,7 +2,6 @@ import { useRouter } from 'expo-router';
 import React, { useMemo, useState } from 'react';
 import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { text2 } from '@/constants/colors';
 import type { Customer } from '@/types';
 
 const isWeb = Platform.OS === 'web';
@@ -68,7 +67,6 @@ export default function CustomerCard({ item, width }: CustomerCardProps) {
           <Text style={styles.phone} numberOfLines={1}>{item.phone}</Text>
         </View>
       </View>
-      <Text style={styles.memo} numberOfLines={2} ellipsizeMode="tail">{item.memo}</Text>
       <Text style={styles.date}>{createdDateText}</Text>
     </Pressable>
   );
@@ -82,6 +80,7 @@ const styles = StyleSheet.create({
     gap: 10,
     borderWidth: 1,
     borderColor: '#D0D0D0',
+    height: 160,
   },
   leftRow:    { flexDirection: 'row', alignItems: 'center', gap: 10 },
   avatar:     { width: 44, height: 44, borderRadius: 999, alignItems: 'center', justifyContent: 'center' },
@@ -89,6 +88,5 @@ const styles = StyleSheet.create({
   textArea:   { flex: 1 },
   name:       { fontSize: isWeb ? 18 : 15, fontWeight: '600', color: '#0F172A' },
   phone:      { fontSize: isWeb ? 15 : 13, fontWeight: '700', color: '#64748B', marginTop: 2 },
-  memo:       { fontSize: isWeb ? 15 : 13, fontWeight: '600', color: text2 },
   date:       { fontSize: isWeb ? 14 : 12, fontWeight: '600', color: '#64748B' },
 });
