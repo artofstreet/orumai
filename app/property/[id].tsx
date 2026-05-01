@@ -28,6 +28,18 @@ import { openRegisterPanel } from '@/utils/registerEvents';
 const getBadge = (key: string) =>
   key in BADGE_COLORS ? BADGE_COLORS[key as keyof typeof BADGE_COLORS] : BADGE_COLORS.기본;
 
+// 날짜 포맷 유틸 (ISO 문자열 → YYYY-MM-DD) — customer/[id].tsx와 동일
+const formatDateShort = (v?: string): string => {
+  if (!v) return '';
+  const d = new Date(v);
+  if (isNaN(d.getTime())) return v.slice(0, 10);
+  // 로컬 날짜 기준 (UTC 변환 방지)
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+};
+
 const DEAL_PRICE_COLOR: Record<string, string> = { 매매: '#1D4ED8', 전세: '#16A34A', 월세: '#DB2777' };
 const isWeb = Platform.OS === 'web';
 export default function PropertyDetailScreen() {
@@ -67,6 +79,7 @@ export default function PropertyDetailScreen() {
   const title      = property.buildingName ?? property.name ?? '매물 상세';
   const typeBadge  = getBadge(property.type);
   const dealBadge  = getBadge(property.deal);
+  const 등록일     = formatDateShort(property.createdAt);
   const photos     = (property.photos ?? []).slice(0, 10);
   const priceColor = DEAL_PRICE_COLOR[property.deal] ?? '#0F172A';
 
@@ -127,7 +140,14 @@ export default function PropertyDetailScreen() {
             </View>
           </View>
 
-          <Text style={[detailStyles.headerTitle, { fontSize: isWeb ? headerTitleSize + 3 : headerTitleSize }, !isWeb && { fontSize: headerTitleSize + 4 }]} numberOfLines={3}>{title}</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
+            <Text style={[detailStyles.headerTitle, { flex: 1, fontSize: isWeb ? headerTitleSize + 3 : headerTitleSize }, !isWeb && { fontSize: headerTitleSize + 4 }]} numberOfLines={3}>{title}</Text>
+            {Boolean(등록일) && (
+              <Text style={{ fontSize: 16, color: '#64748B', fontWeight: '600', marginTop: 6, textAlign: 'right' }}>
+                등록일 {등록일}
+              </Text>
+            )}
+          </View>
           <Text style={[detailStyles.headerAddr, { color: '#374151', fontSize: 16, fontWeight: '500', marginTop: 2 }]}>{property.addr}</Text>
           {/* 지도/주소 복사 버튼 */}
           <View style={[addrBtnStyles.addrBtnRow, { marginTop: 2 }]}>
