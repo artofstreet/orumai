@@ -95,7 +95,7 @@ export default function PropertyCarousel({ photos = [] }: { photos: string[] }) 
 
 const styles = StyleSheet.create({
   wrap:          { width: '100%', position: 'relative' },
-  emptySlot:     { backgroundColor: '#E5E7EB', borderRadius: 8, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 2 },
+  emptySlot:     { backgroundColor: '#FFF8F2', borderRadius: 8, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 2 },
   emptyTxt:      { fontSize: 10, color: '#94A3B8', fontWeight: '500', textAlign: 'center' },
   row:           { flexDirection: 'row', width: '100%' },
   thumb:         { width: '25%', aspectRatio: 3/4, position: 'relative' }, // 사진 셀 높이 축소 (9:16 → 3:4)
