@@ -140,7 +140,18 @@ export default function PropertyDetailScreen() {
             </View>
           </View>
 
-          <Text style={[detailStyles.headerTitle, { fontSize: isWeb ? headerTitleSize + 3 : headerTitleSize }, !isWeb && { fontSize: headerTitleSize + 4 }]} numberOfLines={3}>{title}</Text>
+          {isWeb ? (
+            <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
+              <Text style={[detailStyles.headerTitle, { flex: 1, fontSize: headerTitleSize + 3 }]} numberOfLines={3}>{title}</Text>
+              {Boolean(등록일) && (
+                <Text style={{ fontSize: 16, color: '#647488', fontWeight: '600', marginTop: 6, textAlign: 'right' }}>
+                  등록일 {등록일}
+                </Text>
+              )}
+            </View>
+          ) : (
+            <Text style={[detailStyles.headerTitle, { fontSize: headerTitleSize + 4 }]} numberOfLines={3}>{title}</Text>
+          )}
           <Text style={[detailStyles.headerAddr, { color: '#374151', fontSize: 16, fontWeight: '500', marginTop: 2 }]}>{property.addr}</Text>
           {/* 지도/주소 복사 버튼 */}
           <View style={[addrBtnStyles.addrBtnRow, { marginTop: 2 }]}>
@@ -186,8 +197,8 @@ export default function PropertyDetailScreen() {
                 }}>
                 <Text style={[detailStyles.headerBtnText, narrow && { fontSize: 14, fontWeight: '700' }, detailStyles.headerBtnDel]}>삭제</Text>
               </TouchableOpacity>
-              {Boolean(등록일) && (
-                <Text style={{ marginLeft: 'auto', fontSize: 12, color: '#64748B', fontWeight: '600', alignSelf: 'flex-end' }}>
+              {!isWeb && Boolean(등록일) && (
+                <Text style={{ marginLeft: 'auto', fontSize: 15, color: '#647488', fontWeight: '600', alignSelf: 'center' }}>
                   등록일 {등록일}
                 </Text>
               )}
